@@ -24,8 +24,6 @@
   .meal-info p { font-size:0.85rem; margin-bottom:8px; }
   .meal-info button { background:#ff914d; color:#fff; border:none; border-radius:6px; padding:6px 10px; cursor:pointer; transition:0.3s; font-size:0.85rem;}
   .meal-info button:hover{ background:#ff6a00; }
-  .star-rating span { cursor:pointer; color:#ccc; font-size:1rem; margin-right:2px; }
-  .star-rating span.selected { color:#ff914d; }
   .budget-section { background:#fff0e6; padding:20px; text-align:center; border-top:3px solid #ff914d; margin-top:20px; }
   .budget-section h2 { color:#ff6a00; margin-bottom:8px; }
   .budget-section p { font-size:1rem; margin-bottom:8px; }
@@ -40,9 +38,9 @@
 <header>
  <div>
   <h1 id="welcomeUser">Welcome to Campus Bite 🍽️</h1>
-<p class="subtitle">Plan your meals, save your budget.</p>
-  </div>
-  <button id="logoutBtn">Logout</button>
+  <p class="subtitle">Plan your meals, save your budget.</p>
+ </div>
+ <button id="logoutBtn">Logout</button>
 </header>
 
 <section class="filter-section">
@@ -62,6 +60,7 @@
 <section class="budget-section">
   <h2>Your Daily Budget</h2>
   <p id="budgetTotal">UGX 0</p>
+  <button onclick="showBudgetItems()">View Budget Items</button>
   <button onclick="resetBudget()">Reset Budget</button>
 </section>
 
@@ -73,141 +72,123 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <script>
-  // Firebase config
-  const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
     authDomain: "campus-bite-9dbaa.firebaseapp.com",
     projectId: "campus-bite-9dbaa",
     storageBucket: "campus-bite-9dbaa.firebasestorage.app",
     messagingSenderId: "294389261625",
     appId: "1:294389261625:web:095d6e5f85f4e8"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  let totalBudget = 0;
+let totalBudget = 0;
+let budgetItems = [];
 
-  auth.onAuthStateChanged(user=>{
-    if(!user) window.location.href="index.html";
-    else {
-      // Get student info
-      db.collection("students").doc(user.uid).get().then(doc=>{
-        if(doc.exists){
-          const data = doc.data();
-          document.getElementById("welcomeUser").textContent = `Welcome, ${data.name} 🍽️`;
-        }
-      });
-    }
-  });
-
-  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
-    await auth.signOut();
-    window.location.href="index.html";
-  });
-
-  // Meals array with stable images
-  const meals = [
-    {name:"Pancakes", category:"Breakfast", price:5000, img:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Omelette", category:"Breakfast", price:4000, img:"https://images.unsplash.com/photo-1617196030175-5aa2c4f51a72?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"French Toast", category:"Breakfast", price:4500, img:"https://images.unsplash.com/photo-1604908177521-10ffca44b0d0?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Croissant", category:"Breakfast", price:3500, img:"https://images.unsplash.com/photo-1601050695707-48a6d90b2f25?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Bagel with Cream Cheese", category:"Breakfast", price:3000, img:"https://images.unsplash.com/photo-1551183053-bf91a1d81141?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Smoothie Bowl", category:"Breakfast", price:6000, img:"https://images.unsplash.com/photo-1603073335923-847279bd0b1c?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Cereal & Milk", category:"Breakfast", price:2500, img:"https://images.unsplash.com/photo-1561047029-3000ed3c1e3d?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Fried Eggs & Toast", category:"Breakfast", price:4000, img:"https://images.unsplash.com/photo-1600718377500-74a84f646e2a?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Breakfast Burrito", category:"Breakfast", price:5500, img:"https://images.unsplash.com/photo-1592861954321-0b6bcfe4c0ea?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Waffles", category:"Breakfast", price:5000, img:"https://images.unsplash.com/photo-1617196030175-5aa2c4f51a72?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    // Lunch 15
-    {name:"Grilled Chicken", category:"Lunch", price:10000, img:"https://images.unsplash.com/photo-1603073335923-847279bd0b1c?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Beef Steak", category:"Lunch", price:15000, img:"https://images.unsplash.com/photo-1551183053-bf91a1d81141?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Fried Rice", category:"Lunch", price:8000, img:"https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Veggie Pasta", category:"Lunch", price:9000, img:"https://images.unsplash.com/photo-1617196030175-5aa2c4f51a72?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Fish & Chips", category:"Lunch", price:12000, img:"https://images.unsplash.com/photo-1551183053-bf91a1d81141?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Burger Combo", category:"Lunch", price:10000, img:"https://images.unsplash.com/photo-1553621042-f6e147245754?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Chicken Wrap", category:"Lunch", price:7000, img:"https://images.unsplash.com/photo-1601050695707-48a6d90b2f25?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Veggie Sandwich", category:"Lunch", price:6500, img:"https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Grilled Fish", category:"Lunch", price:13000, img:"https://images.unsplash.com/photo-1603073335923-847279bd0b1c?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Chicken Salad", category:"Lunch", price:8000, img:"https://images.unsplash.com/photo-1592861954321-0b6bcfe4c0ea?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Pizza Slice", category:"Lunch", price:5000, img:"https://images.unsplash.com/photo-1528712306091-ed0763094c98?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Beef Tacos", category:"Lunch", price:9000, img:"https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Chicken Biryani", category:"Lunch", price:11000, img:"https://images.unsplash.com/photo-1617196030175-5aa2c4f51a72?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Veggie Rice Bowl", category:"Lunch", price:7500, img:"https://images.unsplash.com/photo-1603073335923-847279bd0b1c?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Beef Burger", category:"Lunch", price:10000, img:"https://images.unsplash.com/photo-1553621042-f6e147245754?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    // Drinks 5
-    {name:"Fruit Smoothie", category:"Drink", price:5000, img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Orange Juice", category:"Drink", price:4000, img:"https://images.unsplash.com/photo-1604908810458-8b8c082c47dc?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Iced Coffee", category:"Drink", price:6000, img:"https://images.unsplash.com/photo-1573076664846-cb5ed208de96?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Milkshake", category:"Drink", price:5000, img:"https://images.unsplash.com/photo-1601050695707-48a6d90b2f25?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
-    {name:"Herbal Tea", category:"Drink", price:3000, img:"https://images.unsplash.com/photo-1599785209707-784db1d4f6be?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"}
-  ];
-
-  const mealSection = document.getElementById("mealSection");
-  const categoryFilter = document.getElementById("categoryFilter");
-
-  function renderMeals(filter="All"){
-    mealSection.innerHTML="";
-    meals.filter(m=>filter==="All"||m.category===filter).forEach((meal, idx)=>{
-      const card = document.createElement("div");
-      card.className="meal-card";
-      card.innerHTML=`
-        <img src="${meal.img}" alt="${meal.name}">
-        <div class="meal-info">
-          <h3>${meal.name}</h3>
-          <p>${meal.category} – UGX ${meal.price.toLocaleString()}</p>
-          <button onclick="addToBudget(${meal.price})">Add to Budget</button>
-          <div class="star-rating" id="rating-${idx}">
-            <span data-value="1">&#9733;</span>
-            <span data-value="2">&#9733;</span>
-            <span data-value="3">&#9733;</span>
-            <span data-value="4">&#9733;</span>
-            <span data-value="5">&#9733;</span>
-          </div>
-          <p id="avgRating-${idx}" style="font-size:0.8rem; color:#555;">Loading rating...</p>
-        </div>
-      `;
-      mealSection.appendChild(card);
-      setupRating(idx, meal.name);
-    });
-  }
-
-  categoryFilter.addEventListener("change", ()=>{ renderMeals(categoryFilter.value); });
-
-  const budgetDisplay = document.getElementById("budgetTotal");
-  function addToBudget(amount){
-    totalBudget+=amount;
-    budgetDisplay.textContent = "UGX "+totalBudget.toLocaleString();
-    alert("Meal added to budget!");
-  }
-  function resetBudget(){ totalBudget=0; budgetDisplay.textContent="UGX 0"; }
-
-  function setupRating(idx, mealName){
-    const stars = document.querySelectorAll(`#rating-${idx} span`);
-    const avgDisplay = document.getElementById(`avgRating-${idx}`);
-    db.collection("ratings").doc(mealName).onSnapshot(doc=>{
+auth.onAuthStateChanged(user=>{
+  if(!user) window.location.href="index.html";
+  else {
+    db.collection("students").doc(user.uid).get().then(doc=>{
       if(doc.exists){
         const data = doc.data();
-        const avg = data.total / data.count;
-        avgDisplay.textContent = `Average Rating: ${avg.toFixed(1)} / 5 (${data.count} ratings)`;
-      } else avgDisplay.textContent="No ratings yet";
-    });
-    stars.forEach(star=>{
-      star.addEventListener("click", async ()=>{
-        const value=parseInt(star.getAttribute("data-value"));
-        const user = auth.currentUser;
-        if(!user) return alert("Please login");
-        const ratingRef = db.collection("ratings").doc(mealName);
-        await db.runTransaction(async t=>{
-          const docSnap = await t.get(ratingRef);
-          if(!docSnap.exists) t.set(ratingRef,{total:value,count:1});
-          else { const data=docSnap.data(); t.update(ratingRef,{total:data.total+value,count:data.count+1}); }
-        });
-        alert(`You rated ${mealName} ${value} stars!`);
-      });
+        document.getElementById("welcomeUser").textContent = `Welcome, ${data.name} 🍽️`;
+      }
     });
   }
+});
 
-  renderMeals();
+document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+  await auth.signOut();
+  window.location.href="index.html";
+});
+
+// Meals array with place info
+const meals = [
+  // Breakfast 10
+  {name:"Pancakes", category:"Breakfast", place:"Morning Café", price:5000, img:"https://images.unsplash.com/photo-1578985545062-69928b1d9587?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Omelette", category:"Breakfast", place:"Hall Canteen", price:4000, img:"https://images.unsplash.com/photo-1617196030175-5aa2c4f51a72?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"French Toast", category:"Breakfast", place:"Campus Café", price:4500, img:"https://images.unsplash.com/photo-1604908177521-10ffca44b0d0?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Croissant", category:"Breakfast", place:"Morning Café", price:3500, img:"https://images.unsplash.com/photo-1601050695707-48a6d90b2f25?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Bagel with Cream Cheese", category:"Breakfast", place:"Hall Canteen", price:3000, img:"https://images.unsplash.com/photo-1551183053-bf91a1d81141?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Smoothie Bowl", category:"Breakfast", place:"Campus Café", price:6000, img:"https://images.unsplash.com/photo-1603073335923-847279bd0b1c?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Cereal & Milk", category:"Breakfast", place:"Morning Café", price:2500, img:"https://images.unsplash.com/photo-1561047029-3000ed3c1e3d?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Fried Eggs & Toast", category:"Breakfast", place:"Hall Canteen", price:4000, img:"https://images.unsplash.com/photo-1600718377500-74a84f646e2a?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Breakfast Burrito", category:"Breakfast", place:"Campus Café", price:5500, img:"https://images.unsplash.com/photo-1592861954321-0b6bcfe4c0ea?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Waffles", category:"Breakfast", place:"Morning Café", price:5000, img:"https://images.unsplash.com/photo-1617196030175-5aa2c4f51a72?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  // Lunch 15
+  {name:"Grilled Chicken", category:"Lunch", place:"Cafeteria A", price:10000, img:"https://images.unsplash.com/photo-1603073335923-847279bd0b1c?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Beef Steak", category:"Lunch", place:"Food Court", price:15000, img:"https://images.unsplash.com/photo-1551183053-bf91a1d81141?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Fried Rice", category:"Lunch", place:"Hall Canteen", price:8000, img:"https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Veggie Pasta", category:"Lunch", place:"Campus Café", price:9000, img:"https://images.unsplash.com/photo-1617196030175-5aa2c4f51a72?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Fish & Chips", category:"Lunch", place:"Cafeteria A", price:12000, img:"https://images.unsplash.com/photo-1551183053-bf91a1d81141?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Burger Combo", category:"Lunch", place:"Food Court", price:10000, img:"https://images.unsplash.com/photo-1553621042-f6e147245754?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Chicken Wrap", category:"Lunch", place:"Hall Canteen", price:7000, img:"https://images.unsplash.com/photo-1601050695707-48a6d90b2f25?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Veggie Sandwich", category:"Lunch", place:"Campus Café", price:6500, img:"https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Grilled Fish", category:"Lunch", place:"Cafeteria A", price:13000, img:"https://images.unsplash.com/photo-1603073335923-847279bd0b1c?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Chicken Salad", category:"Lunch", place:"Food Court", price:8000, img:"https://images.unsplash.com/photo-1592861954321-0b6bcfe4c0ea?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Pizza Slice", category:"Lunch", place:"Hall Canteen", price:5000, img:"https://images.unsplash.com/photo-1528712306091-ed0763094c98?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Beef Tacos", category:"Lunch", place:"Campus Café", price:9000, img:"https://images.unsplash.com/photo-1600891964599-f61ba0e24092?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Chicken Biryani", category:"Lunch", place:"Cafeteria A", price:11000, img:"https://images.unsplash.com/photo-1617196030175-5aa2c4f51a72?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Veggie Rice Bowl", category:"Lunch", place:"Food Court", price:7500, img:"https://images.unsplash.com/photo-1603073335923-847279bd0b1c?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Beef Burger", category:"Lunch", place:"Hall Canteen", price:10000, img:"https://images.unsplash.com/photo-1553621042-f6e147245754?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  // Drinks 5
+  {name:"Fruit Smoothie", category:"Drink", place:"Campus Café", price:5000, img:"https://images.unsplash.com/photo-1504674900247-0877df9cc836?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Orange Juice", category:"Drink", place:"Morning Café", price:4000, img:"https://images.unsplash.com/photo-1604908810458-8b8c082c47dc?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Iced Coffee", category:"Drink", place:"Hall Canteen", price:6000, img:"https://images.unsplash.com/photo-1573076664846-cb5ed208de96?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Milkshake", category:"Drink", place:"Campus Café", price:5000, img:"https://images.unsplash.com/photo-1601050695707-48a6d90b2f25?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"},
+  {name:"Herbal Tea", category:"Drink", place:"Morning Café", price:3000, img:"https://images.unsplash.com/photo-1599785209707-784db1d4f6be?crop=entropy&cs=tinysrgb&fit=max&w=600&q=80"}
+];
+
+const mealSection = document.getElementById("mealSection");
+const categoryFilter = document.getElementById("categoryFilter");
+
+function renderMeals(filter="All"){
+  mealSection.innerHTML="";
+  meals.filter(m=>filter==="All"||m.category===filter).forEach((meal)=>{
+    const card = document.createElement("div");
+    card.className="meal-card";
+    card.innerHTML=`
+      <img src="${meal.img}" alt="${meal.name}">
+      <div class="meal-info">
+        <h3>${meal.name}</h3>
+        <p>${meal.place} – UGX ${meal.price.toLocaleString()}</p>
+        <button onclick="addToBudget('${meal.name}', ${meal.price})">Add to Budget</button>
+      </div>
+    `;
+    mealSection.appendChild(card);
+  });
+}
+
+categoryFilter.addEventListener("change", ()=>{ renderMeals(categoryFilter.value); });
+
+const budgetDisplay = document.getElementById("budgetTotal");
+
+function addToBudget(name, price){
+  totalBudget += price;
+  budgetItems.push({name, price});
+  budgetDisplay.textContent = "UGX "+totalBudget.toLocaleString();
+  alert(`${name} added to your budget!`);
+}
+
+function resetBudget(){
+  totalBudget=0;
+  budgetItems=[];
+  budgetDisplay.textContent="UGX 0";
+}
+
+function showBudgetItems(){
+  if(budgetItems.length===0) return alert("No items in budget yet!");
+  let msg="Your Daily Budget Items:\n\n";
+  budgetItems.forEach((item,i)=>{
+    msg += `${i+1}. ${item.name} – UGX ${item.price.toLocaleString()}\n`;
+  });
+  msg += `\nTotal: UGX ${totalBudget.toLocaleString()}`;
+  alert(msg);
+}
+
+renderMeals();
 </script>
 
 </body>
