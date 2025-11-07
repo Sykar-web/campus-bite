@@ -9,115 +9,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
     body {
       height: 100vh;
-      background: url("https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=1950&q=80")
-        center/cover no-repeat;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      color: #fff;
+      background: url("https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=1950&q=80") center/cover no-repeat;
+      display: flex; justify-content: center; align-items: center; position: relative; color: #fff;
     }
-
-    .overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.45);
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
-
+    .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
+    .container { position: relative; z-index: 1; width: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; }
     .login-card {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 16px;
-      padding: 40px 35px;
-      width: 340px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+      border-radius: 16px; padding: 40px 35px; width: 340px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
     }
-
-    .title {
-      font-size: 2rem;
-      font-weight: 700;
-      color: #ff914d;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      font-size: 0.9rem;
-      color: #fff5ee;
-      margin-bottom: 25px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px 14px;
-      margin: 8px 0;
-      border: none;
-      border-radius: 8px;
-      outline: none;
-      font-size: 0.95rem;
-    }
-
+    .title { font-size: 2rem; font-weight: 700; color: #ff914d; margin-bottom: 10px; }
+    .subtitle { font-size: 0.9rem; color: #fff5ee; margin-bottom: 25px; }
+    input { width: 100%; padding: 12px 14px; margin: 8px 0; border: none; border-radius: 8px; outline: none; font-size: 0.95rem; }
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #ff914d;
-      color: #fff;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
+      width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #ff914d; color: #fff; font-size: 1rem; cursor: pointer; transition: 0.3s;
     }
-
-    button:hover {
-      background: #ff6a00;
-    }
-
-    p {
-      margin-top: 15px;
-      color: #fff5ee;
-    }
-
-    p a {
-      color: #ff914d;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
-    p a:hover {
-      text-decoration: underline;
-    }
-
-    @media (max-width: 480px) {
-      .login-card {
-        width: 90%;
-        padding: 30px 20px;
-      }
-
-      .title {
-        font-size: 1.7rem;
-      }
-    }
+    button:hover { background: #ff6a00; }
+    button.secondary { background: transparent; border: 2px solid #ff914d; color: #ff914d; }
+    button.secondary:hover { background: #ff914d; color: #fff; }
+    p a { color: #ff914d; text-decoration: none; font-weight: 600; }
+    p a:hover { text-decoration: underline; }
+    @media (max-width: 480px) { .login-card { width: 90%; padding: 30px 20px; } .title { font-size: 1.7rem; } }
   </style>
 </head>
 <body>
@@ -132,21 +47,20 @@
       <input type="password" id="password" placeholder="Password" />
 
       <button id="loginBtn">Login</button>
-
-      <p>Don’t have an account? <a href="signup.html">Create one</a></p>
+      <button id="signupBtn" class="secondary">Sign Up</button>
+      <button id="forgotPasswordBtn" class="secondary">Forgot Password?</button>
     </div>
   </div>
 
-  <!-- Firebase Authentication Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
       authDomain: "campus-bite-9dbaa.firebaseapp.com",
       projectId: "campus-bite-9dbaa",
-      storageBucket: "campus-bite-9dbaa.firebasestorage.app",
+      storageBucket: "campus-bite-9dbaa.appspot.com",
       messagingSenderId: "294389261625",
       appId: "1:294389261625:web:095d6e5e7557555f85f4e8"
     };
@@ -155,20 +69,37 @@
     const auth = getAuth(app);
 
     const loginBtn = document.getElementById("loginBtn");
+    const signupBtn = document.getElementById("signupBtn");
+    const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
 
+    // Login
     loginBtn.addEventListener("click", async () => {
       const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value.trim();
-
-      if (!email || !password) {
-        alert("Please enter your email and password!");
-        return;
-      }
+      if (!email || !password) return alert("Enter both email and password.");
 
       try {
         await signInWithEmailAndPassword(auth, email, password);
         alert("Login successful!");
         window.location.href = "home.html";
+      } catch (error) {
+        alert(error.message);
+      }
+    });
+
+    // Signup redirect
+    signupBtn.addEventListener("click", () => {
+      window.location.href = "signup.html";
+    });
+
+    // Forgot password
+    forgotPasswordBtn.addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      if (!email) return alert("Please enter your email to reset password.");
+
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert("Password reset email sent! Check your inbox.");
       } catch (error) {
         alert(error.message);
       }
