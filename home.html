@@ -12,9 +12,11 @@
   header h1 { font-size:1.3rem; font-weight:600; }
   header button { background:#fff; color:#ff914d; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; font-weight:600; transition:0.3s; }
   header button:hover{ background:#ffd6ba; }
+
   .filter-section { padding:15px 20px; display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
   .filter-section label { font-weight:600; }
   .filter-section select { padding:5px 8px; border-radius:5px; }
+
   .meal-section { padding:20px; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; }
   .meal-card { background:#fff; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); overflow:hidden; transition:0.3s; }
   .meal-card:hover { transform:scale(1.03); }
@@ -24,21 +26,25 @@
   .meal-info p { font-size:0.85rem; margin-bottom:6px; }
   .meal-info button { background:#ff914d; color:#fff; border:none; border-radius:6px; padding:6px 10px; cursor:pointer; transition:0.3s; font-size:0.85rem;}
   .meal-info button:hover{ background:#ff6a00; }
+
   .budget-section { background:#fff0e6; padding:20px; text-align:center; border-top:3px solid #ff914d; margin-top:20px; }
   .budget-section h2 { color:#ff6a00; margin-bottom:8px; }
   .budget-section p { font-size:1rem; margin-bottom:8px; }
   .budget-section button { background:#ff914d; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; transition:0.3s; font-size:0.9rem; margin:3px; }
   .budget-section button:hover{ background:#ff6a00; }
-  .comments-section { background:#fff3e6; padding:20px; border-top:3px solid #ff914d; margin-top:20px; border-radius:12px; }
-  .comments-section h2 { color:#ff6a00; margin-bottom:10px; }
-  .comment-form textarea { width:100%; padding:8px; border-radius:6px; border:1px solid #ccc; margin-bottom:8px; resize:none; }
-  .comment-form button { background:#ff914d; color:#fff; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; transition:0.3s; }
-  .comment-form button:hover{ background:#ff6a00; }
+
+  .comment-section { padding:20px; margin-top:20px; background:#fff8f1; border-top:3px solid #ff914d; border-radius:12px; }
+  .comment-section h2 { color:#ff6a00; margin-bottom:10px; }
+  #commentForm { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+  #commentForm input { padding:10px; border-radius:6px; border:1px solid #ccc; width:100%; }
+  #commentForm button { padding:10px; background:#ff914d; color:#fff; border:none; border-radius:6px; cursor:pointer; }
+  #commentForm button:hover { background:#ff6a00; }
   .comment-card { background:#fff; padding:12px; border-radius:8px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-  .comment-card p { margin-bottom:6px; font-size:0.9rem; }
-  .comment-card small { color:#777; font-size:0.8rem; }
-  .comment-card button { margin-right:5px; background:#ff914d; color:#fff; border:none; border-radius:6px; padding:4px 8px; font-size:0.8rem; cursor:pointer; }
-  .comment-card button:hover{ background:#ff6a00; }
+  .comment-card p { margin-bottom:6px; }
+  .like-btn { margin-right:10px; cursor:pointer; padding:4px 8px; border-radius:6px; border:none; }
+  .liked { background:#ffd6ba; }
+  .disliked { background:#ccc; }
+
   footer { text-align:center; padding:15px; font-size:0.9rem; background:#fff8f1; color:#777; margin-top:20px; }
   @media (max-width:600px) { .meal-section { grid-template-columns:repeat(2,1fr); } }
 </style>
@@ -84,12 +90,12 @@
   <button onclick="viewBudget()">View Added Items</button>
 </section>
 
-<section class="comments-section">
+<section class="comment-section">
   <h2>Comments</h2>
-  <div class="comment-form">
-    <textarea id="commentInput" rows="3" placeholder="Write a comment..."></textarea>
-    <button id="postCommentBtn">Post Comment</button>
-  </div>
+  <form id="commentForm">
+    <input type="text" id="commentInput" placeholder="Write a comment..." required />
+    <button type="submit">Post Comment</button>
+  </form>
   <div id="commentsContainer"></div>
 </section>
 
@@ -100,217 +106,194 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
-  authDomain: "campus-bite-9dbaa.firebaseapp.com",
-  projectId: "campus-bite-9dbaa",
-  storageBucket: "campus-bite-9dbaa.firebasestorage.app",
-  messagingSenderId: "294389261625",
-  appId: "1:294389261625:web:095d6e5f85f4e8"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+  const firebaseConfig = {
+    apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
+    authDomain: "campus-bite-9dbaa.firebaseapp.com",
+    projectId: "campus-bite-9dbaa",
+    storageBucket: "campus-bite-9dbaa.appspot.com",
+    messagingSenderId: "294389261625",
+    appId: "1:294389261625:web:095d6e5f85f4e8"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-// Authentication & Welcome
-auth.onAuthStateChanged(user=>{
-  if(!user) window.location.href="index.html";
-  else {
-    db.collection("students").doc(user.uid).get().then(doc=>{
-      if(doc.exists){
-        document.getElementById("welcomeUser").textContent = `Welcome, ${doc.data().name} 🍽️`;
-      }
-    });
+  // --------------- USER AUTH ----------------
+  let totalBudget = 0;
+  let addedMeals = [];
+  let currentUserName = "";
+
+  auth.onAuthStateChanged(user=>{
+    if(!user) window.location.href="index.html";
+    else {
+      db.collection("students").doc(user.uid).get().then(doc=>{
+        if(doc.exists){
+          const data = doc.data();
+          document.getElementById("welcomeUser").textContent = `Welcome, ${data.name} 🍽️`;
+          currentUserName = data.name;
+        }
+      });
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+    await auth.signOut();
+    window.location.href="index.html";
+  });
+
+  // --------------- MEALS -----------------
+  const mealSection = document.getElementById("mealSection");
+  const categoryFilter = document.getElementById("categoryFilter");
+  const dayFilter = document.getElementById("dayFilter");
+
+  const meals = [
+    {name:"Mandazi", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/mandazi.png"},
+    {name:"Chapati", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/chapati.jpg"},
+    {name:"Fried Cassava", category:"Breakfast", place:"Cassava Lady", price:100, img:"images/fried cassava.jpg"},
+    {name:"Pan Cakes", category:"Breakfast", place:"Cassava Lady", price:100, img:"images/pancakes.png"},
+    {name:"Samosas", category:"Breakfast", place:"Munisite Market", price:200, img:"images/samosa.jpg"},
+    {name:"Smoothie Bowl", category:"Breakfast", place:"Fresh Spot", price:6000, img:"images/breakfast/smoothie.jpg"},
+    {name:"Cereal & Milk", category:"Breakfast", place:"Student Lounge", price:2500, img:"images/breakfast/cereal.jpg"},
+    {name:"Fried Eggs & Toast", category:"Breakfast", place:"Café Bliss", price:4000, img:"images/breakfast/eggs.jpg"},
+    {name:"Breakfast Burrito", category:"Breakfast", place:"Taste Hub", price:5500, img:"images/breakfast/burrito.jpg"},
+    {name:"Kikomando", category:"Lunch", place:"Campus Canteen", price:1000, img:"images/kikomando.jpg"},
+    {name:"Fried Rice", category:"Lunch", place:"Desert breeze", price:2000, img:"images/rice.webp"},
+    {name:"Matooke", category:"Lunch", place:"Cassava Lady", price:2000, img:"images/matooke.jpg"},
+    {name:"White Rice & Beans", category:"Lunch", place:"Cassava Lady", price:2000, img:"images/white rice.jpg"},
+    {name:"Pizza Slice", category:"Lunch", place:"Pizza Stop", price:5000, img:"images/lunch/pizza.jpg"},
+    {name:"Beef Tacos", category:"Lunch", place:"Food Truck", price:9000, img:"images/lunch/tacos.jpg"},
+    {name:"Chicken Biryani", category:"Lunch", place:"Campus Kitchen", price:11000, img:"images/lunch/biryani.jpg"},
+    {name:"Cold Water", category:"Drink", place:"Campus Canteen", price:500, img:"images/nivana.jpg"},
+    {name:"Guiness", category:"Drink", place:"Campus Ark", price:4500, img:"images/guiness.png"},
+    {name:"Bond 7", category:"Drink", place:"Campus Ark", price:7500, img:"images/bond7.jpg"},
+  ];
+
+  function renderMeals(category="All", day="All") {
+    mealSection.innerHTML = "";
+    let allowedPlaces;
+    if(["Saturday","Sunday"].includes(day)) allowedPlaces = ["Campus Ark","Campus Canteen"];
+    else if(["Monday","Tuesday","Wednesday","Thursday","Friday"].includes(day)) allowedPlaces = null;
+    else allowedPlaces = null;
+
+    meals
+      .filter(m => (category==="All" || m.category===category))
+      .filter(m => !allowedPlaces || allowedPlaces.includes(m.place))
+      .forEach(meal=>{
+        const card = document.createElement("div");
+        card.className = "meal-card";
+        card.innerHTML = `
+          <img src="${meal.img}" alt="${meal.name}">
+          <div class="meal-info">
+            <h3>${meal.name}</h3>
+            <p>${meal.category} – UGX ${meal.price.toLocaleString()}</p>
+            <p><strong>Place:</strong> ${meal.place}</p>
+            <button onclick="addToBudget('${meal.name}', ${meal.price})">Add to Budget</button>
+          </div>
+        `;
+        mealSection.appendChild(card);
+      });
   }
-});
 
-document.getElementById("logoutBtn").addEventListener("click", async ()=>{
-  await auth.signOut();
-  window.location.href="index.html";
-});
+  categoryFilter.addEventListener("change", ()=>renderMeals(categoryFilter.value, dayFilter.value));
+  dayFilter.addEventListener("change", ()=>renderMeals(categoryFilter.value, dayFilter.value));
 
-// Budget
-let totalBudget = 0;
-let addedMeals = [];
-const budgetDisplay = document.getElementById("budgetTotal");
-function addToBudget(name, amount){
-  totalBudget+=amount;
-  addedMeals.push({name, amount});
-  budgetDisplay.textContent = "UGX "+totalBudget.toLocaleString();
-  alert(`${name} added to your budget!`);
-}
-function resetBudget(){ totalBudget=0; addedMeals=[]; budgetDisplay.textContent="UGX 0"; }
-function viewBudget(){
-  if(addedMeals.length===0) return alert("No items added yet!");
-  let summary="Your Planned Budget:\n\n";
-  addedMeals.forEach(i=> summary+=`${i.name} - UGX ${i.amount}\n`);
-  summary+=`\nTotal: UGX ${totalBudget.toLocaleString()}`;
-  alert(summary);
-}
+  // --------------- BUDGET -----------------
+  const budgetDisplay = document.getElementById("budgetTotal");
+  function addToBudget(name, amount){
+    totalBudget+=amount;
+    addedMeals.push({name, amount});
+    budgetDisplay.textContent = "UGX "+totalBudget.toLocaleString();
+    alert(`${name} added to your budget!`);
+  }
+  function resetBudget(){ totalBudget=0; addedMeals=[]; budgetDisplay.textContent="UGX 0"; }
+  function viewBudget(){
+    if(addedMeals.length===0) return alert("No items added yet!");
+    let summary="Your Planned Budget:\n\n";
+    addedMeals.forEach(i=> summary+=`${i.name} - UGX ${i.amount}\n`);
+    summary+=`\nTotal: UGX ${totalBudget.toLocaleString()}`;
+    alert(summary);
+  }
 
-// Meals Array (FULL restore)
-const meals = [
-  // Breakfast
-  {name:"Mandazi", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/mandazi.png"},
-  {name:"Chapati", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/chapati.jpg"},
-  {name:"Fried Cassava", category:"Breakfast", place:"Cassava Lady", price:100, img:"images/fried cassava.jpg"},
-  {name:"Pan Cakes", category:"Breakfast", place:"Cassava Lady", price:100, img:"images/pancakes.png"},
-  {name:"Bagel with Cream Cheese", category:"Breakfast", place:"Campus Bakery", price:3000, img:"images/breakfast/bagel.jpg"},
-  {name:"Smoothie Bowl", category:"Breakfast", place:"Fresh Spot", price:6000, img:"images/breakfast/smoothie.jpg"},
-  {name:"Cereal & Milk", category:"Breakfast", place:"Student Lounge", price:2500, img:"images/breakfast/cereal.jpg"},
-  {name:"Fried Eggs & Toast", category:"Breakfast", place:"Café Bliss", price:4000, img:"images/breakfast/eggs.jpg"},
-  {name:"Breakfast Burrito", category:"Breakfast", place:"Taste Hub", price:5500, img:"images/breakfast/burrito.jpg"},
-  {name:"Waffles", category:"Breakfast", place:"Morning Café", price:5000, img:"images/breakfast/waffles.jpg"},
-  // Lunch
-  {name:"Kikomando", category:"Lunch", place:"Campus Canteen", price:1000, img:"images/kikomando.jpg"},
-  {name:"Fried Rice", category:"Lunch", place:"Desert breeze", price:2000, img:"images/rice.webp"},
-  {name:"Matooke", category:"Lunch", place:"Cassava Lady", price:2000, img:"images/matooke.jpg"},
-  {name:"White Rice & Beans", category:"Lunch", place:"Cassava Lady", price:2000, img:"images/white rice.jpg"},
-  {name:"Fish & Chips", category:"Lunch", place:"Food Court", price:12000, img:"images/lunch/fish.jpg"},
-  {name:"Burger Combo", category:"Lunch", place:"Campus Diner", price:10000, img:"images/lunch/burger.jpg"},
-  {name:"Chicken Wrap", category:"Lunch", place:"Food Express", price:7000, img:"images/lunch/wrap.jpg"},
-  {name:"Veggie Sandwich", category:"Lunch", place:"Fresh Spot", price:6500, img:"images/lunch/sandwich.jpg"},
-  {name:"Grilled Fish", category:"Lunch", place:"Café Bliss", price:13000, img:"images/lunch/grilledfish.jpg"},
-  {name:"Chicken Salad", category:"Lunch", place:"Green Bowl", price:8000, img:"images/lunch/salad.jpg"},
-  {name:"Pizza Slice", category:"Lunch", place:"Pizza Stop", price:5000, img:"images/lunch/pizza.jpg"},
-  {name:"Beef Tacos", category:"Lunch", place:"Food Truck", price:9000, img:"images/lunch/tacos.jpg"},
-  {name:"Chicken Biryani", category:"Lunch", place:"Campus Kitchen", price:11000, img:"images/lunch/biryani.jpg"},
-  {name:"Veggie Rice Bowl", category:"Lunch", place:"Green Bowl", price:7500, img:"images/lunch/ricebowl.jpg"},
-  {name:"Beef Burger", category:"Lunch", place:"Food Court", price:10000, img:"images/lunch/beefburger.jpg"},
-  // Drinks
-  {name:"Cold Water", category:"Drink", place:"Campus Canteen", price:500, img:"images/nivana.jpg"},
-  {name:"Cold sodas", category:"Drink", place:"Campus Canteen", price:1000, img:"images/soda.jpg"},
-  {name:"Bongo", category:"Drink", place:"Campus Canteen", price:1000, img:"images/bongo.jpg"},
-  {name:"Guiness", category:"Drink", place:"Campus Ark", price:4500, img:"images/guiness.png"},
-  {name:"Bond 7", category:"Drink", place:"Campus Ark", price:7500, img:"images/bond7.jpg"},
-  {name:"Smirnoff", category:"Drink", place:"Campus Ark", price:4000, img:"images/smirnoff.jpg"},
-  {name:"Club Pilsener", category:"Drink", place:"Campus Ark", price:3500, img:"images/club.webp"},
-  {name:"Minute maid", category:"Drink", place:"Campus Ark", price:2500, img:"images/minute maid.webp"},
-  {name:"Bushera", category:"Drink", place:"Campus Canteen", price:1000, img:"images/bushera.jpeg"},
-  {name:"Oner", category:"Drink", place:"Campus Canteen", price:1000, img:"images/oner.jpeg"},
-  {name:"Yorghurt", category:"Drink", place:"Campus Canteen", price:2000, img:"images/yorghurt.jpg"},
-  {name:"Fresh Juice", category:"Drink", place:"Campus Canteen", price:1000, img:"images/juice.jpg"}
-];
+  renderMeals();
 
-const mealSection = document.getElementById("mealSection");
+  // -------------------- COMMENTS --------------------
+  const commentForm = document.getElementById("commentForm");
+  const commentInput = document.getElementById("commentInput");
+  const commentsContainer = document.getElementById("commentsContainer");
 
-function renderMeals(category="All", day="All") {
-  mealSection.innerHTML = "";
-  let allowedPlaces;
-  if(["Saturday","Sunday"].includes(day)) allowedPlaces = ["Campus Ark","Campus Canteen"];
-  else if(["Monday","Tuesday","Wednesday","Thursday","Friday"].includes(day)) allowedPlaces = null;
-  else allowedPlaces = null;
+  // Post comment
+  commentForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const commentText = commentInput.value.trim();
+    if (!commentText) return;
+    const user = auth.currentUser;
+    if (!user) return alert("You must be logged in!");
+    await db.collection("comments").add({
+      userId: user.uid,
+      userName: currentUserName,
+      text: commentText,
+      likes: [],
+      dislikes: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    commentInput.value = "";
+  });
 
-  meals
-    .filter(m => (category==="All" || m.category===category))
-    .filter(m => !allowedPlaces || allowedPlaces.includes(m.place))
-    .forEach(meal=>{
+  // Render comments in real-time
+  db.collection("comments").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+    commentsContainer.innerHTML = "";
+    snapshot.docs.forEach(doc => {
+      const data = doc.data();
+      const commentId = doc.id;
+      const userId = auth.currentUser ? auth.currentUser.uid : "";
+
+      const liked = data.likes.includes(userId);
+      const disliked = data.dislikes.includes(userId);
+
       const card = document.createElement("div");
-      card.className = "meal-card";
+      card.className = "comment-card";
       card.innerHTML = `
-        <img src="${meal.img}" alt="${meal.name}">
-        <div class="meal-info">
-          <h3>${meal.name}</h3>
-          <p>${meal.category} – UGX ${meal.price.toLocaleString()}</p>
-          <p><strong>Place:</strong> ${meal.place}</p>
-          <button onclick="addToBudget('${meal.name}', ${meal.price})">Add to Budget</button>
-        </div>
+        <p><strong>${data.userName}</strong></p>
+        <p>${data.text}</p>
+        <p>
+          <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleReaction('${commentId}', 'like')">
+            👍 ${data.likes.length}
+          </button>
+          <button class="like-btn ${disliked ? 'disliked' : ''}" onclick="toggleReaction('${commentId}', 'dislike')">
+            👎 ${data.dislikes.length}
+          </button>
+        </p>
       `;
-      mealSection.appendChild(card);
-    });
-}
-
-categoryFilter.addEventListener("change", ()=>renderMeals(categoryFilter.value, dayFilter.value));
-dayFilter.addEventListener("change", ()=>renderMeals(categoryFilter.value, dayFilter.value));
-
-renderMeals();
-
-// ---------------- Comments Section ----------------
-const commentInput = document.getElementById("commentInput");
-const postCommentBtn = document.getElementById("postCommentBtn");
-const commentsContainer = document.getElementById("commentsContainer");
-
-postCommentBtn.addEventListener("click", async ()=>{
-  const text = commentInput.value.trim();
-  if(!text) return alert("Please write a comment!");
-  const user = auth.currentUser;
-  if(!user) return alert("Login to comment!");
-  
-  await db.collection("comments").add({
-    text,
-    uid: user.uid,
-    name: user.name.split("@")[0],
-    likes: 0,
-    dislikes: 0,
-    likedBy: [],
-    dislikedBy: [],
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  commentInput.value="";
-});
-
-// Real-time listener
-db.collection("comments").orderBy("timestamp","desc").onSnapshot(snapshot=>{
-  commentsContainer.innerHTML="";
-  snapshot.forEach(doc=>{
-    const data = doc.data();
-    const commentId = doc.id;
-    const card = document.createElement("div");
-    card.className="comment-card";
-    const time = data.timestamp ? data.timestamp.toDate().toLocaleString() : "";
-    card.innerHTML=`
-      <p><strong>${data.name}</strong>: ${data.text}</p>
-      <small>${time}</small><br>
-      <button onclick="likeComment('${commentId}')">👍 ${data.likes || 0}</button>
-      <button onclick="dislikeComment('${commentId}')">👎 ${data.dislikes || 0}</button>
-    `;
-    commentsContainer.appendChild(card);
-  });
-});
-
-// Like/Dislike functions
-async function likeComment(commentId) {
-  const user = auth.currentUser;
-  if (!user) return alert("Login to like comments!");
-  const commentRef = db.collection("comments").doc(commentId);
-  await db.runTransaction(async t=>{
-    const doc = await t.get(commentRef);
-    if(!doc.exists) return;
-    const data = doc.data();
-    const likedBy = data.likedBy || [];
-    const dislikedBy = data.dislikedBy || [];
-    if(likedBy.includes(user.uid)) return alert("You already liked this comment!");
-    const newDislikedBy = dislikedBy.filter(id=>id!==user.uid);
-    t.update(commentRef,{
-      likes: (data.likes||0)+1,
-      dislikes: (data.dislikes||0) - (dislikedBy.includes(user.uid)?1:0),
-      likedBy: [...likedBy,user.uid],
-      dislikedBy: newDislikedBy
+      commentsContainer.appendChild(card);
     });
   });
-}
 
-async function dislikeComment(commentId) {
-  const user = auth.currentUser;
-  if (!user) return alert("Login to dislike comments!");
-  const commentRef = db.collection("comments").doc(commentId);
-  await db.runTransaction(async t=>{
-    const doc = await t.get(commentRef);
-    if(!doc.exists) return;
-    const data = doc.data();
-    const likedBy = data.likedBy || [];
-    const dislikedBy = data.dislikedBy || [];
-    if(dislikedBy.includes(user.uid)) return alert("You already disliked this comment!");
-    const newLikedBy = likedBy.filter(id=>id!==user.uid);
-    t.update(commentRef,{
-      likes: (data.likes||0) - (likedBy.includes(user.uid)?1:0),
-      dislikes: (data.dislikes||0)+1,
-      likedBy: newLikedBy,
-      dislikedBy: [...dislikedBy,user.uid]
-    });
-  });
-}
+  async function toggleReaction(commentId, type) {
+    const user = auth.currentUser;
+    if (!user) return;
+    const docRef = db.collection("comments").doc(commentId);
+    const docSnap = await docRef.get();
+    if (!docSnap.exists) return;
+
+    let { likes = [], dislikes = [] } = docSnap.data();
+    const uid = user.uid;
+
+    if (type === "like") {
+      if (likes.includes(uid)) likes = likes.filter(id => id !== uid);
+      else {
+        likes.push(uid);
+        dislikes = dislikes.filter(id => id !== uid);
+      }
+    } else if (type === "dislike") {
+      if (dislikes.includes(uid)) dislikes = dislikes.filter(id => id !== uid);
+      else {
+        dislikes.push(uid);
+        likes = likes.filter(id => id !== uid);
+      }
+    }
+
+    await docRef.update({ likes, dislikes });
+  }
 </script>
-
 </body>
 </html>
