@@ -8,42 +8,36 @@
 <style>
   * { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins", sans-serif; }
   body { background:#fff8f1; color:#333; }
-  header { background:#ff914d; color:#fff; padding:20px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+  header { background:#ff914d; color:#fff; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 8px rgba(0,0,0,0.1);}
   header h1 { font-size:1.3rem; font-weight:600; }
-  header button { background:#fff; color:#ff914d; border:none; border-radius:8px; padding:8px 16px; cursor:pointer; font-weight:600; transition:0.3s; }
+  header button { background:#fff; color:#ff914d; border:none; border-radius:8px; padding:6px 12px; cursor:pointer; font-weight:600; transition:0.3s; }
   header button:hover{ background:#ffd6ba; }
-  .comment-section { padding:20px; margin-top:20px; background:#fff8f1; border-top:3px solid #ff914d; border-radius:12px; }
-  .comment-section h2 { color:#ff6a00; margin-bottom:10px; }
-  #commentForm { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
-  #commentForm input { padding:10px; border-radius:6px; border:1px solid #ccc; width:100%; }
-  #commentForm button { padding:10px; background:#ff914d; color:#fff; border:none; border-radius:6px; cursor:pointer; }
-  #commentForm button:hover { background:#ff6a00; }
+
+  .comment-section { padding:20px; margin-top:20px; }
+  .comment-section h2 { color:#ff6a00; margin-bottom:15px; }
   .comment-card { background:#fff; padding:12px; border-radius:8px; margin-bottom:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
   .comment-card p { margin-bottom:6px; }
-  .like-btn { margin-right:10px; cursor:pointer; padding:4px 8px; border-radius:6px; border:none; }
-  .liked { background:#ffd6ba; }
-  .disliked { background:#ccc; }
   .reply-section { margin-left:20px; margin-top:10px; }
-  .reply-form { display:flex; gap:6px; margin-bottom:10px; }
+  .reply-form { display:flex; gap:6px; margin-top:10px; }
   .reply-form input { flex:1; padding:6px 8px; border-radius:6px; border:1px solid #ccc; font-size:0.85rem; }
   .reply-form button { padding:6px 10px; background:#ff914d; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:0.85rem; }
   .reply-form button:hover { background:#ff6a00; }
+  .like-btn { margin-right:10px; cursor:pointer; padding:4px 8px; border-radius:6px; border:none; }
+  .liked { background:#ffd6ba; }
+  .disliked { background:#ccc; }
+
   footer { text-align:center; padding:15px; font-size:0.9rem; background:#fff8f1; color:#777; margin-top:20px; }
 </style>
 </head>
 <body>
 
 <header>
- <h1>Campus Bite 🍽️ <br><b>Comment section</b></h1>
+ <h1>Community 💬</h1>
  <button onclick="window.location.href='home.html'">Back to Home</button>
 </header>
 
 <section class="comment-section">
   <h2>All Comments</h2>
-  <form id="commentForm">
-    <input type="text" id="commentInput" placeholder="Write a comment..." required />
-    <button type="submit">Post Comment</button>
-  </form>
   <div id="commentsContainer"></div>
 </section>
 
@@ -65,142 +59,119 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
 let currentUserName = "";
 
-// User info
+// ---------------- USER ----------------
 auth.onAuthStateChanged(user=>{
   if(!user) window.location.href="index.html";
   else {
     db.collection("students").doc(user.uid).get().then(doc=>{
-      if(doc.exists) currentUserName = doc.data().name;
+      if(doc.exists){
+        currentUserName = doc.data().name;
+      }
     });
   }
 });
 
-// Post top-level comment
-const commentForm = document.getElementById("commentForm");
-const commentInput = document.getElementById("commentInput");
-commentForm.addEventListener("submit", async e=>{
-  e.preventDefault();
-  const text = commentInput.value.trim();
-  if(!text) return;
-  const user = auth.currentUser;
-  if(!user) return alert("You must be logged in!");
-  await db.collection("comments").add({
-    userId: user.uid,
-    userName: currentUserName,
-    text,
-    likes: [],
-    dislikes: [],
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  commentInput.value="";
-});
+// ---------------- REPLIES ----------------
+function showReplyForm(buttonElem, parentId, parentType, replyId){
+    const parentDiv = buttonElem.closest(".comment-card");
+    if(parentDiv.querySelector(".reply-form")) return; // already open
 
-// Recursive function to render replies
-async function renderReplies(commentRef, container){
-  const snapshot = await commentRef.collection("replies").orderBy("createdAt","asc").get();
-  for(const doc of snapshot.docs){
-    const data = doc.data();
-    const replyId = doc.id;
-    const uid = auth.currentUser ? auth.currentUser.uid : "";
-    const liked = data.likes.includes(uid);
-    const disliked = data.dislikes.includes(uid);
-
-    const div = document.createElement("div");
-    div.className = "comment-card reply-section";
-    div.innerHTML = `
-      <p><strong>${data.userName}</strong></p>
-      <p>${data.text}</p>
-      <p>
-        <button class="like-btn ${liked?'liked':''}" onclick="toggleReaction('${commentRef.id}','replies','${replyId}','like')">👍 ${data.likes.length}</button>
-        <button class="like-btn ${disliked?'disliked':''}" onclick="toggleReaction('${commentRef.id}','replies','${replyId}','dislike')">👎 ${data.dislikes.length}</button>
-        <button onclick="showReplyForm(this,'${commentRef.id}','replies','${replyId}')">Reply</button>
-      </p>
-    `;
-    const replyForm = document.createElement("div");
-    div.appendChild(replyForm);
-
-    container.appendChild(div);
-
-    await renderReplies(commentRef.collection("replies").doc(replyId), div);
-  }
+    const form = document.createElement("div");
+    form.className = "reply-form";
+    form.innerHTML = `<input type='text' placeholder='Write a reply...' required>
+                      <button>Reply</button>`;
+    form.querySelector("button").addEventListener("click", async ()=>{
+        const text = form.querySelector("input").value.trim();
+        if(!text) return;
+        const user = auth.currentUser;
+        if(!user) return alert("You must be logged in!");
+        let parentRef = db.collection("comments").doc(parentId);
+        if(parentType==="replies") parentRef = parentRef.collection("replies").doc(replyId);
+        await parentRef.collection("replies").add({
+            userId: user.uid,
+            userName: currentUserName,
+            text,
+            likes: [],
+            dislikes: [],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        form.querySelector("input").value="";
+    });
+    parentDiv.appendChild(form);
 }
 
-// Show reply form
-function showReplyForm(buttonElem,parentId,parentType,replyId){
-  const parentDiv = buttonElem.parentElement.parentElement;
-  if(parentDiv.querySelector(".reply-form")) return;
-  const form = document.createElement("div");
-  form.className="reply-form";
-  form.innerHTML = `<input type='text' placeholder='Write a reply...' required>
-                    <button>Reply</button>`;
-  form.querySelector("button").addEventListener("click", async ()=>{
-    const input = form.querySelector("input");
-    const text = input.value.trim();
-    if(!text) return;
+// ---------------- LIKE/DISLIKE ----------------
+async function toggleReaction(commentId, parentType, replyId, type){
     const user = auth.currentUser;
-    if(!user) return alert("You must be logged in!");
-    const parentRef = parentType==='replies' ? db.collection("comments").doc(parentId).collection("replies").doc(replyId) : db.collection("comments").doc(parentId);
-    await parentRef.collection("replies").add({
-      userId: user.uid,
-      userName: currentUserName,
-      text,
-      likes: [],
-      dislikes: [],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    input.value="";
-  });
-  parentDiv.appendChild(form);
+    if(!user) return;
+    const uid = user.uid;
+    let ref = db.collection("comments").doc(commentId);
+    if(parentType==="replies") ref = ref.collection("replies").doc(replyId);
+    const docSnap = await ref.get();
+    if(!docSnap.exists) return;
+    let {likes=[], dislikes=[]} = docSnap.data();
+    if(type==="like"){
+        if(likes.includes(uid)) likes = likes.filter(id=>id!==uid);
+        else{ likes.push(uid); dislikes = dislikes.filter(id=>id!==uid); }
+    } else {
+        if(dislikes.includes(uid)) dislikes = dislikes.filter(id=>id!==uid);
+        else{ dislikes.push(uid); likes = likes.filter(id=>id!==uid); }
+    }
+    await ref.update({likes, dislikes});
 }
 
-// Like/dislike toggle
-async function toggleReaction(commentId,parentType,replyId,type){
-  const user = auth.currentUser;
-  if(!user) return;
-  const uid = user.uid;
-  let ref = db.collection("comments").doc(commentId);
-  if(parentType==='replies') ref = ref.collection("replies").doc(replyId);
-  const docSnap = await ref.get();
-  if(!docSnap.exists) return;
-  let {likes=[],dislikes[]} = docSnap.data();
-  if(type==='like'){
-    if(likes.includes(uid)) likes = likes.filter(id=>id!==uid);
-    else { likes.push(uid); dislikes = dislikes.filter(id=>id!==uid); }
-  } else {
-    if(dislikes.includes(uid)) dislikes = dislikes.filter(id=>id!==uid);
-    else { dislikes.push(uid); likes = likes.filter(id=>id!==uid); }
-  }
-  await ref.update({likes,dislikes});
+// ---------------- RENDER COMMENTS ----------------
+async function renderReplies(commentRef, container){
+    const snapshot = await commentRef.collection("replies").orderBy("createdAt","asc").get();
+    for(const doc of snapshot.docs){
+        const data = doc.data();
+        const replyId = doc.id;
+        const uid = auth.currentUser ? auth.currentUser.uid : "";
+        const liked = data.likes.includes(uid);
+        const disliked = data.dislikes.includes(uid);
+
+        const div = document.createElement("div");
+        div.className = "comment-card reply-section";
+        div.innerHTML = `
+          <p><strong>${data.userName}</strong></p>
+          <p>${data.text}</p>
+          <p>
+            <button class="like-btn ${liked?'liked':''}" onclick="toggleReaction('${commentRef.id}','replies','${replyId}','like')">👍 ${data.likes.length}</button>
+            <button class="like-btn ${disliked?'disliked':''}" onclick="toggleReaction('${commentRef.id}','replies','${replyId}','dislike')">👎 ${data.dislikes.length}</button>
+            <button onclick="showReplyForm(this,'${commentRef.id}','replies','${replyId}')">Reply</button>
+          </p>
+        `;
+        container.appendChild(div);
+        await renderReplies(commentRef.collection("replies").doc(replyId), div);
+    }
 }
 
-// Render all comments with nested replies in real-time
-const commentsContainer = document.getElementById("commentsContainer");
 db.collection("comments").orderBy("createdAt","desc").onSnapshot(async snapshot=>{
-  commentsContainer.innerHTML="";
-  for(const doc of snapshot.docs){
-    const data = doc.data();
-    const commentId = doc.id;
-    const uid = auth.currentUser ? auth.currentUser.uid : "";
-    const liked = data.likes.includes(uid);
-    const disliked = data.dislikes.includes(uid);
+    const container = document.getElementById("commentsContainer");
+    container.innerHTML = "";
+    for(const doc of snapshot.docs){
+        const data = doc.data();
+        const commentId = doc.id;
+        const uid = auth.currentUser ? auth.currentUser.uid : "";
+        const liked = data.likes.includes(uid);
+        const disliked = data.dislikes.includes(uid);
 
-    const div = document.createElement("div");
-    div.className="comment-card";
-    div.innerHTML = `
-      <p><strong>${data.userName}</strong></p>
-      <p>${data.text}</p>
-      <p>
-        <button class="like-btn ${liked?'liked':''}" onclick="toggleReaction('${commentId}','comment','','like')">👍 ${data.likes.length}</button>
-        <button class="like-btn ${disliked?'disliked':''}" onclick="toggleReaction('${commentId}','comment','','dislike')">👎 ${data.dislikes.length}</button>
-        <button onclick="showReplyForm(this,'${commentId}','comment','')">Reply</button>
-      </p>
-    `;
-    commentsContainer.appendChild(div);
-    await renderReplies(db.collection("comments").doc(commentId), div);
-  }
+        const div = document.createElement("div");
+        div.className = "comment-card";
+        div.innerHTML = `
+          <p><strong>${data.userName}</strong></p>
+          <p>${data.text}</p>
+          <p>
+            <button class="like-btn ${liked?'liked':''}" onclick="toggleReaction('${commentId}','comment','','like')">👍 ${data.likes.length}</button>
+            <button class="like-btn ${disliked?'disliked':''}" onclick="toggleReaction('${commentId}','comment','','dislike')">👎 ${data.dislikes.length}</button>
+            <button onclick="showReplyForm(this,'${commentId}','comment','')">Reply</button>
+          </p>
+        `;
+        container.appendChild(div);
+        await renderReplies(db.collection("comments").doc(commentId), div);
+    }
 });
 </script>
 </body>
