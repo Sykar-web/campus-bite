@@ -91,9 +91,10 @@
 </section>
 
 <section class="comment-section">
-  <h2>Comments</h2>
+  <h2>Top Comments</h2>
   <form id="commentForm">
     <input type="text" id="commentInput" placeholder="Write a comment..." required />
+    <!-- Redirect to community.html -->
     <button type="submit">Post Comment</button>
   </form>
   <div id="commentsContainer"></div>
@@ -106,72 +107,59 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
-    authDomain: "campus-bite-9dbaa.firebaseapp.com",
-    projectId: "campus-bite-9dbaa",
-    storageBucket: "campus-bite-9dbaa.appspot.com",
-    messagingSenderId: "294389261625",
-    appId: "1:294389261625:web:095d6e5f85f4e8"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db = firebase.firestore();
+const firebaseConfig = {
+  apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
+  authDomain: "campus-bite-9dbaa.firebaseapp.com",
+  projectId: "campus-bite-9dbaa",
+  storageBucket: "campus-bite-9dbaa.appspot.com",
+  messagingSenderId: "294389261625",
+  appId: "1:294389261625:web:095d6e5f85f4e8"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  // --------------- USER AUTH ----------------
-  let totalBudget = 0;
-  let addedMeals = [];
-  let currentUserName = "";
+let totalBudget = 0;
+let addedMeals = [];
+let currentUserName = "";
 
-  auth.onAuthStateChanged(user=>{
-    if(!user) window.location.href="index.html";
-    else {
-      db.collection("students").doc(user.uid).get().then(doc=>{
-        if(doc.exists){
-          const data = doc.data();
-          document.getElementById("welcomeUser").textContent = `Welcome, ${data.name} 🍽️`;
-          currentUserName = data.name;
-        }
-      });
-    }
-  });
+// ---------------- USER ----------------
+auth.onAuthStateChanged(user=>{
+  if(!user) window.location.href="index.html";
+  else {
+    db.collection("students").doc(user.uid).get().then(doc=>{
+      if(doc.exists){
+        const data = doc.data();
+        document.getElementById("welcomeUser").textContent = `Welcome, ${data.name} 🍽️`;
+        currentUserName = data.name;
+      }
+    });
+  }
+});
 
-  document.getElementById("logoutBtn").addEventListener("click", async ()=>{
-    await auth.signOut();
-    window.location.href="index.html";
-  });
+document.getElementById("logoutBtn").addEventListener("click", async ()=>{
+  await auth.signOut();
+  window.location.href="index.html";
+});
 
-  // --------------- MEALS -----------------
-  const mealSection = document.getElementById("mealSection");
-  const categoryFilter = document.getElementById("categoryFilter");
-  const dayFilter = document.getElementById("dayFilter");
+// ---------------- MEALS -----------------
+const mealSection = document.getElementById("mealSection");
+const categoryFilter = document.getElementById("categoryFilter");
+const dayFilter = document.getElementById("dayFilter");
 
-  const meals = [
-    {name:"Mandazi", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/mandazi.png"},
+const meals = [
+  {name:"Mandazi", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/mandazi.png"},
   {name:"Chapati", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/chapati.jpg"},
   {name:"Fried Cassava", category:"Breakfast", place:"Cassava Lady", price:100, img:"images/fried cassava.jpg"},
   {name:"Pan Cakes", category:"Breakfast", place:"Cassava Lady", price:100, img:"images/pancakes.png"},
   {name:"Samosas", category:"Breakfast", place:"Munisite Market", price:200, img:"images/samosa.jpg"},
   {name:"Boiled Eggs", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/eggs.jpg"},
   {name:"Black Tea", category:"Breakfast", place:"Cassava Lady", price:500, img:"images/tea.webp"},
-  /*{name:"Fried Eggs & Toast", category:"Breakfast", place:"Café Bliss", price:4000, img:"images/breakfast/eggs.jpg"},
-  {name:"Breakfast Burrito", category:"Breakfast", place:"Taste Hub", price:5500, img:"images/breakfast/burrito.jpg"},
-  {name:"Waffles", category:"Breakfast", place:"Morning Café", price:5000, img:"images/breakfast/waffles.jpg"},*/
   {name:"Kikomando", category:"Lunch", place:"Campus Canteen", price:1000, img:"images/kikomando.jpg"},
   {name:"Fried Rice", category:"Lunch", place:"Desert breeze", price:2000, img:"images/rice.webp"},
   {name:"Matooke", category:"Lunch", place:"Cassava Lady", price:2000, img:"images/matooke.jpg"},
   {name:"White Rice & Beans", category:"Lunch", place:"Cassava Lady", price:2000, img:"images/white rice.jpg"},
   {name:"Anyoya", category:"Lunch", place:"Cassava Lady", price:1000, img:"images/anyoya.jpeg"},
-  /*{name:"Burger Combo", category:"Lunch", place:"Campus Diner", price:10000, img:"images/lunch/burger.jpg"},
-  {name:"Chicken Wrap", category:"Lunch", place:"Food Express", price:7000, img:"images/lunch/wrap.jpg"},
-  {name:"Veggie Sandwich", category:"Lunch", place:"Fresh Spot", price:6500, img:"images/lunch/sandwich.jpg"},
-  {name:"Grilled Fish", category:"Lunch", place:"Café Bliss", price:13000, img:"images/lunch/grilledfish.jpg"},
-  {name:"Chicken Salad", category:"Lunch", place:"Green Bowl", price:8000, img:"images/lunch/salad.jpg"},
-  {name:"Pizza Slice", category:"Lunch", place:"Pizza Stop", price:5000, img:"images/lunch/pizza.jpg"},
-  {name:"Beef Tacos", category:"Lunch", place:"Food Truck", price:9000, img:"images/lunch/tacos.jpg"},
-  {name:"Chicken Biryani", category:"Lunch", place:"Campus Kitchen", price:11000, img:"images/lunch/biryani.jpg"},
-  {name:"Veggie Rice Bowl", category:"Lunch", place:"Green Bowl", price:7500, img:"images/lunch/ricebowl.jpg"},
-  {name:"Beef Burger", category:"Lunch", place:"Food Court", price:10000, img:"images/lunch/beefburger.jpg"},*/
   {name:"Cold Water", category:"Drink", place:"Campus Canteen", price:500, img:"images/nivana.jpg"},
   {name:"Cold sodas", category:"Drink", place:"Campus Canteen", price:1000, img:"images/soda.jpg"},
   {name:"Bongo", category:"Drink", place:"Campus Canteen", price:1000, img:"images/bongo.jpg"},
@@ -186,132 +174,91 @@
   {name:"Fresh Juice", category:"Drink", place:"Campus Canteen", price:1000, img:"images/juice.jpg"},
 ];
 
-  function renderMeals(category="All", day="All") {
-    mealSection.innerHTML = "";
-    let allowedPlaces;
-    if(["Saturday","Sunday"].includes(day)) allowedPlaces = ["Campus Ark","Campus Canteen"];
-    else if(["Monday","Tuesday","Wednesday","Thursday","Friday"].includes(day)) allowedPlaces = null;
-    else allowedPlaces = null;
+function renderMeals(category="All", day="All") {
+  mealSection.innerHTML = "";
+  let allowedPlaces;
+  if(["Saturday","Sunday"].includes(day)) allowedPlaces = ["Campus Ark","Campus Canteen"];
+  else allowedPlaces = null;
 
-    meals
-      .filter(m => (category==="All" || m.category===category))
-      .filter(m => !allowedPlaces || allowedPlaces.includes(m.place))
-      .forEach(meal=>{
-        const card = document.createElement("div");
-        card.className = "meal-card";
-        card.innerHTML = `
-          <img src="${meal.img}" alt="${meal.name}">
-          <div class="meal-info">
-            <h3>${meal.name}</h3>
-            <p>${meal.category} – UGX ${meal.price.toLocaleString()}</p>
-            <p><strong>Place:</strong> ${meal.place}</p>
-            <button onclick="addToBudget('${meal.name}', ${meal.price})">Add to Budget</button>
-          </div>
-        `;
-        mealSection.appendChild(card);
-      });
-  }
-
-  categoryFilter.addEventListener("change", ()=>renderMeals(categoryFilter.value, dayFilter.value));
-  dayFilter.addEventListener("change", ()=>renderMeals(categoryFilter.value, dayFilter.value));
-
-  // --------------- BUDGET -----------------
-  const budgetDisplay = document.getElementById("budgetTotal");
-  function addToBudget(name, amount){
-    totalBudget+=amount;
-    addedMeals.push({name, amount});
-    budgetDisplay.textContent = "UGX "+totalBudget.toLocaleString();
-    alert(`${name} added to your budget!`);
-  }
-  function resetBudget(){ totalBudget=0; addedMeals=[]; budgetDisplay.textContent="UGX 0"; }
-  function viewBudget(){
-    if(addedMeals.length===0) return alert("No items added yet!");
-    let summary="Your Planned Budget:\n\n";
-    addedMeals.forEach(i=> summary+=`${i.name} - UGX ${i.amount}\n`);
-    summary+=`\nTotal: UGX ${totalBudget.toLocaleString()}`;
-    alert(summary);
-  }
-
-  renderMeals();
-
-  // -------------------- COMMENTS --------------------
-  const commentForm = document.getElementById("commentForm");
-  const commentInput = document.getElementById("commentInput");
-  const commentsContainer = document.getElementById("commentsContainer");
-
-  // Post comment
-  commentForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const commentText = commentInput.value.trim();
-    if (!commentText) return;
-    const user = auth.currentUser;
-    if (!user) return alert("You must be logged in!");
-    await db.collection("comments").add({
-      userId: user.uid,
-      userName: currentUserName,
-      text: commentText,
-      likes: [],
-      dislikes: [],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    commentInput.value = "";
-  });
-
-  // Render comments in real-time
-  db.collection("comments").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-    commentsContainer.innerHTML = "";
-    snapshot.docs.forEach(doc => {
-      const data = doc.data();
-      const commentId = doc.id;
-      const userId = auth.currentUser ? auth.currentUser.uid : "";
-
-      const liked = data.likes.includes(userId);
-      const disliked = data.dislikes.includes(userId);
-
+  meals
+    .filter(m => (category==="All" || m.category===category))
+    .filter(m => !allowedPlaces || allowedPlaces.includes(m.place))
+    .forEach(meal=>{
       const card = document.createElement("div");
-      card.className = "comment-card";
+      card.className = "meal-card";
       card.innerHTML = `
-        <p><strong>${data.userName}</strong></p>
-        <p>${data.text}</p>
-        <p>
-          <button class="like-btn ${liked ? 'liked' : ''}" onclick="toggleReaction('${commentId}', 'like')">
-            👍 ${data.likes.length}
-          </button>
-          <button class="like-btn ${disliked ? 'disliked' : ''}" onclick="toggleReaction('${commentId}', 'dislike')">
-            👎 ${data.dislikes.length}
-          </button>
-        </p>
+        <img src="${meal.img}" alt="${meal.name}">
+        <div class="meal-info">
+          <h3>${meal.name}</h3>
+          <p>${meal.category} – UGX ${meal.price.toLocaleString()}</p>
+          <p><strong>Place:</strong> ${meal.place}</p>
+          <button onclick="addToBudget('${meal.name}', ${meal.price})">Add to Budget</button>
+        </div>
       `;
-      commentsContainer.appendChild(card);
+      mealSection.appendChild(card);
     });
+}
+
+categoryFilter.addEventListener("change", ()=>renderMeals(categoryFilter.value, dayFilter.value));
+dayFilter.addEventListener("change", ()=>renderMeals(categoryFilter.value, dayFilter.value));
+
+// ---------------- BUDGET ----------------
+const budgetDisplay = document.getElementById("budgetTotal");
+function addToBudget(name, amount){
+  totalBudget+=amount;
+  addedMeals.push({name, amount});
+  budgetDisplay.textContent = "UGX "+totalBudget.toLocaleString();
+  alert(`${name} added to your budget!`);
+}
+function resetBudget(){ totalBudget=0; addedMeals=[]; budgetDisplay.textContent="UGX 0"; }
+function viewBudget(){
+  if(addedMeals.length===0) return alert("No items added yet!");
+  let summary="Your Planned Budget:\n\n";
+  addedMeals.forEach(i=> summary+=`${i.name} - UGX ${i.amount}\n`);
+  summary+=`\nTotal: UGX ${totalBudget.toLocaleString()}`;
+  alert(summary);
+}
+renderMeals();
+
+// ---------------- COMMENTS ----------------
+const commentForm = document.getElementById("commentForm");
+const commentInput = document.getElementById("commentInput");
+const commentsContainer = document.getElementById("commentsContainer");
+
+// Redirect to community.html on post comment
+commentForm.addEventListener("submit", e=>{
+  e.preventDefault();
+  const text = commentInput.value.trim();
+  if(!text) return;
+  // Store temporarily in sessionStorage to prefill community
+  sessionStorage.setItem("newComment", text);
+  window.location.href="community.html";
+});
+
+// Render only top 2 comments by likes
+db.collection("comments").orderBy("createdAt","desc").onSnapshot(snapshot=>{
+  const allComments = snapshot.docs.map(doc=>{
+    return {id: doc.id, ...doc.data()};
   });
 
-  async function toggleReaction(commentId, type) {
-    const user = auth.currentUser;
-    if (!user) return;
-    const docRef = db.collection("comments").doc(commentId);
-    const docSnap = await docRef.get();
-    if (!docSnap.exists) return;
+  allComments.sort((a,b)=> b.likes.length - a.likes.length);
 
-    let { likes = [], dislikes = [] } = docSnap.data();
-    const uid = user.uid;
+  commentsContainer.innerHTML="";
+  allComments.slice(0,2).forEach(data=>{
+    const uid = auth.currentUser ? auth.currentUser.uid : "";
+    const liked = data.likes.includes(uid);
+    const disliked = data.dislikes.includes(uid);
 
-    if (type === "like") {
-      if (likes.includes(uid)) likes = likes.filter(id => id !== uid);
-      else {
-        likes.push(uid);
-        dislikes = dislikes.filter(id => id !== uid);
-      }
-    } else if (type === "dislike") {
-      if (dislikes.includes(uid)) dislikes = dislikes.filter(id => id !== uid);
-      else {
-        dislikes.push(uid);
-        likes = likes.filter(id => id !== uid);
-      }
-    }
-
-    await docRef.update({ likes, dislikes });
-  }
+    const div = document.createElement("div");
+    div.className="comment-card";
+    div.innerHTML = `
+      <p><strong>${data.userName}</strong></p>
+      <p>${data.text}</p>
+      <p>👍 ${data.likes.length} 👎 ${data.dislikes.length}</p>
+    `;
+    commentsContainer.appendChild(div);
+  });
+});
 </script>
 </body>
 </html>
