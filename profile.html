@@ -42,9 +42,6 @@
       <p>Select a new avatar:</p>
       <div id="avatarChoices">
         <img src="images/default.png" alt="Default" data-url="images/default.png">
-        <img src="images/avatar1.png" alt="Avatar 1" data-url="images/avatar1.png">
-        <img src="images/avatar2.png" alt="Avatar 2" data-url="images/avatar2.png">
-        <img src="images/avatar3.png" alt="Avatar 3" data-url="images/avatar3.png">
         <img src="images/avatar4.png" alt="Avatar 4" data-url="images/avatar4.png">
         <img src="images/avatar5.png" alt="Avatar 5" data-url="images/avatar5.png">
       </div>
@@ -139,7 +136,8 @@
         phone: phoneInput.value,
         department: departmentInput.value,
         email: user.email,
-        photoURL: selectedAvatar
+        photoURL: selectedAvatar,
+        password: user.password
       }, { merge: true });
       alert("Profile updated successfully!");
     } catch (err) {
