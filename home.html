@@ -145,7 +145,7 @@ footer { text-align:center; padding:15px; font-size:0.9rem; background:#fff8f1; 
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-
+<script src="meals.js"></script>
 <script>
 // ---------- Firebase ----------
 const firebaseConfig = {
@@ -196,54 +196,6 @@ const mealSection=document.getElementById("mealSection");
 const categoryFilter=document.getElementById("categoryFilter");
 const dayFilter=document.getElementById("dayFilter");
 
-const meals=[
-  {name:"Mandazi", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/mandazi.png"},
-  {name:"Chapati", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/chapati.jpg"},
-  {name:"Fried Cassava", category:"Breakfast", place:"Bangri TC", price:100, img:"images/fried cassava.jpg"},
-  {name:"Pan Cakes", category:"Breakfast", place:"Bangri TC", price:100, img:"images/pancakes.png"},
-  {name:"Samosas", category:"Breakfast", place:"Munisite Market", price:200, img:"images/samosa.jpg"},
-  {name:"Boiled Eggs", category:"Breakfast", place:"Campus Canteen", price:500, img:"images/eggs.jpg"},
-  {name:"Black Tea", category:"Breakfast", place:"Bangri TC", price:500, img:"images/tea.webp"},
-  {name:"Toasted Bread", category:"Breakfast", place:"Desert Breeze", price:1000, img:"images/Bread.jpg"},
-  {name:"Vegetable Samosa (A pair)", category:"Breakfast", place:"Desert Breeze", price:1000, img:"images/vegetable.jpg"},
-  {name:"Beef Samosa(A pair)", category:"Breakfast", place:"Desert Breeze", price:1000, img:"images/beef.png"},
-  {name:"Mandazi (A pair)", category:"Breakfast", place:"Desert Breeze", price:1500, img:"images/mandazi.jpg"},
-  {name:"Beef Pie", category:"Breakfast", place:"Desert Breeze", price:4000, img:"images/beef pie.jpg"},
-  {name:"Cookies", category:"Breakfast", place:"Desert Breeze", price:3000, img:"images/cookies.webp"},
-  {name:"Home fries", category:"Breakfast", place:"Desert Breeze", price:3000, img:"images/fries.jpg"},
-  {name:"Baked Beans", category:"Breakfast", place:"Desert Breeze", price:3000, img:"images/beans.jpg"},
-  {name:"Egg Rolls (A pair)", category:"Breakfast", place:"Desert Breeze", price:3000, img:"images/egg rolls.jpg"},
-  {name:"American Pancake", category:"Breakfast", place:"Desert Breeze", price:4000, img:"images/american.jpg"},
-  {name:"Kikomando", category:"Lunch", place:"Campus Canteen", price:1000, img:"images/kikomando.jpg"},
-  {name:"Fried Rice", category:"Lunch", place:"Desert breeze", price:2000, img:"images/rice.webp"},
-  {name:"Matooke", category:"Lunch", place:"Bangri TC", price:2000, img:"images/matooke.jpg"},
-  {name:"Beef Suasage (A pair)", category:"Breakfast", place:"Desert Breeze", price:3000, img:"images/beefs.webp"},
-  {name:"White Rice & Beans", category:"Lunch", place:"Bangri TC", price:2000, img:"images/white rice.jpg"},
-  {name:"Anyoya", category:"Lunch", place:"Bangri TC", price:1000, img:"images/anyoya.jpeg"},
-  {name:"Chicken/Liver/Goat/Beef Stew", category:"Lunch", place:"Desert Breeze", price:10000, img:"images/chicken stew.jpg"},
-  {name:"Chicken/Beef/Fish stew", category:"Lunch", place:"Munisite Restaurant", price:5000, img:"images/stew.webp"},
-  {name:"Chicken/Beef Pizza", category:"Lunch", place:"Desert Breeze", price:15000, img:"images/pizza.jpg"},
-  {name:"Chicken/Beef/Fish/Beans/G.nuts", category:"Lunch", place:"Bariffa Restaurant", price:6000, img:"images/g.nuts.jpg"},
-  {name:"Matooke/Karo/Posho/Sweet Potatoes", category:"Lunch", place:"Bariffa Restaurant", price:3000, img:"images/foods.jpg"},
-  {name:"Enyasa/Posho/Yams/Sweet & Irish Potatoes", category:"Lunch", place:"Muni site Restaurant", price:3000, img:"images/enyasa.jpg"},
-  {name:"Greens/Peas", category:"Lunch", place:"Bariffa Restaurant", price:1500, img:"images/greens.jpg"},
-  {name:"Roasted G.nuts", category:"Breakfast", place:"Campus Ark", price:500, img:"images/g.nuts.webp"},
-  {name:"Fruit salad", category:"Lunch", place:"Desert Breeze", price:8000, img:"images/fruit.webp"},
-  {name:"English Tea", category:"Breakfast", place:"Desert Breeze", price:5000, img:"images/english.jpg"},
-  {name:"Hot Chocolate", category:"Breakfast", place:"Desert Breeze", price:5000, img:"images/chocolate.webp"},
-  {name:"Cold Water", category:"Drink", place:"Campus Canteen", price:500, img:"images/nivana.jpg"},
-  {name:"Cold sodas", category:"Drink", place:"Campus Canteen", price:1000, img:"images/soda.jpg"},
-  {name:"Bongo", category:"Drink", place:"Campus Canteen", price:1000, img:"images/bongo.jpg"},
-  {name:"Guiness", category:"Drink", place:"Campus Ark", price:4500, img:"images/guiness.png"},
-  {name:"Bond 7", category:"Drink", place:"Campus Ark", price:7500, img:"images/bond7.jpg"},
-  {name:"Smirnoff", category:"Drink", place:"Campus Ark", price:4000, img:"images/smirnoff.jpg"},
-  {name:"Club Pilsener", category:"Drink", place:"Campus Ark", price:3500, img:"images/club.webp"},
-  {name:"Minute maid", category:"Drink", place:"Campus Ark", price:2500, img:"images/minute maid.webp"},
-  {name:"Bushera", category:"Drink", place:"Campus Canteen", price:1000, img:"images/bushera.jpeg"},
-  {name:"Oner", category:"Drink", place:"Campus Canteen", price:1000, img:"images/oner.jpeg"},
-  {name:"Yorghurt", category:"Drink", place:"Campus Canteen", price:2000, img:"images/yorghurt.jpg"},
-  {name:"Fresh Juice", category:"Drink", place:"Desert Breeze", price:1000, img:"images/juice.jpg"}
-];
 
 // ---------- Render meals ----------
 function renderMeals(category="All", day="All"){
@@ -381,4 +333,3 @@ window.addToBudget=function(name,price){ setMealQty(name, price, (addedMeals[nam
 
 </body>
 </html>
-

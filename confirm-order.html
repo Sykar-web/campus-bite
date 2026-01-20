@@ -1,276 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Confirm Your Order</title>
-<link rel="canonical" href="https://campusbite.xyz/">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<link rel="icon" href="images/tent.jpeg" type="image/jpeg">
-  <link rel="shortcut icon" href="images/tent.jpeg" type="image/jpeg">
-  <!-- Apple / iOS icon (optional but good) -->
-  <link rel="apple-touch-icon" href="images/tent.jpeg">
-<style>
-body{
-  font-family:Poppins,sans-serif;
-  background:#fff8f1;
-  padding:20px;
-}
-h1{
-  color:#ff6a00;
-  margin-bottom:20px;
-}
-.order-item{
-  background:#fff;
-  padding:12px;
-  margin:12px 0;
-  border-radius:14px;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-.item-img{
-  width:70px;
-  height:70px;
-  border-radius:12px;
-  object-fit:cover;
-  flex-shrink:0;
-  background:#eee;
-}
-.item-info{
-  flex:1;
-}
-.item-name{
-  font-weight:600;
-}
-.item-meta{
-  font-size:.85rem;
-  color:#555;
-  margin-top:4px;
-}
-.item-sub{
-  font-weight:600;
-  margin-top:6px;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Confirm Your Order</title>
 
-.summary{
-  background:#fff;
-  padding:15px;
-  border-radius:14px;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
-  margin-top:20px;
-}
-.summary-row{
-  display:flex;
-  justify-content:space-between;
-  margin:6px 0;
-  font-weight:500;
-}
-.summary-row.total{
-  font-size:1.2rem;
-  font-weight:600;
-  color:#ff6a00;
-}
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-.form-group{
-  margin:15px 0;
-}
-label{
-  font-weight:600;
-  display:block;
-  margin-bottom:6px;
-}
-select{
-  padding:8px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  width:100%;
-}
+  <!-- App icons -->
+  <link rel="icon" href="images/tent.jpeg" type="image/jpeg" />
+  <link rel="apple-touch-icon" href="images/tent.jpeg" />
 
-button{
-  background:#4CAF50;
-  color:#fff;
-  border:none;
-  padding:14px;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
-  margin-top:20px;
-  width:100%;
-  font-size:1rem;
-  transition:.2s;
-}
-button:hover{transform:scale(1.03)}
-button:disabled{
-  opacity:.6;
-  cursor:not-allowed;
-  transform:none;
-}
-</style>
+  <meta name="theme-color" content="#ff914d" />
+
+  <style>
+    :root{
+      --bg:#fff8f1;
+      --primary:#ff6a00;
+      --primary-2:#ff914d;
+      --text:#333;
+      --muted:#555;
+      --card:#fff;
+      --accent:#4CAF50;
+      --radius:12px;
+      --shadow:0 4px 12px rgba(0,0,0,.08);
+      --shadow-hover:0 6px 16px rgba(0,0,0,.12);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body {
+      font-family: Poppins, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      max-width: 640px;
+      width: 100%;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px 20px;
+    }
+
+    /* Top app bar */
+    .appbar {
+      position: sticky;
+      top: 0;
+      background: var(--card);
+      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      z-index: 10;
+    }
+    .appbar .logo {
+      width: 32px; height: 32px; border-radius: 6px; object-fit: cover;
+    }
+    .appbar .title {
+      font-weight: 600; color: var(--primary);
+    }
+    .appbar .spacer {flex:1}
+    .appbar .back-btn {
+      display: inline-flex; align-items: center; gap:6px;
+      color: var(--muted); text-decoration: none; font-weight: 500;
+    }
+    .appbar .back-btn:hover { color: var(--primary); }
+
+    h1 {
+      color: var(--primary);
+      margin: 16px 0 8px;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    .subtitle {
+      text-align: center;
+      color: var(--muted);
+      font-size: .95rem;
+      margin-bottom: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    /* Order list */
+    #orderList { margin-top: 10px; }
+    .order-item {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      margin: 12px 0;
+      border-radius: var(--radius);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .order-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .item-img {
+      width: 70px; height: 70px; border-radius: 12px; object-fit: cover; background: #eee; flex-shrink: 0;
+    }
+    .item-info { flex: 1; }
+    .item-name { font-weight: 600; }
+    .item-meta { font-size: .85rem; color: var(--muted); margin-top: 4px; }
+    .item-sub { font-weight: 600; margin-top: 6px; }
+
+    /* Summary */
+    .summary {
+      margin-top: 16px; padding: 15px;
+    }
+    .summary-row {
+      display: flex; justify-content: space-between; margin: 6px 0; font-weight: 500;
+    }
+    .summary-row.total {
+      font-size: 1.1rem; font-weight: 600; color: var(--primary);
+    }
+
+    /* Form */
+    .form-group { margin: 15px 0; }
+    label { font-weight: 600; display: block; margin-bottom: 6px; }
+    select, .input {
+      padding: 10px; border-radius: 10px; border: 1px solid #ddd; width: 100%; background:#fff;
+      font-size: .95rem;
+    }
+
+    /* Button */
+    button {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+      width: 100%;
+      font-size: 1rem;
+      transition: box-shadow .25s ease, transform .25s ease, opacity .25s ease;
+    }
+    button:hover { box-shadow: 0 6px 16px rgba(0,0,0,.15); transform: translateY(-1px); }
+    button:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    /* Footer */
+    footer {
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--card);
+      border-top: 1px solid #eee;
+      text-align: center;
+      font-size: 0.92rem;
+      color: var(--muted);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .footer-nav {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+    }
+    .footer-nav a {
+      text-decoration: none;
+      color: #444;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      transition: background .2s ease, color .2s ease;
+    }
+    .footer-nav a:hover { background: #f8f8f8; color: var(--primary); }
+    .contact-info { margin-top: 8px; }
+    .contact-info a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .contact-info a:hover { text-decoration: underline; }
+    .legal { margin-top: 10px; }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      color: var(--muted);
+      padding: 16px;
+    }
+
+    /* Page spacing at bottom so footer isn’t cramped */
+    .bottom-space { height: 12px; }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <!-- App bar -->
+    <div class="appbar">
+      <img class="logo" src="images/tent.jpeg" alt="Campus Bite logo" />
+      <div class="title">Campus Bite</div>
+      <div class="spacer"></div>
+      <a class="back-btn" href="/home.html" aria-label="Back to menu">
+        <i class="fa fa-arrow-left"></i> Back
+      </a>
+    </div>
 
-<h1>Confirm Your Order</h1>
+    <h1>Confirm Your Order</h1>
+    <p class="subtitle">Review your items, choose delivery and payment, then place your order.</p>
 
-<div id="orderList"></div>
+    <div id="orderList" class="card"></div>
 
-<div class="summary">
-  <div class="summary-row">
-    <span>Subtotal</span>
-    <span id="subTotal">UGX 0</span>
-  </div>
-  <div class="summary-row">
-    <span>Delivery</span>
-    <span id="deliveryFee">UGX 0</span>
-  </div>
-  <div class="summary-row total">
-    <span>Total</span>
-    <span id="finalTotal">UGX 0</span>
-  </div>
-</div>
-
-<div class="form-group">
-  <label for="paymentMode">Mode of Payment</label>
-  <select id="paymentMode">
-    <option value="Cash">Cash</option>
-    <option value="Mobile Money">Mobile Money</option>
-    <option value="Card">Card</option>
-  </select>
-</div>
-
-<div class="form-group">
-  <label for="deliveryOption">Delivery Option</label>
-  <select id="deliveryOption">
-    <option value="pickup">Pickup (No charge)</option>
-    <option value="delivery">Delivery (+UGX 2,000)</option>
-  </select>
-</div>
-
-<button id="confirmOrderBtn">Confirm & Place Order ✅</button>
-
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-
-<script>
-// ---------- Firebase ----------
-const firebaseConfig = {
-  apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
-  authDomain: "campus-bite-9dbaa.firebaseapp.com",
-  projectId: "campus-bite-9dbaa",
-  storageBucket: "campus-bite-9dbaa.appspot.com",
-  messagingSenderId: "294389261625",
-  appId: "1:294389261625:web:095d6e5f85f4e8"
-};
-if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// ---------- Load Budget ----------
-const STORAGE_KEY = "campusbite_budget_items_v1";
-const raw = localStorage.getItem(STORAGE_KEY);
-const items = raw ? JSON.parse(raw) : {};
-
-const orderList = document.getElementById("orderList");
-let subtotal = 0;
-const DELIVERY_FEE = 2000;
-
-if(Object.keys(items).length === 0){
-  orderList.innerHTML = "<p>No items found. Go back and add meals.</p>";
-  document.getElementById("confirmOrderBtn").disabled = true;
-} else {
-  Object.keys(items).forEach(name=>{
-    const item = items[name];
-    const sub = item.qty * item.price;
-    subtotal += sub;
-
-    const div = document.createElement("div");
-    div.className = "order-item";
-    div.innerHTML = `
-      <img src="${item.img || 'images/placeholder.png'}" class="item-img">
-      <div class="item-info">
-        <div class="item-name">${name}</div>
-        <div class="item-meta">
-          Qty: ${item.qty} × UGX ${item.price.toLocaleString()}
-        </div>
-        <div class="item-sub">
-          Subtotal: UGX ${sub.toLocaleString()}
-        </div>
+    <div class="summary card" aria-live="polite">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span id="subTotal">UGX 0</span>
       </div>
-    `;
-    orderList.appendChild(div);
-  });
-}
+      <div class="summary-row">
+        <span>Delivery</span>
+        <span id="deliveryFee">UGX 0</span>
+      </div>
+      <div class="summary-row total">
+        <span>Total</span>
+        <span id="finalTotal">UGX 0</span>
+      </div>
+    </div>
 
-const subTotalEl = document.getElementById("subTotal");
-const deliveryFeeEl = document.getElementById("deliveryFee");
-const finalTotalEl = document.getElementById("finalTotal");
-const deliverySelect = document.getElementById("deliveryOption");
+    <div class="form-group">
+      <label for="paymentMode">Mode of Payment</label>
+      <select id="paymentMode" aria-label="Payment mode">
+        <option value="Cash">Cash</option>
+        <option value="Mobile Money">Mobile Money</option>
+        <option value="Card">Card</option>
+      </select>
+    </div>
 
-function updateTotals(){
-  const delivery = deliverySelect.value === "delivery" ? DELIVERY_FEE : 0;
-  subTotalEl.textContent = "UGX " + subtotal.toLocaleString();
-  deliveryFeeEl.textContent = "UGX " + delivery.toLocaleString();
-  finalTotalEl.textContent = "UGX " + (subtotal + delivery).toLocaleString();
-}
+    <div class="form-group">
+      <label for="deliveryOption">Delivery Option</label>
+      <select id="deliveryOption" aria-label="Delivery option">
+        <option value="pickup">Pickup (No charge)</option>
+        <option value="delivery">Delivery (+UGX 2,000)</option>
+      </select>
+    </div>
 
-deliverySelect.addEventListener("change", updateTotals);
-updateTotals();
+    <!-- ✅ Delivery location input added -->
+    <div class="form-group" id="deliveryLocationGroup" style="display:none;">
+      <label for="deliveryLocation">Delivery Location</label>
+      <input type="text" id="deliveryLocation" class="input" placeholder="Enter hostel, Room Number, or landmark" />
+    </div>
 
-// ---------- Place Order ----------
-document.getElementById("confirmOrderBtn").addEventListener("click", async ()=>{
-  const user = auth.currentUser;
-  if(!user){
-    alert("Please log in to place an order.");
-    return;
-  }
+    <button id="confirmOrderBtn">Confirm & Place Order ✅</button>
 
-  const btn = event.target;
-  btn.disabled = true;
-  btn.textContent = "Placing order...";
+    <div class="bottom-space"></div>
 
-  try{
-    // Prepare items array
-    const itemsArray = Object.keys(items).map(name=>{
-      const item = items[name];
-      return {
-        name: name,
-        qty: item.qty,
-        price: item.price,
-        img: item.img || ''
-      };
+    <footer>
+      <nav class="footer-nav" aria-label="Bottom navigation">
+        <a href="/profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
+        <a href="/home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
+        <a href="/confirm-order.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+        <a href="/order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
+        <a href="/comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
+      </nav>
+
+      <div class="contact-info" aria-label="Contact information">
+        <p>📞 <a href="tel:+256748372023">+256 748 372 023</a></p>
+        <p>✉️ <a href="mailto:campusbite@muni.ac.ug">campusbite@muni.ac.ug</a></p>
+      </div>
+
+      <p class="legal">© 2026 Campus Bite. All rights reserved.<br/>Muni University | Arua, Uganda</p>
+    </footer>
+  </div>
+
+  <!-- Firebase & App Logic -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ---------- Firebase ----------
+    const firebaseConfig = {
+      apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
+      authDomain: "campus-bite-9dbaa.firebaseapp.com",
+      projectId: "campus-bite-9dbaa",
+      storageBucket: "campus-bite-9dbaa.appspot.com",
+      messagingSenderId: "294389261625",
+      appId: "1:294389261625:web:095d6e5f85f4e8"
+    };
+    if(!firebase.apps.length){ firebase.initializeApp(firebaseConfig); }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ---------- Cart ----------
+    const STORAGE_KEY = "campusbite_budget_items_v1";
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const items = raw ? JSON.parse(raw) : {};
+
+    const orderList = document.getElementById("orderList");
+    let subtotal = 0;
+    const DELIVERY_FEE = 2000;
+
+    const deliverySelect = document.getElementById("deliveryOption");
+    const deliveryLocationGroup = document.getElementById("deliveryLocationGroup");
+    const deliveryLocationInput = document.getElementById("deliveryLocation");
+
+    function renderItems() {
+      orderList.innerHTML = "";
+      const keys = Object.keys(items);
+
+      if(keys.length === 0){
+        orderList.innerHTML = '<div class="empty">No items found. Go back and add meals.</div>';
+        document.getElementById("confirmOrderBtn").disabled = true;
+        subtotal = 0;
+        updateTotals();
+        return;
+      }
+
+      document.getElementById("confirmOrderBtn").disabled = false;
+
+      subtotal = 0;
+      keys.forEach(name=>{
+        const item = items[name];
+        const sub = (Number(item.qty) || 0) * (Number(item.price) || 0);
+        subtotal += sub;
+
+        const div = document.createElement("div");
+        div.className = "order-item";
+        div.innerHTML = `
+          <img src="${item.img || 'images/placeholder.png'}" class="item-img" alt="${name}">
+          <div class="item-info">
+            <div class="item-name">${name}</div>
+            <div class="item-meta">Qty: ${item.qty} × UGX ${Number(item.price).toLocaleString()}</div>
+            <div class="item-sub">Subtotal: UGX ${sub.toLocaleString()}</div>
+          </div>
+        `;
+        orderList.appendChild(div);
+      });
+    }
+
+    const subTotalEl = document.getElementById("subTotal");
+    const deliveryFeeEl = document.getElementById("deliveryFee");
+    const finalTotalEl = document.getElementById("finalTotal");
+
+    function updateTotals(){
+      const delivery = deliverySelect.value === "delivery" ? DELIVERY_FEE : 0;
+      subTotalEl.textContent = "UGX " + subtotal.toLocaleString();
+      deliveryFeeEl.textContent = "UGX " + delivery.toLocaleString();
+      finalTotalEl.textContent = "UGX " + (subtotal + delivery).toLocaleString();
+
+      // ✅ Show/hide delivery location
+      deliveryLocationGroup.style.display = deliverySelect.value === "delivery" ? "block" : "none";
+    }
+
+    deliverySelect.addEventListener("change", updateTotals);
+
+    // ---------- Place Order ----------
+    document.getElementById("confirmOrderBtn").addEventListener("click", async (event)=>{
+      const user = auth.currentUser;
+      if(!user){
+        alert("Please log in to place an order.");
+        return;
+      }
+
+      // Validate delivery location
+      if(deliverySelect.value === "delivery" && !deliveryLocationInput.value.trim()){
+        alert("Please enter delivery location.");
+        return;
+      }
+
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = "Placing order...";
+
+      try{
+        const itemsArray = Object.keys(items).map(name=>{
+          const item = items[name];
+          return {
+            name,
+            qty: Number(item.qty) || 0,
+            price: Number(item.price) || 0,
+            img: item.img || ""
+          };
+        });
+
+        const deliveryFee = deliverySelect.value === "delivery" ? DELIVERY_FEE : 0;
+        const totalAmount = subtotal + deliveryFee;
+
+        await db.collection("orders").doc(user.uid).collection("userOrders").add({
+          items: itemsArray,
+          subtotal: subtotal,
+          deliveryOption: deliverySelect.value,
+          deliveryLocation: deliveryLocationInput.value.trim(),
+          deliveryFee: deliveryFee,
+          totalAmount: totalAmount,
+          paymentMode: document.getElementById("paymentMode").value,
+          status: "pending",
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        localStorage.removeItem(STORAGE_KEY);
+        alert("Order placed successfully 🎉");
+        window.location.href = "/order-history.html";
+      } catch(e){
+        console.error(e);
+        alert("Failed to place order. Try again.");
+        btn.disabled = false;
+        btn.textContent = "Confirm & Place Order ✅";
+      }
     });
 
-    const deliveryFee = deliverySelect.value === "delivery" ? DELIVERY_FEE : 0;
-    const totalAmount = subtotal + deliveryFee;
+    renderItems();
+    updateTotals();
 
-    // Save order as ONE document in userOrders subcollection
-    await db.collection("orders").doc(user.uid).collection("userOrders").add({
-      items: itemsArray,
-      subtotal: subtotal,
-      deliveryOption: deliverySelect.value,
-      deliveryFee: deliveryFee,
-      totalAmount: totalAmount,
-      paymentMode: document.getElementById("paymentMode").value,
-      status: "pending",
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    localStorage.removeItem(STORAGE_KEY);
-    alert("Order placed successfully 🎉");
-    window.location.href = "home.html";
-
-  } catch(e){
-    console.error(e);
-    alert("Failed to place order. Try again.");
-    btn.disabled = false;
-    btn.textContent = "Confirm & Place Order ✅";
-  }
-});
-</script>
-
+  </script>
 </body>
 </html>
-
