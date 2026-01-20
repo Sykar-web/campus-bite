@@ -1,358 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="canonical" href="https://campusbite.xyz/">
   <meta charset="UTF-8"/>
-  <title>Your Budget</title>
+  <title>Your Budget – Campus Bite</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Icons & Fonts -->
   <link rel="icon" href="images/tent.jpeg">
   <link rel="apple-touch-icon" href="images/tent.jpeg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-/* ===================== VARIABLES ===================== */
-:root{
-  --bg:#fff8f1;
-  --primary:#ff6a00;
-  --primary-2:#ff914d;
-  --text:#333;
-  --muted:#666;
-  --card:#fff;
-  --success:#4CAF50;
-  --danger:#E53935;
-  --radius:12px;
-  --shadow:0 4px 12px rgba(0,0,0,.08);
-  --shadow-hover:0 6px 16px rgba(0,0,0,.12);
-}
-
-/* ===================== RESET ===================== */
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
 body{
   font-family:Poppins,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  display:flex;
-  justify-content:center;
+  background:#0f0f0f;
+  color:#eee;
+  padding-bottom:160px;
 }
 
-/* ===================== LAYOUT ===================== */
-.container{
-  max-width:640px;
-  width:100%;
-  min-height:100dvh;
-  display:flex;
-  flex-direction:column;
-  padding:0 20px 20px;
-}
-.card{
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-}
-
-/* ===================== APP BAR ===================== */
-.appbar{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:var(--card);
+/* App bar */
+header{
   display:flex;
   align-items:center;
   gap:12px;
-  padding:12px 16px;
-  border-bottom:1px solid #eee;
+  padding:14px 16px;
+  background:#141414;
 }
-.logo{
-  width:32px;height:32px;border-radius:6px;object-fit:cover
+header img{
+  width:36px;height:36px;border-radius:8px
 }
-.title{font-weight:600;color:var(--primary)}
-.spacer{flex:1}
-.back-btn{
+header h1{
+  font-size:1.25rem;
+  color:#ff914d;
+}
+.back{
+  margin-left:auto;
+  color:#aaa;
   text-decoration:none;
-  color:var(--muted);
-  font-weight:500;
-}
-.back-btn:hover{color:var(--primary)}
-
-/* ===================== HEADERS ===================== */
-h1{
-  margin:16px 0 6px;
-  text-align:center;
-  color:var(--primary);
-  font-size:1.5rem;
-}
-.subtitle{
-  text-align:center;
-  color:var(--muted);
-  font-size:.95rem;
-  margin-bottom:12px;
+  font-weight:600;
 }
 
-/* ===================== ITEMS ===================== */
+/* Budget cards */
+.container{padding:16px}
 .budget-item{
+  background:#1a1a1a;
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:14px;
   display:flex;
-  gap:12px;
-  padding:12px;
-  margin:12px 0;
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  transition:.2s;
-}
-.budget-item:hover{
-  transform:translateY(-2px);
-  box-shadow:var(--shadow-hover);
+  gap:14px;
 }
 .item-img{
-  width:80px;height:80px;border-radius:12px;
-  object-fit:cover;background:#eee;flex-shrink:0;
+  width:80px;height:80px;
+  border-radius:14px;
+  object-fit:cover;
 }
 .item-info{flex:1}
-.item-name{font-weight:600}
-.item-price{font-size:.85rem;color:var(--muted)}
+.item-name{font-weight:600;font-size:1.05rem}
+.item-price{color:#aaa;font-size:.9rem;margin:2px 0}
 
-.qty-control{
-  display:flex;align-items:center;gap:10px;margin-top:8px;
+.qty-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin:8px 0;
 }
-.qty-control button{
-  width:32px;height:32px;border:none;border-radius:8px;
-  font-size:18px;font-weight:700;
-  cursor:pointer;background:var(--primary-2);color:#fff;
+.qty-row button{
+  width:34px;height:34px;
+  border:none;
+  border-radius:10px;
+  font-size:20px;
+  font-weight:700;
+  background:#ff914d;
+  color:#000;
+  cursor:pointer;
 }
-.qty-control button:hover{background:var(--primary)}
-.qty-control span{min-width:24px;text-align:center;font-weight:600}
+.qty-row span{
+  min-width:24px;
+  text-align:center;
+  font-weight:600;
+}
+.subtotal{color:#ff914d;font-weight:600;font-size:.9rem}
 
-.subtotal{margin-top:6px;font-weight:600;font-size:.9rem}
-
-/* ===================== SUMMARY ===================== */
-.summary{padding:15px;margin-top:10px}
-.summary-row{
-  display:flex;justify-content:space-between;
-  font-size:1.05rem;font-weight:600;color:var(--primary);
+/* Total */
+.total{
+  margin-top:18px;
+  background:#141414;
+  padding:16px;
+  border-radius:18px;
+  font-size:1.3rem;
+  font-weight:600;
+  color:#ff914d;
 }
 
-/* ===================== BUTTONS ===================== */
-.button-row{
-  display:flex;gap:12px;margin-top:20px;
+/* Action buttons */
+.actions{
+  display:flex;
+  gap:14px;
+  margin-top:18px;
 }
-.button-row button{
-  flex:1;padding:14px;border:none;border-radius:10px;
-  font-weight:600;font-size:1rem;cursor:pointer;
-  transition:.25s;
+.actions button{
+  flex:1;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-size:1rem;
+  font-weight:600;
+  cursor:pointer;
 }
-.btn-back{
-  background:linear-gradient(135deg,var(--primary-2),var(--primary));
-  color:#fff;
-}
-.btn-order{
-  background:linear-gradient(135deg,#66bb6a,var(--success));
-  color:#fff;
-}
-.button-row button:hover{
-  transform:translateY(-1px);
-  box-shadow:0 6px 16px rgba(0,0,0,.15);
-}
-button:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.back-btn{background:#ff914d;color:#000}
+.checkout-btn{background:#4CAF50;color:#000}
 
-/* ===================== EMPTY ===================== */
-.empty{text-align:center;color:var(--muted);padding:20px}
-
-/* ===================== MODAL ===================== */
-.modal{
-  position:fixed;inset:0;display:flex;
-  justify-content:center;align-items:center;
-  background:rgba(0,0,0,.5);z-index:999;
-}
-.modal.hidden{display:none}
-.modal-content{
-  background:#fff;padding:20px;border-radius:14px;
-  width:85%;max-width:400px;text-align:center;
-  box-shadow:var(--shadow);animation:pop .25s ease;
-}
-.modal-actions{display:flex;gap:12px;margin-top:16px}
-.modal-actions button{
-  flex:1;padding:10px;border:none;border-radius:8px;
-  font-weight:600;color:#fff;cursor:pointer;
-}
-.yes{background:var(--success)}
-.no{background:var(--danger)}
-@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
-
-/* ===================== FOOTER ===================== */
+/* Footer */
 footer{
-  margin-top:24px;padding:20px;background:var(--card);
-  border-top:1px solid #eee;text-align:center;
-  font-size:.92rem;color:var(--muted);
-  border-radius:var(--radius);box-shadow:var(--shadow);
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#141414;
+  padding:14px 10px 18px;
 }
 .footer-nav{
-  display:flex;justify-content:space-around;
-  flex-wrap:wrap;gap:8px 14px;margin-bottom:14px;
+  display:flex;
+  justify-content:space-around;
+  margin-bottom:12px;
 }
 .footer-nav a{
-  text-decoration:none;color:#444;font-weight:500;
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 10px;border-radius:8px;transition:.2s;
+  color:#4CAF50;
+  text-decoration:none;
+  font-size:.75rem;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
 }
-.footer-nav a:hover{background:#f8f8f8;color:var(--primary)}
-.contact-info{margin-top:8px}
-.contact-info a{color:var(--success);font-weight:600;text-decoration:none}
-.contact-info a:hover{text-decoration:underline}
-.legal{margin-top:10px}
+.contact-info{
+  text-align:center;
+  font-size:.85rem;
+}
+.contact-info a{color:#4CAF50;text-decoration:none}
+.legal{
+  text-align:center;
+  font-size:.75rem;
+  color:#888;
+  margin-top:8px;
+}
 
-.bottom-space{height:12px}
+/* Modal */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+.modal.hidden{display:none}
+.modal-box{
+  background:#1a1a1a;
+  padding:20px;
+  border-radius:18px;
+  text-align:center;
+}
+.modal-box button{
+  margin:10px;
+  padding:10px 18px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+}
+.yes{background:#4CAF50}
+.no{background:#ff5a5a}
 </style>
 </head>
 
 <body>
+
+<header>
+  <img src="images/tent.jpeg">
+  <h1>Campus Bite</h1>
+  <a href="home.html" class="back">← Back</a>
+</header>
+
+<div class="container" id="list"></div>
 <div class="container">
+  <div class="total" id="grandTotal"></div>
 
-  <!-- App Bar -->
-  <div class="appbar">
-    <img src="images/tent.jpeg" class="logo">
-    <div class="title">Campus Bite</div>
-    <div class="spacer"></div>
-    <a href="home.html" class="back-btn">
-      <i class="fa fa-arrow-left"></i> Back
-    </a>
+  <div class="actions">
+    <button class="back-btn" onclick="goBack()">Add More Items</button>
+    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout ✔</button>
   </div>
-
-  <h1>Your Budget</h1>
-  <p class="subtitle">Adjust quantities before proceeding to checkout</p>
-
-  <div id="budgetList"></div>
-
-  <div class="summary card">
-    <div class="summary-row" id="grandTotal"></div>
-  </div>
-
-  <div class="button-row">
-    <button id="backBtn" class="btn-back">Add More Items</button>
-    <button id="orderBtn" class="btn-order">Proceed to Checkout ✅</button>
-  </div>
-
-  <div class="bottom-space"></div>
-
-  <!-- Footer -->
-  <footer>
-    <nav class="footer-nav">
-      <a href="profile.html"><i class="fa fa-user"></i>Profile</a>
-      <a href="home.html"><i class="fa fa-utensils"></i>Menu</a>
-      <a href="confirm-order.html"><i class="fa fa-shopping-cart"></i>Cart</a>
-      <a href="order-history.html"><i class="fa fa-list"></i>Orders</a>
-      <a href="comments.html"><i class="fa fa-comments"></i>Comments</a>
-    </nav>
-
-    <div class="contact-info">
-      <p>📞 <a href="tel:+256748372023">+256 748 372 023</a></p>
-      <p>✉️ <a href="mailto:campusbite@muni.ac.ug">campusbite@muni.ac.ug</a></p>
-    </div>
-
-    <p class="legal">
-      © 2026 Campus Bite. All rights reserved.<br>
-      Muni University | Arua, Uganda
-    </p>
-  </footer>
-
 </div>
 
 <!-- Modal -->
-<div id="confirmModal" class="modal hidden">
-  <div class="modal-content">
-    <p id="confirmMessage"></p>
-    <div class="modal-actions">
-      <button id="confirmYes" class="yes">Yes</button>
-      <button id="confirmNo" class="no">No</button>
-    </div>
+<div class="modal hidden" id="modal">
+  <div class="modal-box">
+    <p id="modalMsg"></p>
+    <button class="yes" id="yesBtn">Yes</button>
+    <button class="no" id="noBtn">No</button>
   </div>
 </div>
 
+<footer>
+  <nav class="footer-nav">
+    <a href="/profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
+    <a href="/home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
+    <a href="/confirm-order.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+    <a href="/order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
+    <a href="/comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
+  </nav>
+
+  <div class="contact-info">
+    <p>📞 <a href="tel:+256748372023">+256 748 372 023</a></p>
+    <p>✉️ <a href="mailto:campusbite@muni.ac.ug">campusbite@muni.ac.ug</a></p>
+  </div>
+
+  <p class="legal">© 2026 Campus Bite. All rights reserved.<br>Muni University | Arua, Uganda</p>
+</footer>
+
 <script>
-const STORAGE_KEY="campusbite_budget_items_v1";
-const PLACEHOLDER_IMG="images/placeholder.png";
+const KEY="campusbite_budget_items_v1";
+const PLACEHOLDER="images/placeholder.png";
+const list=document.getElementById("list");
+const totalEl=document.getElementById("grandTotal");
 
-function loadBudget(){
-  const raw=localStorage.getItem(STORAGE_KEY);
-  const items=raw?JSON.parse(raw):{};
-  const list=document.getElementById("budgetList");
-  let total=0;
+function load(){
+  const items=JSON.parse(localStorage.getItem(KEY)||"{}");
   list.innerHTML="";
+  let total=0;
 
-  if(Object.keys(items).length===0){
-    list.innerHTML='<div class="empty">Your budget is empty. Add meals from the menu.</div>';
-    document.getElementById("grandTotal").textContent="";
-    document.getElementById("orderBtn").disabled=true;
-    return;
-  }
-
-  document.getElementById("orderBtn").disabled=false;
-
-  Object.keys(items).forEach(name=>{
-    const item=items[name];
-    const sub=item.qty*item.price;
+  Object.entries(items).forEach(([name,i])=>{
+    const sub=i.qty*i.price;
     total+=sub;
 
-    const div=document.createElement("div");
-    div.className="budget-item";
-    div.innerHTML=`
-      <img src="${item.img||PLACEHOLDER_IMG}" class="item-img">
-      <div class="item-info">
-        <div class="item-name">${name}</div>
-        <div class="item-price">UGX ${item.price.toLocaleString()}</div>
-        <div class="qty-control">
-          <button class="decrease" data-name="${name}">−</button>
-          <span>${item.qty}</span>
-          <button class="increase" data-name="${name}">+</button>
+    list.innerHTML+=`
+      <div class="budget-item">
+        <img class="item-img" src="${i.img||PLACEHOLDER}">
+        <div class="item-info">
+          <div class="item-name">${name}</div>
+          <div class="item-price">UGX ${i.price.toLocaleString()}</div>
+          <div class="qty-row">
+            <button onclick="update('${name}',-1)">−</button>
+            <span>${i.qty}</span>
+            <button onclick="update('${name}',1)">+</button>
+          </div>
+          <div class="subtotal">Subtotal: UGX ${sub.toLocaleString()}</div>
         </div>
-        <div class="subtotal">Subtotal: UGX ${sub.toLocaleString()}</div>
       </div>`;
-    list.appendChild(div);
   });
 
-  document.getElementById("grandTotal").textContent="Total: UGX "+total.toLocaleString();
-  attachQtyHandlers(items);
+  totalEl.textContent=total?"Total: UGX "+total.toLocaleString():"Your budget is empty";
 }
 
-function attachQtyHandlers(items){
-  document.querySelectorAll(".increase").forEach(b=>b.onclick=()=>{
-    items[b.dataset.name].qty++;save(items);
-  });
-  document.querySelectorAll(".decrease").forEach(b=>b.onclick=()=>{
-    const n=b.dataset.name;
-    items[n].qty--;if(items[n].qty<=0)delete items[n];
-    save(items);
-  });
+function update(name,delta){
+  const items=JSON.parse(localStorage.getItem(KEY)||"{}");
+  if(!items[name])return;
+  items[name].qty+=delta;
+  if(items[name].qty<=0) delete items[name];
+  localStorage.setItem(KEY,JSON.stringify(items));
+  load();
 }
 
-function save(items){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
-  loadBudget();
-}
+function goBack(){location.href="home.html"}
+function checkout(){location.href="confirm-order.html"}
 
-function showConfirmation(msg){
-  return new Promise(res=>{
-    confirmMessage.textContent=msg;
-    confirmModal.classList.remove("hidden");
-    confirmYes.onclick=()=>{confirmModal.classList.add("hidden");res(true);}
-    confirmNo.onclick=()=>{confirmModal.classList.add("hidden");res(false);}
-  });
-}
-
-backBtn.onclick=async()=>{
-  if(await showConfirmation("Go back to add more items?")){
-    location.href="home.html";
-  }
-};
-orderBtn.onclick=async()=>{
-  if(await showConfirmation("Proceed to checkout?")){
-    location.href="confirm-order.html";
-  }
-};
-
-loadBudget();
+load();
 </script>
+
 </body>
 </html>
