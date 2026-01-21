@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="canonical" href="https://campusbite.xyz/">
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Campus Bite – Your Budget</title>
+  <meta charset="UTF-8"/>
+  <title>Your Budget</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="icon" href="images/tent.jpeg" type="image/jpeg">
+  <!-- Icons & Fonts -->
+  <link rel="icon" href="images/tent.jpeg">
   <link rel="apple-touch-icon" href="images/tent.jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+/* ===================== VARIABLES ===================== */
 :root{
   --bg:#fff8f1;
-  --card:#ffffff;
-  --primary:#ff914d;
-  --primary-dark:#ff6a00;
+  --primary:#ff6a00;
+  --primary-2:#ff914d;
   --text:#333;
   --muted:#666;
-  --radius:14px;
-  --shadow:0 6px 16px rgba(0,0,0,.08);
+  --card:#fff;
+  --success:#4CAF50;
+  --danger:#E53935;
+  --radius:12px;
+  --shadow:0 4px 12px rgba(0,0,0,.08);
+  --shadow-hover:0 6px 16px rgba(0,0,0,.12);
 }
 
-*{box-sizing:border-box}
+/* ===================== RESET ===================== */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
 body{
-  margin:0;
   font-family:Poppins,sans-serif;
   background:var(--bg);
   color:var(--text);
@@ -33,179 +38,212 @@ body{
   justify-content:center;
 }
 
+/* ===================== LAYOUT ===================== */
 .container{
-  max-width:720px;
+  max-width:640px;
   width:100%;
-  padding:16px 18px 24px;
+  min-height:100dvh;
   display:flex;
   flex-direction:column;
+  padding:0 20px 20px;
 }
-
-/* App bar */
-.appbar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:12px 0;
-}
-.appbar img{
-  width:34px;height:34px;border-radius:8px;object-fit:cover;
-}
-.appbar h1{
-  font-size:1.4rem;
-  color:var(--primary-dark);
-}
-
-/* Main cart container */
-.cart{
+.card{
   background:var(--card);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
-  padding:14px;
-  margin-top:10px;
 }
 
-.cart-item{
-  display:flex;
-  gap:12px;
-  padding:12px 0;
-}
-.cart-item:not(:last-child){
-  border-bottom:1px solid #f0f0f0;
-}
-
-.item-img{
-  width:70px;
-  height:70px;
-  border-radius:12px;
-  object-fit:cover;
-  background:#eee;
-  flex-shrink:0;
-}
-
-.item-info{
-  flex:1;
-}
-.item-name{font-weight:600}
-.item-price{font-size:.85rem;color:var(--muted);margin-top:2px}
-
-.qty-row{
+/* ===================== APP BAR ===================== */
+.appbar{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:var(--card);
   display:flex;
   align-items:center;
-  gap:10px;
-  margin-top:8px;
+  gap:12px;
+  padding:12px 16px;
+  border-bottom:1px solid #eee;
 }
-
-.qty-btn{
-  width:32px;
-  height:32px;
-  border:none;
-  border-radius:8px;
-  background:var(--primary);
-  color:#fff;
-  font-size:18px;
-  font-weight:700;
-  cursor:pointer;
+.logo{
+  width:32px;height:32px;border-radius:6px;object-fit:cover
 }
-.qty-btn:hover{background:var(--primary-dark)}
+.title{font-weight:600;color:var(--primary)}
+.spacer{flex:1}
+.back-btn{
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:500;
+}
+.back-btn:hover{color:var(--primary)}
 
-.qty{
-  min-width:22px;
+/* ===================== HEADERS ===================== */
+h1{
+  margin:16px 0 6px;
   text-align:center;
-  font-weight:600;
+  color:var(--primary);
+  font-size:1.5rem;
+}
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:.95rem;
+  margin-bottom:12px;
 }
 
-.subtotal{
-  font-size:.9rem;
-  font-weight:600;
-  margin-top:6px;
-}
-
-/* Total + actions */
-.summary{
-  margin-top:16px;
-  text-align:right;
-  font-size:1.2rem;
-  font-weight:600;
-  color:var(--primary-dark);
-}
-
-.actions{
+/* ===================== ITEMS ===================== */
+.budget-item{
   display:flex;
   gap:12px;
-  margin-top:18px;
-}
-.actions button{
-  flex:1;
   padding:12px;
-  border:none;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
-  font-size:1rem;
-}
-.back-btn{background:var(--primary);color:#fff}
-.checkout-btn{background:#4CAF50;color:#fff}
-.actions button:hover{opacity:.9}
-button:disabled{opacity:.6;cursor:not-allowed}
-
-/* Footer (UNCHANGED, EXACT) */
-footer{
-  margin-top:26px;
-  padding:20px;
-  background:#fff;
+  margin:12px 0;
+  background:var(--card);
   border-radius:var(--radius);
   box-shadow:var(--shadow);
+  transition:.2s;
+}
+.budget-item:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-hover);
+}
+.item-img{
+  width:80px;height:80px;border-radius:12px;
+  object-fit:cover;background:#eee;flex-shrink:0;
+}
+.item-info{flex:1}
+.item-name{font-weight:600}
+.item-price{font-size:.85rem;color:var(--muted)}
+
+.qty-control{
+  display:flex;align-items:center;gap:10px;margin-top:8px;
+}
+.qty-control button{
+  width:32px;height:32px;border:none;border-radius:8px;
+  font-size:18px;font-weight:700;
+  cursor:pointer;background:var(--primary-2);color:#fff;
+}
+.qty-control button:hover{background:var(--primary)}
+.qty-control span{min-width:24px;text-align:center;font-weight:600}
+
+.subtotal{margin-top:6px;font-weight:600;font-size:.9rem}
+
+/* ===================== SUMMARY ===================== */
+.summary{padding:15px;margin-top:10px}
+.summary-row{
+  display:flex;justify-content:space-between;
+  font-size:1.05rem;font-weight:600;color:var(--primary);
+}
+
+/* ===================== BUTTONS ===================== */
+.button-row{
+  display:flex;gap:12px;margin-top:20px;
+}
+.button-row button{
+  flex:1;padding:14px;border:none;border-radius:10px;
+  font-weight:600;font-size:1rem;cursor:pointer;
+  transition:.25s;
+}
+.btn-back{
+  background:linear-gradient(135deg,var(--primary-2),var(--primary));
+  color:#fff;
+}
+.btn-order{
+  background:linear-gradient(135deg,#66bb6a,var(--success));
+  color:#fff;
+}
+.button-row button:hover{
+  transform:translateY(-1px);
+  box-shadow:0 6px 16px rgba(0,0,0,.15);
+}
+button:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+/* ===================== EMPTY ===================== */
+.empty{text-align:center;color:var(--muted);padding:20px}
+
+/* ===================== MODAL ===================== */
+.modal{
+  position:fixed;inset:0;display:flex;
+  justify-content:center;align-items:center;
+  background:rgba(0,0,0,.5);z-index:999;
+}
+.modal.hidden{display:none}
+.modal-content{
+  background:#fff;padding:20px;border-radius:14px;
+  width:85%;max-width:400px;text-align:center;
+  box-shadow:var(--shadow);animation:pop .25s ease;
+}
+.modal-actions{display:flex;gap:12px;margin-top:16px}
+.modal-actions button{
+  flex:1;padding:10px;border:none;border-radius:8px;
+  font-weight:600;color:#fff;cursor:pointer;
+}
+.yes{background:var(--success)}
+.no{background:var(--danger)}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ===================== FOOTER ===================== */
+footer{
+  margin-top:24px;padding:20px;background:var(--card);
+  border-top:1px solid #eee;text-align:center;
+  font-size:.92rem;color:var(--muted);
+  border-radius:var(--radius);box-shadow:var(--shadow);
 }
 .footer-nav{
-  display:flex;
-  justify-content:space-around;
-  flex-wrap:wrap;
-  gap:8px 14px;
-  margin-bottom:14px;
+  display:flex;justify-content:space-around;
+  flex-wrap:wrap;gap:8px 14px;margin-bottom:14px;
 }
 .footer-nav a{
-  text-decoration:none;
-  color:#4CAF50;
-  font-weight:500;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  padding:8px 10px;
-  border-radius:8px;
+  text-decoration:none;color:#444;font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 10px;border-radius:8px;transition:.2s;
 }
-.footer-nav a:hover{background:#f6f6f6}
-.contact-info{text-align:center;margin-top:6px}
-.contact-info a{color:#4CAF50;font-weight:600;text-decoration:none}
-.legal{text-align:center;margin-top:10px;font-size:.9rem;color:#666}
+.footer-nav a:hover{background:#f8f8f8;color:var(--primary)}
+.contact-info{margin-top:8px}
+.contact-info a{color:var(--success);font-weight:600;text-decoration:none}
+.contact-info a:hover{text-decoration:underline}
+.legal{margin-top:10px}
+
+.bottom-space{height:12px}
 </style>
 </head>
 
 <body>
 <div class="container">
 
+  <!-- App Bar -->
   <div class="appbar">
-    <img src="images/tent.jpeg" alt="Campus Bite">
-    <h1>Your Budget</h1>
+    <img src="images/tent.jpeg" class="logo">
+    <div class="title">Campus Bite</div>
+    <div class="spacer"></div>
+    <a href="home.html" class="back-btn">
+      <i class="fa fa-arrow-left"></i> Back
+    </a>
   </div>
 
-  <div class="cart" id="cart"></div>
+  <h1>Your Budget</h1>
+  <p class="subtitle">Adjust quantities before proceeding to checkout</p>
 
-  <div class="summary" id="grandTotal">UGX 0</div>
+  <div id="budgetList"></div>
 
-  <div class="actions">
-    <button class="back-btn" onclick="goBack()">← Add More</button>
-    <button class="checkout-btn" id="checkoutBtn" onclick="checkout()">Proceed to Checkout ✅</button>
+  <div class="summary card">
+    <div class="summary-row" id="grandTotal"></div>
   </div>
 
-  <!-- FOOTER (exact) -->
+  <div class="button-row">
+    <button id="backBtn" class="btn-back">Add More Items</button>
+    <button id="orderBtn" class="btn-order">Proceed to Checkout ✅</button>
+  </div>
+
+  <div class="bottom-space"></div>
+
+  <!-- Footer -->
   <footer>
-    <nav class="footer-nav" aria-label="Bottom navigation">
-      <a href="/profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
-      <a href="/home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
-      <a href="/confirm-order.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
-      <a href="/order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
-      <a href="/comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
+    <nav class="footer-nav">
+      <a href="profile.html"><i class="fa fa-user"></i>Profile</a>
+      <a href="home.html"><i class="fa fa-utensils"></i>Menu</a>
+      <a href="confirm-order.html"><i class="fa fa-shopping-cart"></i>Cart</a>
+      <a href="order-history.html"><i class="fa fa-list"></i>Orders</a>
+      <a href="comments.html"><i class="fa fa-comments"></i>Comments</a>
     </nav>
 
     <div class="contact-info">
@@ -213,74 +251,110 @@ footer{
       <p>✉️ <a href="mailto:campusbite@muni.ac.ug">campusbite@muni.ac.ug</a></p>
     </div>
 
-    <p class="legal">© 2026 Campus Bite. All rights reserved.<br/>Muni University | Arua, Uganda</p>
+    <p class="legal">
+      © 2026 Campus Bite. All rights reserved.<br>
+      Muni University | Arua, Uganda
+    </p>
   </footer>
 
 </div>
 
+<!-- Modal -->
+<div id="confirmModal" class="modal hidden">
+  <div class="modal-content">
+    <p id="confirmMessage"></p>
+    <div class="modal-actions">
+      <button id="confirmYes" class="yes">Yes</button>
+      <button id="confirmNo" class="no">No</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const STORAGE_KEY="campusbite_budget_items_v1";
-const PLACEHOLDER="images/placeholder.png";
-const cartEl=document.getElementById("cart");
-const totalEl=document.getElementById("grandTotal");
-const checkoutBtn=document.getElementById("checkoutBtn");
+const PLACEHOLDER_IMG="images/placeholder.png";
 
-function load(){
+function loadBudget(){
   const raw=localStorage.getItem(STORAGE_KEY);
   const items=raw?JSON.parse(raw):{};
-  cartEl.innerHTML="";
+  const list=document.getElementById("budgetList");
   let total=0;
+  list.innerHTML="";
 
   if(Object.keys(items).length===0){
-    cartEl.innerHTML="<p style='text-align:center;color:#666'>Your budget is empty.</p>";
-    totalEl.textContent="";
-    checkoutBtn.disabled=true;
+    list.innerHTML='<div class="empty">Your budget is empty. Add meals from the menu.</div>';
+    document.getElementById("grandTotal").textContent="";
+    document.getElementById("orderBtn").disabled=true;
     return;
   }
 
-  checkoutBtn.disabled=false;
+  document.getElementById("orderBtn").disabled=false;
 
   Object.keys(items).forEach(name=>{
-    const it=items[name];
-    const sub=it.qty*it.price;
+    const item=items[name];
+    const sub=item.qty*item.price;
     total+=sub;
 
     const div=document.createElement("div");
-    div.className="cart-item";
+    div.className="budget-item";
     div.innerHTML=`
-      <img class="item-img" src="${it.img||PLACEHOLDER}">
+      <img src="${item.img||PLACEHOLDER_IMG}" class="item-img">
       <div class="item-info">
         <div class="item-name">${name}</div>
-        <div class="item-price">UGX ${it.price.toLocaleString()}</div>
-
-        <div class="qty-row">
-          <button class="qty-btn" onclick="changeQty('${name}',-1)">−</button>
-          <div class="qty">${it.qty}</div>
-          <button class="qty-btn" onclick="changeQty('${name}',1)">+</button>
+        <div class="item-price">UGX ${item.price.toLocaleString()}</div>
+        <div class="qty-control">
+          <button class="decrease" data-name="${name}">−</button>
+          <span>${item.qty}</span>
+          <button class="increase" data-name="${name}">+</button>
         </div>
-
         <div class="subtotal">Subtotal: UGX ${sub.toLocaleString()}</div>
-      </div>
-    `;
-    cartEl.appendChild(div);
+      </div>`;
+    list.appendChild(div);
   });
 
-  totalEl.textContent="Total: UGX "+total.toLocaleString();
+  document.getElementById("grandTotal").textContent="Total: UGX "+total.toLocaleString();
+  attachQtyHandlers(items);
 }
 
-function changeQty(name,delta){
-  const items=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}");
-  if(!items[name]) return;
-  items[name].qty+=delta;
-  if(items[name].qty<=0) delete items[name];
+function attachQtyHandlers(items){
+  document.querySelectorAll(".increase").forEach(b=>b.onclick=()=>{
+    items[b.dataset.name].qty++;save(items);
+  });
+  document.querySelectorAll(".decrease").forEach(b=>b.onclick=()=>{
+    const n=b.dataset.name;
+    items[n].qty--;if(items[n].qty<=0)delete items[n];
+    save(items);
+  });
+}
+
+function save(items){
   localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
-  load();
+  loadBudget();
 }
 
-function goBack(){ location.href="home.html"; }
-function checkout(){ location.href="confirm-order.html"; }
+function showConfirmation(msg){
+  return new Promise(res=>{
+    confirmMessage.textContent=msg;
+    confirmModal.classList.remove("hidden");
+    confirmYes.onclick=()=>{confirmModal.classList.add("hidden");res(true);}
+    confirmNo.onclick=()=>{confirmModal.classList.add("hidden");res(false);}
+  });
+}
 
-load();
+backBtn.onclick=async()=>{
+  if(await showConfirmation("Go back to add more items?")){
+    location.href="home.html";
+  }
+};
+orderBtn.onclick=async()=>{
+  if(await showConfirmation("Proceed to checkout?")){
+    location.href="confirm-order.html";
+  }
+};
+
+loadBudget();
 </script>
 </body>
 </html>
+
+
