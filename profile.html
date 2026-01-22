@@ -1,327 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="canonical" href="https://campusbite.xyz/">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Campus Bite – Profile</title>
+  <link rel="canonical" href="https://campusbite.xyz/">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile | Campus Bite</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<link rel="icon" href="images/tent.jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="images/tent.jpeg" type="image/jpeg" />
 
-<style>
-:root{
-  --primary:#ff6a00;
-  --accent:#ff914d;
-  --bg:#fff8f1;
-  --card:#fff;
-  --muted:#777;
-  --radius:14px;
-  --shadow:0 6px 18px rgba(0,0,0,.08);
-}
+  <style>
+    :root {
+      --primary: #ff914d;
+      --bg: #fdfdfd;
+      --dark: #1a1a1a;
+      --text: #2d3436;
+      --danger: #eb4d4b;
+    }
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Poppins,sans-serif;
-  background:var(--bg);
-  padding-bottom:140px;
-}
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding-bottom: 100px;
+    }
 
-/* App Bar */
-.app-bar{
-  position:sticky;
-  top:0;
-  z-index:100;
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:#fff;
-  display:flex;
-  align-items:center;
-  padding:14px 16px;
-}
-.app-bar button{
-  background:none;
-  border:none;
-  color:#fff;
-  font-size:1.2rem;
-  margin-right:10px;
-  cursor:pointer;
-}
-.app-bar h1{
-  font-size:1.3rem;
-  margin:0;
-}
+    /* Premium Curved Header */
+    .profile-header {
+      background: linear-gradient(135deg, var(--primary), #ff6a00);
+      height: 180px;
+      padding: 40px 20px;
+      text-align: center;
+      color: white;
+      border-bottom-left-radius: 50px;
+      border-bottom-right-radius: 50px;
+      position: relative;
+      margin-bottom: 60px;
+    }
 
-/* Cards */
-.container{
-  max-width:520px;
-  margin:18px auto;
-  padding:0 12px;
-}
-.card{
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:18px;
-  margin-bottom:18px;
-}
+    .profile-header h2 { font-weight: 500; font-size: 1.1rem; opacity: 0.9; }
 
-/* Profile summary */
-.profile-summary{
-  text-align:center;
-}
-.avatar{
-  width:84px;
-  height:84px;
-  border-radius:50%;
-  background:var(--accent);
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-  font-weight:600;
-  margin:0 auto 10px;
-}
-.profile-summary h2{
-  margin:6px 0 4px;
-}
-.profile-summary p{
-  margin:0;
-  font-size:.9rem;
-  color:var(--muted);
-}
+    /* Squircle Avatar */
+    .avatar-wrapper {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .avatar-circle {
+      width: 100px;
+      height: 100px;
+      background: white;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: var(--primary);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
 
-/* Form */
-label{
-  display:block;
-  margin-top:14px;
-  font-weight:600;
-}
-input,select{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  margin-top:6px;
-  font-size:.95rem;
-}
-input:disabled{background:#f3f3f3}
+    .container { padding: 0 25px; max-width: 500px; margin: 0 auto; }
 
-.save-btn{
-  margin-top:22px;
-  width:100%;
-  padding:14px;
-  border:none;
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:#fff;
-  border-radius:12px;
-  font-weight:600;
-  font-size:1rem;
-  cursor:pointer;
-}
+    /* Admin Feature Bar */
+    #adminPortal {
+      background: var(--dark);
+      color: white;
+      border-radius: 20px;
+      padding: 18px;
+      margin-bottom: 25px;
+      display: none; /* Hidden by default */
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+    .admin-text h4 { font-size: 0.9rem; margin-bottom: 2px; }
+    .admin-text p { font-size: 0.7rem; color: #888; }
 
-/* Floating Orders */
-.floating-btn{
-  position:fixed;
-  bottom:90px;
-  right:18px;
-  width:58px;
-  height:58px;
-  background:var(--accent);
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 8px 20px rgba(0,0,0,.25);
-  text-decoration:none;
-  color:#fff;
-}
-.badge{
-  position:absolute;
-  top:-6px;
-  right:-6px;
-  background:#e53935;
-  color:#fff;
-  font-size:.7rem;
-  padding:4px 7px;
-  border-radius:50%;
-  font-weight:600;
-}
+    /* Input Rows */
+    .section-label { font-size: 0.7rem; color: #b2bec3; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px 5px; display: block; }
+    
+    .input-row {
+      background: white;
+      padding: 15px 20px;
+      border-radius: 18px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      border: 1px solid #f1f1f1;
+    }
+    .input-row i:first-child { color: var(--primary); width: 20px; text-align: center; }
+    .input-row div { flex: 1; }
+    .input-row label { display: block; font-size: 0.65rem; color: #b2bec3; }
+    .input-row input, .input-row select {
+      width: 100%;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text);
+      background: transparent;
+    }
 
-/* Footer */
-footer{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#fff;
-  border-top:1px solid #eee;
-  padding:14px 10px;
-  text-align:center;
-  box-shadow:0 -4px 12px rgba(0,0,0,.06);
-}
-.footer-nav{
-  display:flex;
-  justify-content:space-around;
-  margin-bottom:8px;
-}
-.footer-nav a{
-  text-decoration:none;
-  color:#444;
-  font-size:.8rem;
-  font-weight:600;
-}
-.footer-nav a:hover{color:var(--primary)}
-.contact-info{
-  font-size:.8rem;
-}
-.contact-info a{
-  color:var(--accent);
-  font-weight:600;
-  text-decoration:none;
-}
-.legal{
-  font-size:.75rem;
-  color:var(--muted);
-}
-</style>
+    /* Password Toggle Icon */
+    .toggle-pass { color: #ccc; cursor: pointer; padding: 5px; transition: 0.3s; }
+    .toggle-pass:hover { color: var(--primary); }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 18px;
+      border-radius: 20px;
+      border: none;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .btn:active { transform: scale(0.98); }
+
+    .save-btn { background: var(--primary); color: white; margin-top: 15px; box-shadow: 0 8px 20px rgba(255, 145, 77, 0.3); }
+    
+    .logout-btn {
+      background: #fff;
+      color: var(--danger);
+      border: 1px solid #ffebeb;
+      margin-top: 30px;
+      box-shadow: 0 4px 10px rgba(235, 77, 75, 0.05);
+    }
+
+    /* Footer Nav */
+    .footer-nav { 
+      position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
+      display: flex; justify-content: space-around; padding: 12px 0; 
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; 
+    }
+    .footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
+    .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
+    .footer-nav a.active { color: var(--primary); }
+  </style>
 </head>
-
 <body>
 
-<!-- App Bar -->
-<div class="app-bar">
-  <button onclick="history.back()">←</button>
-  <h1>My Profile</h1>
+<div class="profile-header">
+  <h2 id="displayEmail">My Profile</h2>
+  <div class="avatar-wrapper">
+    <div class="avatar-circle"><i class="fa fa-user"></i></div>
+  </div>
 </div>
 
 <div class="container">
-
-  <!-- Profile Summary -->
-  <div class="card profile-summary">
-    <div class="avatar" id="avatar">U</div>
-    <h2 id="displayName">User</h2>
-    <p id="displayEmail">email@example.com</p>
+  
+  <div id="adminPortal" onclick="location.href='admin.html'">
+    <div class="admin-text">
+      <h4>Command Center</h4>
+      <p>Manage Orders & Students</p>
+    </div>
+    <i class="fa fa-arrow-right" style="color: var(--primary)"></i>
   </div>
 
-  <!-- Editable Info -->
-  <div class="card">
-    <form id="profileForm">
+  <span class="section-label">General Info</span>
+  <div class="input-row">
+    <i class="fa fa-user-edit"></i>
+    <div>
+      <label>Full Name</label>
+      <input type="text" id="name" placeholder="Enter your name">
+    </div>
+  </div>
+
+  <div class="input-row">
+    <i class="fa fa-phone"></i>
+    <div>
       <label>Phone Number</label>
-      <input id="phone">
+      <input type="tel" id="phone" placeholder="07...">
+    </div>
+  </div>
 
+  <div class="input-row">
+    <i class="fa fa-university"></i>
+    <div>
       <label>Department</label>
-      <input id="department">
+      <input type="text" id="dept" placeholder="e.g. ICT">
+    </div>
+  </div>
 
-      <label>Gender</label>
-      <select id="gender">
-        <option value="">Select</option>
-        <option>Male</option>
-        <option>Female</option>
-        <option>Other</option>
-      </select>
-
+  <div class="input-row">
+    <i class="fa fa-graduation-cap"></i>
+    <div>
       <label>Year of Study</label>
       <select id="year">
-        <option value="">Select</option>
         <option value="1">Year 1</option>
         <option value="2">Year 2</option>
         <option value="3">Year 3</option>
         <option value="4">Year 4</option>
       </select>
-
-      <label>New Password (optional)</label>
-      <input id="password" type="password">
-
-      <button class="save-btn">Save Changes</button>
-    </form>
+    </div>
   </div>
 
+  <span class="section-label">Security</span>
+  <div class="input-row">
+    <i class="fa fa-lock"></i>
+    <div>
+      <label>New Password</label>
+      <input type="password" id="newPassword" placeholder="••••••••">
+    </div>
+    <i class="fa fa-eye toggle-pass" onclick="togglePass()"></i>
+  </div>
+
+  <button class="btn save-btn" id="saveBtn"><i class="fa fa-check-circle"></i> Save All Changes</button>
+
+  <button class="btn logout-btn" id="logoutBtn"><i class="fa fa-power-off"></i> Log Out</button>
 </div>
 
-<a href="order-history.html" class="floating-btn">
-  🛒
-  <span class="badge" id="pendingBadge">0</span>
-</a>
+<nav class="footer-nav">
+  <a href="profile.html" class="active"><i class="fa fa-user"></i><span>Profile</span></a>
+  <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
+  <a href="confirm-order.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+  <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
+  <a href="comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
+</nav>
 
-<footer>
-  <nav class="footer-nav">
-    <a href="profile.html">Profile</a>
-    <a href="home.html">Menu</a>
-    <a href="confirm-order.html">Cart</a>
-    <a href="order-history.html">Orders</a>
-    <a href="comments.html">Comments</a>
-  </nav>
-  <div class="contact-info">
-    <a href="tel:+256748372023">📞 +256 748 372 023</a> |
-    <a href="mailto:campusbite@muni.ac.ug">✉️ campusbite@muni.ac.ug</a>
-  </div>
-  <div class="legal">© 2026 Campus Bite · Muni University</div>
-</footer>
-
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <script>
-firebase.initializeApp({
-  apiKey:"AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
-  authDomain:"campus-bite-9dbaa.firebaseapp.com",
-  projectId:"campus-bite-9dbaa"
-});
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
+  authDomain: "campus-bite-9dbaa.firebaseapp.com",
+  projectId: "campus-bite-9dbaa"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-const auth=firebase.auth();
-const db=firebase.firestore();
+// 🔸 CHANGE TO YOUR ADMIN EMAIL
+const ADMIN_EMAIL = "ezrasykar@gmail.com";
 
-const displayName=document.getElementById("displayName");
-const displayEmail=document.getElementById("displayEmail");
-const avatar=document.getElementById("avatar");
-const pendingBadge=document.getElementById("pendingBadge");
+// Password Visibility Toggle
+function togglePass() {
+  const input = document.getElementById("newPassword");
+  const icon = event.target;
+  if(input.type === "password") {
+    input.type = "text";
+    icon.classList.replace("fa-eye", "fa-eye-slash");
+  } else {
+    input.type = "password";
+    icon.classList.replace("fa-eye-slash", "fa-eye");
+  }
+}
 
-auth.onAuthStateChanged(async user=>{
+auth.onAuthStateChanged(async user => {
   if(!user) return location.href="index.html";
+  document.getElementById("displayEmail").textContent = user.email;
 
-  displayEmail.textContent=user.email;
-
-  const snap=await db.collection("students").doc(user.uid).get();
-  if(snap.exists){
-    const d=snap.data();
-    displayName.textContent=d.name||"User";
-    avatar.textContent=(d.name||"U")[0].toUpperCase();
-    phone.value=d.phone||"";
-    department.value=d.department||"";
-    gender.value=d.gender||"";
-    year.value=d.year||"";
+  // Check Admin Access
+  if(user.email === ADMIN_EMAIL) {
+    document.getElementById("adminPortal").style.display = "flex";
   }
 
-  const orders=await db.collection("orders").doc(user.uid).collection("userOrders").get();
-  let pending=0;
-  orders.forEach(o=>{
-    if(o.data().status==="pending") pending+=o.data().totalAmount;
-  });
-  pendingBadge.textContent=pending;
+  // Load Profile Data
+  const doc = await db.collection("students").doc(user.uid).get();
+  if(doc.exists) {
+    const d = doc.data();
+    document.getElementById("name").value = d.name || "";
+    document.getElementById("phone").value = d.phone || "";
+    document.getElementById("dept").value = d.department || "";
+    document.getElementById("year").value = d.year || "1";
+  }
 });
 
-profileForm.onsubmit=async e=>{
-  e.preventDefault();
-  const user=auth.currentUser;
+// Update Profile & Password
+document.getElementById("saveBtn").onclick = async () => {
+  const user = auth.currentUser;
+  const newPass = document.getElementById("newPassword").value;
 
-  await db.collection("students").doc(user.uid).set({
-    phone:phone.value,
-    department:department.value,
-    gender:gender.value,
-    year:year.value,
-    email:user.email
-  },{merge:true});
+  try {
+    // 1. Update Password if provided
+    if(newPass.length >= 6) {
+      await user.updatePassword(newPass);
+    } else if (newPass.length > 0) {
+      return alert("Password must be at least 6 characters!");
+    }
 
-  if(password.value.trim())
-    await user.updatePassword(password.value.trim());
+    // 2. Update Profile Info
+    await db.collection("students").doc(user.uid).set({
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      department: document.getElementById("dept").value,
+      year: document.getElementById("year").value,
+      email: user.email
+    }, {merge: true});
 
-  alert("Profile updated successfully");
+    alert("Profile Updated Successfully ✨");
+    document.getElementById("newPassword").value = "";
+  } catch(e) {
+    if (e.code === 'auth/requires-recent-login') {
+      alert("Please log out and log back in to change your password for security.");
+    } else {
+      alert("Error: " + e.message);
+    }
+  }
+};
+
+// Logout Logic
+document.getElementById("logoutBtn").onclick = () => {
+  if(confirm("Are you sure you want to log out?")) {
+    auth.signOut().then(() => location.href = "index.html");
+  }
 };
 </script>
-
 </body>
 </html>

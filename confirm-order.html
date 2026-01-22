@@ -3,289 +3,230 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Confirm Your Order</title>
+  <title>Confirm Your Order – Campus Bite</title>
 
-  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-  <!-- App icons -->
   <link rel="icon" href="images/tent.jpeg" type="image/jpeg" />
-  <link rel="apple-touch-icon" href="images/tent.jpeg" />
-
-  <meta name="theme-color" content="#ff914d" />
 
   <style>
     :root{
-      --bg:#fff8f1;
-      --primary:#ff6a00;
-      --primary-2:#ff914d;
+      --primary:#ff914d;
+      --primary-dark:#ff6a00;
+      --bg:#fff;
       --text:#333;
-      --muted:#555;
-      --card:#fff;
-      --accent:#4CAF50;
-      --radius:12px;
-      --shadow:0 4px 12px rgba(0,0,0,.08);
-      --shadow-hover:0 6px 16px rgba(0,0,0,.12);
+      --muted:#888;
+      --success:#4CAF50;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    *{box-sizing:border-box; margin:0; padding:0;}
     body {
-      font-family: Poppins, sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: var(--bg);
-      margin: 0;
       color: var(--text);
-      display: flex;
-      justify-content: center;
-    }
-
-    .container {
-      max-width: 640px;
+      -webkit-font-smoothing: antialiased;
       width: 100%;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      padding: 0 20px 20px;
     }
 
-    /* Top app bar */
-    .appbar {
+    /* Sticky Header */
+    header { 
+      background: var(--primary); 
+      color: #fff; 
+      padding: 15px 20px; 
+      display: flex; 
+      align-items: center; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
       position: sticky;
       top: 0;
-      background: var(--card);
-      border-bottom: 1px solid #eee;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      z-index: 10;
+      z-index: 1000;
+      width: 100%;
     }
-    .appbar .logo {
-      width: 32px; height: 32px; border-radius: 6px; object-fit: cover;
-    }
-    .appbar .title {
-      font-weight: 600; color: var(--primary);
-    }
-    .appbar .spacer {flex:1}
-    .appbar .back-btn {
-      display: inline-flex; align-items: center; gap:6px;
-      color: var(--muted); text-decoration: none; font-weight: 500;
-    }
-    .appbar .back-btn:hover { color: var(--primary); }
+    .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
+    header h1 { font-size: 1.1rem; font-weight: 600; flex-grow: 1; }
+    .back-link { color: white; text-decoration: none; font-size: 0.9rem; font-weight: 600; }
 
-    h1 {
-      color: var(--primary);
-      margin: 16px 0 8px;
-      text-align: center;
-      font-size: 1.5rem;
-    }
-    .subtitle {
-      text-align: center;
-      color: var(--muted);
-      font-size: .95rem;
-      margin-bottom: 12px;
+    /* Main Layout */
+    .main-content {
+      padding: 20px 20px 140px; 
+      width: 100%;
     }
 
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+    .page-title { text-align: left; margin-bottom: 25px; }
+    .page-title h2 { color: var(--primary-dark); font-size: 1.5rem; }
+    .page-title p { color: var(--muted); font-size: 0.9rem; }
+
+    /* Order Review Grid */
+    #orderList {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
     }
 
-    /* Order list */
-    #orderList { margin-top: 10px; }
+    @media (min-width: 768px) {
+      #orderList { grid-template-columns: repeat(2, 1fr); }
+    }
+
     .order-item {
       display: flex;
-      gap: 12px;
+      gap: 15px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
       align-items: center;
-      padding: 12px;
-      margin: 12px 0;
-      border-radius: var(--radius);
-      background: var(--card);
-      box-shadow: var(--shadow);
-      transition: transform .2s ease, box-shadow .2s ease;
     }
-    .order-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
     .item-img {
-      width: 70px; height: 70px; border-radius: 12px; object-fit: cover; background: #eee; flex-shrink: 0;
+      width: 70px; height: 70px; border-radius: 12px; object-fit: cover; background: #f9f9f9; flex-shrink: 0;
     }
     .item-info { flex: 1; }
-    .item-name { font-weight: 600; }
-    .item-meta { font-size: .85rem; color: var(--muted); margin-top: 4px; }
-    .item-sub { font-weight: 600; margin-top: 6px; }
+    .item-name { font-weight: 600; font-size: 1rem; color: #333; }
+    .item-meta { font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+    .item-sub { font-weight: 700; color: var(--primary-dark); margin-top: 5px; font-size: 0.9rem; }
 
-    /* Summary */
-    .summary {
-      margin-top: 16px; padding: 15px;
-    }
-    .summary-row {
-      display: flex; justify-content: space-between; margin: 6px 0; font-weight: 500;
-    }
-    .summary-row.total {
-      font-size: 1.1rem; font-weight: 600; color: var(--primary);
+    /* Checkout Details Grid */
+    .checkout-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
     }
 
-    /* Form */
-    .form-group { margin: 15px 0; }
-    label { font-weight: 600; display: block; margin-bottom: 6px; }
-    select, .input {
-      padding: 10px; border-radius: 10px; border: 1px solid #ddd; width: 100%; background:#fff;
-      font-size: .95rem;
+    @media (min-width: 992px) {
+      .checkout-grid { grid-template-columns: 1fr 1fr; }
     }
 
-    /* Button */
-    button {
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color: #fff;
-      border: none;
-      padding: 14px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 16px;
+    .summary-card {
+      background: #fdf2e9;
+      padding: 25px;
+      border-radius: 15px;
+      height: fit-content;
+    }
+    .summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; }
+    .summary-row.total { 
+      border-top: 1px dashed #ff914d; 
+      padding-top: 15px; 
+      margin-top: 15px; 
+      font-weight: 700; 
+      font-size: 1.3rem; 
+      color: var(--primary-dark); 
+    }
+
+    /* Form Fields */
+    .form-section { background: #fff; }
+    .form-group { margin-bottom: 20px; }
+    label { font-weight: 600; display: block; margin-bottom: 8px; color: #444; font-size: 0.9rem; }
+    select, input {
       width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      background: #f9f9f9;
       font-size: 1rem;
-      transition: box-shadow .25s ease, transform .25s ease, opacity .25s ease;
+      outline: none;
+      font-family: inherit;
     }
-    button:hover { box-shadow: 0 6px 16px rgba(0,0,0,.15); transform: translateY(-1px); }
-    button:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    select:focus, input:focus { border-color: var(--primary); background: #fff; }
 
-    /* Footer */
-    footer {
-      margin-top: 24px;
-      padding: 20px;
-      background: var(--card);
-      border-top: 1px solid #eee;
-      text-align: center;
-      font-size: 0.92rem;
-      color: var(--muted);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .footer-nav {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 8px 14px;
-    }
-    .footer-nav a {
-      text-decoration: none;
-      color: #444;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 10px;
-      border-radius: 8px;
-      transition: background .2s ease, color .2s ease;
-    }
-    .footer-nav a:hover { background: #f8f8f8; color: var(--primary); }
-    .contact-info { margin-top: 8px; }
-    .contact-info a {
-      color: var(--accent);
-      text-decoration: none;
+    #confirmOrderBtn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 12px;
+      width: 100%;
       font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(255, 145, 77, 0.3);
+      transition: 0.2s;
     }
-    .contact-info a:hover { text-decoration: underline; }
-    .legal { margin-top: 10px; }
+    #confirmOrderBtn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; }
 
-    /* Empty state */
-    .empty {
-      text-align: center;
-      color: var(--muted);
-      padding: 16px;
+    /* Bottom Nav */
+    .footer-nav { 
+      position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
+      display: flex; justify-content: space-around; padding: 15px 0; 
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.05); z-index: 2000; 
     }
+    .footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; }
+    .footer-nav a i { font-size: 1.3rem; margin-bottom: 5px; }
+    .footer-nav a.active { color: var(--primary); }
 
-    /* Page spacing at bottom so footer isn’t cramped */
-    .bottom-space { height: 12px; }
+    .empty-state { text-align: center; padding: 50px; color: #ccc; font-style: italic; grid-column: 1/-1; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <!-- App bar -->
-    <div class="appbar">
-      <img class="logo" src="images/tent.jpeg" alt="Campus Bite logo" />
-      <div class="title">Campus Bite</div>
-      <div class="spacer"></div>
-      <a class="back-btn" href="/home.html" aria-label="Back to menu">
-        <i class="fa fa-arrow-left"></i> Back
-      </a>
-    </div>
 
+  <header>
+    <img src="images/tent.jpeg" class="header-logo" alt="Logo">
     <h1>Confirm Your Order</h1>
-    <p class="subtitle">Review your items, choose delivery and payment, then place your order.</p>
+    <a href="home.html" class="back-link">Menu</a>
+  </header>
 
-    <div id="orderList" class="card"></div>
-
-    <div class="summary card" aria-live="polite">
-      <div class="summary-row">
-        <span>Subtotal</span>
-        <span id="subTotal">UGX 0</span>
-      </div>
-      <div class="summary-row">
-        <span>Delivery</span>
-        <span id="deliveryFee">UGX 0</span>
-      </div>
-      <div class="summary-row total">
-        <span>Total</span>
-        <span id="finalTotal">UGX 0</span>
-      </div>
+  <div class="main-content">
+    <div class="page-title">
+      <h2>Order Review</h2>
+      <p>Please double-check your items and delivery address.</p>
     </div>
 
-    <div class="form-group">
-      <label for="paymentMode">Mode of Payment</label>
-      <select id="paymentMode" aria-label="Payment mode">
-        <option value="Cash">Cash</option>
-        <option value="Mobile Money">Mobile Money</option>
-        <option value="Card">Card</option>
-      </select>
-    </div>
+    <div id="orderList"></div>
 
-    <div class="form-group">
-      <label for="deliveryOption">Delivery Option</label>
-      <select id="deliveryOption" aria-label="Delivery option">
-        <option value="pickup">Pickup (No charge)</option>
-        <option value="delivery">Delivery (+UGX 2,000)</option>
-      </select>
-    </div>
-
-    <!-- ✅ Delivery location input added -->
-    <div class="form-group" id="deliveryLocationGroup" style="display:none;">
-      <label for="deliveryLocation">Delivery Location</label>
-      <input type="text" id="deliveryLocation" class="input" placeholder="Enter hostel, Room Number, or landmark" />
-    </div>
-
-    <button id="confirmOrderBtn">Confirm & Place Order ✅</button>
-
-    <div class="bottom-space"></div>
-
-    <footer>
-      <nav class="footer-nav" aria-label="Bottom navigation">
-        <a href="/profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
-        <a href="/home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
-        <a href="/confirm-order.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
-        <a href="/order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
-        <a href="/comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
-      </nav>
-
-      <div class="contact-info" aria-label="Contact information">
-        <p>📞 <a href="tel:+256748372023">+256 748 372 023</a></p>
-        <p>✉️ <a href="mailto:campusbite@muni.ac.ug">campusbite@muni.ac.ug</a></p>
+    <div class="checkout-grid">
+      <div class="summary-card">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subTotal">UGX 0</span>
+        </div>
+        <div class="summary-row">
+          <span>Delivery Fee</span>
+          <span id="deliveryFee">UGX 0</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total Amount</span>
+          <span id="finalTotal">UGX 0</span>
+        </div>
       </div>
 
-      <p class="legal">© 2026 Campus Bite. All rights reserved.<br/>Muni University | Arua, Uganda</p>
-    </footer>
+      <div class="form-section">
+        <div class="form-group">
+          <label for="paymentMode">Payment Method</label>
+          <select id="paymentMode">
+            <option value="Cash">Cash on Delivery</option>
+            <option value="Mobile Money">Mobile Money</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="deliveryOption">How do you want your food?</label>
+          <select id="deliveryOption">
+            <option value="pickup">Pickup (Canteen)</option>
+            <option value="delivery">Delivery (+UGX 2,000)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="deliveryLocationGroup" style="display:none;">
+          <label for="deliveryLocation">Delivery Address / Hostel</label>
+          <input type="text" id="deliveryLocation" placeholder="Hostel name, Room or Landmark" />
+        </div>
+
+        <button id="confirmOrderBtn">Place Order Now ✅</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Firebase & App Logic -->
+  <nav class="footer-nav">
+    <a href="profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
+    <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
+    <a href="confirm-order.html" class="active"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+    <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
+    <a href="comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
+  </nav>
+
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
   <script>
-    // ---------- Firebase ----------
     const firebaseConfig = {
       apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
       authDomain: "campus-bite-9dbaa.firebaseapp.com",
@@ -298,127 +239,104 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // ---------- Cart ----------
     const STORAGE_KEY = "campusbite_budget_items_v1";
     const raw = localStorage.getItem(STORAGE_KEY);
     const items = raw ? JSON.parse(raw) : {};
-
-    const orderList = document.getElementById("orderList");
     let subtotal = 0;
     const DELIVERY_FEE = 2000;
 
-    const deliverySelect = document.getElementById("deliveryOption");
-    const deliveryLocationGroup = document.getElementById("deliveryLocationGroup");
-    const deliveryLocationInput = document.getElementById("deliveryLocation");
-
     function renderItems() {
+      const orderList = document.getElementById("orderList");
       orderList.innerHTML = "";
+      subtotal = 0;
+      
       const keys = Object.keys(items);
-
-      if(keys.length === 0){
-        orderList.innerHTML = '<div class="empty">No items found. Go back and add meals.</div>';
+      if(keys.length === 0) {
+        orderList.innerHTML = '<div class="empty-state">Your cart is empty.</div>';
         document.getElementById("confirmOrderBtn").disabled = true;
-        subtotal = 0;
-        updateTotals();
         return;
       }
 
-      document.getElementById("confirmOrderBtn").disabled = false;
-
-      subtotal = 0;
-      keys.forEach(name=>{
+      keys.forEach(name => {
         const item = items[name];
-        const sub = (Number(item.qty) || 0) * (Number(item.price) || 0);
+        const sub = (item.qty || 0) * (item.price || 0);
         subtotal += sub;
-
+        
         const div = document.createElement("div");
         div.className = "order-item";
         div.innerHTML = `
-          <img src="${item.img || 'images/placeholder.png'}" class="item-img" alt="${name}">
+          <img src="${item.img || 'images/placeholder.png'}" class="item-img" onerror="this.src='images/placeholder.png'">
           <div class="item-info">
             <div class="item-name">${name}</div>
-            <div class="item-meta">Qty: ${item.qty} × UGX ${Number(item.price).toLocaleString()}</div>
-            <div class="item-sub">Subtotal: UGX ${sub.toLocaleString()}</div>
-          </div>
-        `;
+            <div class="item-meta">Qty: ${item.qty} × UGX ${item.price.toLocaleString()}</div>
+            <div class="item-sub">UGX ${sub.toLocaleString()}</div>
+          </div>`;
         orderList.appendChild(div);
       });
     }
 
-    const subTotalEl = document.getElementById("subTotal");
-    const deliveryFeeEl = document.getElementById("deliveryFee");
-    const finalTotalEl = document.getElementById("finalTotal");
-
     function updateTotals(){
-      const delivery = deliverySelect.value === "delivery" ? DELIVERY_FEE : 0;
-      subTotalEl.textContent = "UGX " + subtotal.toLocaleString();
-      deliveryFeeEl.textContent = "UGX " + delivery.toLocaleString();
-      finalTotalEl.textContent = "UGX " + (subtotal + delivery).toLocaleString();
-
-      // ✅ Show/hide delivery location
-      deliveryLocationGroup.style.display = deliverySelect.value === "delivery" ? "block" : "none";
+      const isDel = document.getElementById("deliveryOption").value === "delivery";
+      const fee = isDel ? DELIVERY_FEE : 0;
+      document.getElementById("subTotal").textContent = "UGX " + subtotal.toLocaleString();
+      document.getElementById("deliveryFee").textContent = "UGX " + fee.toLocaleString();
+      document.getElementById("finalTotal").textContent = "UGX " + (subtotal + fee).toLocaleString();
+      document.getElementById("deliveryLocationGroup").style.display = isDel ? "block" : "none";
     }
 
-    deliverySelect.addEventListener("change", updateTotals);
+    document.getElementById("deliveryOption").addEventListener("change", updateTotals);
 
-    // ---------- Place Order ----------
-    document.getElementById("confirmOrderBtn").addEventListener("click", async (event)=>{
-      const user = auth.currentUser;
-      if(!user){
-        alert("Please log in to place an order.");
-        return;
-      }
+    document.getElementById("confirmOrderBtn").addEventListener("click", async (e) => {
+        const user = auth.currentUser;
+        if(!user) return alert("Please log in to place an order.");
+        
+        const deliveryOpt = document.getElementById("deliveryOption").value;
+        const loc = document.getElementById("deliveryLocation").value.trim();
+        
+        if(deliveryOpt === 'delivery' && !loc) {
+            alert("Please enter a delivery location.");
+            return;
+        }
 
-      // Validate delivery location
-      if(deliverySelect.value === "delivery" && !deliveryLocationInput.value.trim()){
-        alert("Please enter delivery location.");
-        return;
-      }
+        e.target.disabled = true;
+        e.target.textContent = "Placing Order...";
 
-      const btn = event.target;
-      btn.disabled = true;
-      btn.textContent = "Placing order...";
+        try {
+            // FIX: This ensures images are passed to the order document
+            const itemsArray = Object.keys(items).map(name => ({
+                name: name,
+                qty: items[name].qty,
+                price: items[name].price,
+                img: items[name].img || "" // Captured from LocalStorage
+            }));
 
-      try{
-        const itemsArray = Object.keys(items).map(name=>{
-          const item = items[name];
-          return {
-            name,
-            qty: Number(item.qty) || 0,
-            price: Number(item.price) || 0,
-            img: item.img || ""
-          };
-        });
+            const deliveryFee = deliveryOpt === "delivery" ? DELIVERY_FEE : 0;
 
-        const deliveryFee = deliverySelect.value === "delivery" ? DELIVERY_FEE : 0;
-        const totalAmount = subtotal + deliveryFee;
+            await db.collection("orders").doc(user.uid).collection("userOrders").add({
+                items: itemsArray,
+                subtotal: subtotal,
+                deliveryFee: deliveryFee,
+                totalAmount: subtotal + deliveryFee,
+                deliveryOption: deliveryOpt,
+                deliveryLocation: loc,
+                paymentMode: document.getElementById("paymentMode").value,
+                status: "pending",
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
 
-        await db.collection("orders").doc(user.uid).collection("userOrders").add({
-          items: itemsArray,
-          subtotal: subtotal,
-          deliveryOption: deliverySelect.value,
-          deliveryLocation: deliveryLocationInput.value.trim(),
-          deliveryFee: deliveryFee,
-          totalAmount: totalAmount,
-          paymentMode: document.getElementById("paymentMode").value,
-          status: "pending",
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        localStorage.removeItem(STORAGE_KEY);
-        alert("Order placed successfully 🎉");
-        window.location.href = "/order-history.html";
-      } catch(e){
-        console.error(e);
-        alert("Failed to place order. Try again.");
-        btn.disabled = false;
-        btn.textContent = "Confirm & Place Order ✅";
-      }
+            localStorage.removeItem(STORAGE_KEY);
+            alert("Order successful! Check 'My Orders' for updates.");
+            window.location.href = "order-history.html";
+        } catch(error) {
+            console.error(error);
+            alert("Order failed. Please check your connection.");
+            e.target.disabled = false;
+            e.target.textContent = "Place Order Now ✅";
+        }
     });
 
     renderItems();
     updateTotals();
-
   </script>
 </body>
 </html>

@@ -2,116 +2,180 @@
 <html lang="en">
 <head>
   <link rel="canonical" href="https://campusbite.xyz/">
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Campus Bite Comments</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Chat | Campus Bite</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="icon" href="images/tent.jpeg" type="image/jpeg" />
+
+  <style>
+    :root {
+      --primary: #ff914d;
+      --bg: #f5f7fb;
+      --text: #333;
+      --muted: #888;
+      --white: #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: "Poppins", sans-serif;
+      background: var(--bg);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      overflow: hidden; /* Prevent body scroll, only wrapper scrolls */
+    }
+
+    /* Sticky Header */
+    header { 
+      background: var(--primary); 
+      color: #fff; 
+      padding: 15px 20px; 
+      display: flex; 
+      align-items: center; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
+    header h1 { font-size: 1.1rem; font-weight: 600; flex-grow: 1; }
+
+    /* Continuous Chat Wrapper */
+    .comments-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column; /* Normal flow: Top to Bottom */
+      width: 100%;
+      background: var(--bg);
+    }
+
+    /* Chat Message Style (Merged Look) */
+    .comment-bubble {
+      max-width: 85%;
+      margin-bottom: 8px;
+      padding: 10px 15px;
+      background: var(--white);
+      border-radius: 4px 18px 18px 18px; /* Chat bubble shape */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      position: relative;
+    }
+
+    /* Highlight current user's messages slightly differently if needed */
+    .my-message {
+      align-self: flex-end;
+      background: #fff0e6;
+      border-radius: 18px 4px 18px 18px;
+    }
+
+    .comment-user { 
+      font-weight: 600; 
+      color: var(--primary); 
+      font-size: 0.75rem; 
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .comment-body { 
+      font-size: 0.92rem; 
+      color: #444; 
+      word-wrap: break-word;
+    }
+
+    .comment-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+      font-size: 0.7rem;
+    }
+
+    .reaction-link {
+      color: var(--muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .reaction-link.active { color: var(--primary); font-weight: 600; }
+    .reaction-link:hover { color: var(--primary); }
+
+    /* Input Section - Anchored above bottom nav */
+    .comment-input-section {
+      padding: 12px 15px;
+      background: #fff;
+      display: flex;
+      gap: 10px;
+      border-top: 1px solid #eee;
+      margin-bottom: 60px; /* Space for footer-nav */
+    }
+
+    .comment-input-section input {
+      flex: 1;
+      padding: 12px 18px;
+      border-radius: 25px;
+      border: 1px solid #eee;
+      background: #f9f9f9;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .comment-input-section button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fixed Bottom Nav */
+    .footer-nav { 
+      position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
+      display: flex; justify-content: space-around; padding: 12px 0; 
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; 
+    }
+    .footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
+    .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
+    .footer-nav a.active { color: var(--primary); }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="images/tent.jpeg" class="header-logo" alt="Logo">
+  <h1>Community Chat</h1>
+</header>
+
+<div class="comments-wrapper" id="commentsContainer">
+  </div>
+
+<div class="comment-input-section">
+  <input type="text" id="commentInput" placeholder="Write a message..." autocomplete="off"/>
+  <button id="postCommentBtn"><i class="fa fa-paper-plane"></i></button>
+</div>
+
+<nav class="footer-nav">
+  <a href="profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
+  <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
+  <a href="confirm-order.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+  <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
+  <a href="comments.html" class="active"><i class="fa fa-comments"></i><span>Comments</span></a>
+</nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
-<style>
-  body {
-    font-family: "Poppins", sans-serif;
-    margin:0;
-    padding:0;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background: url('https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
-    background-size: cover;
-    color: #333;
-  }
-
-  .comments-wrapper {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column-reverse; /* newest at bottom */
-    gap: 12px;
-  }
-
-  .comment-card {
-    background: rgba(255, 255, 255, 0.85);
-    padding: 12px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-
-  .comment-text {
-    flex: 1;
-  }
-
-  .comment-text p {
-    margin: 0 0 4px 0;
-  }
-
-  .reaction-btn {
-    display: flex;
-    gap: 6px;
-  }
-
-  .reaction-btn button {
-    border: none;
-    border-radius: 6px;
-    padding: 4px 8px;
-    cursor: pointer;
-    background: #eee;
-  }
-
-  .reaction-btn button.liked {
-    background: #ffd6ba;
-  }
-
-  .reaction-btn button.disliked {
-    background: #ccc;
-  }
-
-  .comment-input-section {
-    padding: 10px;
-    background: rgba(255,255,255,0.9);
-    display: flex;
-    gap: 10px;
-    border-top: 2px solid #ff914d;
-  }
-
-  .comment-input-section input {
-    flex: 1;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-
-  .comment-input-section button {
-    background: #ff914d;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 14px;
-    cursor: pointer;
-  }
-
-  .comment-input-section button:hover {
-    background: #ff6a00;
-  }
-</style>
-</head>
-<body>
-
-<div class="comments-wrapper" id="commentsContainer"></div>
-
-<div class="comment-input-section">
-  <input type="text" id="commentInput" placeholder="Write a comment..." />
-  <button id="postCommentBtn">Post</button>
-</div>
-
 <script>
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
   authDomain: "campus-bite-9dbaa.firebaseapp.com",
@@ -120,25 +184,23 @@ const firebaseConfig = {
   messagingSenderId: "294389261625",
   appId: "1:294389261625:web:095d6e5f85f4e8"
 };
-
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-const commentsContainer = document.getElementById("commentsContainer");
-const commentInput = document.getElementById("commentInput");
-const postBtn = document.getElementById("postCommentBtn");
+const container = document.getElementById("commentsContainer");
+const input = document.getElementById("commentInput");
+const btn = document.getElementById("postCommentBtn");
 
-// Post comment
-postBtn.addEventListener("click", async () => {
-  const text = commentInput.value.trim();
+// Post message
+btn.onclick = async () => {
+  const text = input.value.trim();
   if(!text) return;
-
   const user = auth.currentUser;
-  if(!user) return alert("You must be logged in to comment");
+  if(!user) return alert("Log in to chat");
 
-  const docUser = await db.collection("students").doc(user.uid).get();
-  const name = docUser.exists ? docUser.data().name || user.email : user.email;
+  const doc = await db.collection("students").doc(user.uid).get();
+  const name = doc.exists ? doc.data().name : user.email;
 
   await db.collection("comments").add({
     userId: user.uid,
@@ -148,73 +210,55 @@ postBtn.addEventListener("click", async () => {
     dislikes: [],
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
+  input.value = "";
+};
 
-  commentInput.value = "";
+// Real-time Chat Feed
+db.collection("comments").orderBy("createdAt", "asc").onSnapshot(snap => {
+  container.innerHTML = "";
+  const uid = auth.currentUser ? auth.currentUser.uid : null;
+
+  snap.forEach(doc => {
+    const data = doc.data();
+    const isMe = data.userId === uid;
+    const bubble = document.createElement("div");
+    bubble.className = `comment-bubble ${isMe ? 'my-message' : ''}`;
+
+    bubble.innerHTML = `
+      <span class="comment-user">${isMe ? 'Me' : data.userName}</span>
+      <div class="comment-body">${data.text}</div>
+      <div class="comment-footer">
+        <span class="reaction-link ${data.likes?.includes(uid) ? 'active' : ''}" onclick="react('${doc.id}','like')">
+          <i class="fa fa-thumbs-up"></i> ${data.likes?.length || 0}
+        </span>
+        <span class="reaction-link ${data.dislikes?.includes(uid) ? 'active' : ''}" onclick="react('${doc.id}','dislike')">
+          <i class="fa fa-thumbs-down"></i> ${data.dislikes?.length || 0}
+        </span>
+      </div>
+    `;
+    container.appendChild(bubble);
+  });
+  // Auto-scroll to bottom
+  container.scrollTop = container.scrollHeight;
 });
 
-// Load comments
-db.collection("comments")
-  .orderBy("createdAt")
-  .onSnapshot(snapshot => {
-    commentsContainer.innerHTML = "";
-    const uid = auth.currentUser ? auth.currentUser.uid : null;
-
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const card = document.createElement("div");
-      card.className = "comment-card";
-
-      const liked = uid && data.likes?.includes(uid);
-      const disliked = uid && data.dislikes?.includes(uid);
-
-      card.innerHTML = `
-        <div class="comment-text">
-          <p><strong>${data.userName}</strong></p>
-          <p>${data.text}</p>
-        </div>
-        <div class="reaction-btn">
-          <button class="${liked ? "liked" : ""}" onclick="toggleReaction('${doc.id}','like')">👍 ${data.likes?.length || 0}</button>
-          <button class="${disliked ? "disliked" : ""}" onclick="toggleReaction('${doc.id}','dislike')">👎 ${data.dislikes?.length || 0}</button>
-        </div>
-      `;
-
-      commentsContainer.appendChild(card);
-    });
-  });
-
-// Toggle like/dislike
-async function toggleReaction(commentId, type){
+async function react(id, type) {
   const user = auth.currentUser;
   if(!user) return alert("Login required");
-
-  const docRef = db.collection("comments").doc(commentId);
-  const snap = await docRef.get();
-  if(!snap.exists) return;
-
-  let { likes = [], dislikes = [] } = snap.data();
+  const ref = db.collection("comments").doc(id);
+  const doc = await ref.get();
+  let { likes = [], dislikes = [] } = doc.data();
   const uid = user.uid;
 
-  if(type === "like"){
-    if(likes.includes(uid)){
-      likes = likes.filter(id => id !== uid);
-    } else {
-      likes.push(uid);
-      dislikes = dislikes.filter(id => id !== uid);
-    }
+  if(type === 'like'){
+    if(likes.includes(uid)) likes = likes.filter(i => i !== uid);
+    else { likes.push(uid); dislikes = dislikes.filter(i => i !== uid); }
+  } else {
+    if(dislikes.includes(uid)) dislikes = dislikes.filter(i => i !== uid);
+    else { dislikes.push(uid); likes = likes.filter(i => i !== uid); }
   }
-
-  if(type === "dislike"){
-    if(dislikes.includes(uid)){
-      dislikes = dislikes.filter(id => id !== uid);
-    } else {
-      dislikes.push(uid);
-      likes = likes.filter(id => id !== uid);
-    }
-  }
-
-  await docRef.update({ likes, dislikes });
+  await ref.update({ likes, dislikes });
 }
 </script>
-
 </body>
 </html>

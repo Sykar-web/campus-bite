@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Your Budget</title>
+  <title>Your Budget – Campus Bite</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Icons & Fonts -->
   <link rel="icon" href="images/tent.jpeg">
   <link rel="apple-touch-icon" href="images/tent.jpeg">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -14,261 +13,183 @@
 <style>
 /* ===================== VARIABLES ===================== */
 :root{
-  --bg:#fff8f1;
-  --primary:#ff6a00;
-  --primary-2:#ff914d;
+  --primary:#ff914d;
+  --primary-dark:#ff6a00;
+  --bg:#fff;
   --text:#333;
-  --muted:#666;
-  --card:#fff;
+  --muted:#888;
+  --card-bg:#fff;
   --success:#4CAF50;
-  --danger:#E53935;
-  --radius:12px;
-  --shadow:0 4px 12px rgba(0,0,0,.08);
-  --shadow-hover:0 6px 16px rgba(0,0,0,.12);
+  --danger:#ff4d4d;
 }
 
-/* ===================== RESET ===================== */
+/* ===================== RESET & BASE ===================== */
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
 body{
-  font-family:Poppins,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  display:flex;
-  justify-content:center;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ===================== LAYOUT ===================== */
-.container{
-  max-width:640px;
-  width:100%;
-  min-height:100dvh;
-  display:flex;
-  flex-direction:column;
-  padding:0 20px 20px;
+/* ===================== APP BAR (Sticky) ===================== */
+header { 
+    background: var(--primary); 
+    color: #fff; 
+    padding: 15px 20px; 
+    display: flex; 
+    align-items: center; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
-.card{
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
+.header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
+header h1 { font-size: 1.1rem; font-weight: 600; flex-grow: 1; }
+
+/* ===================== CONTENT ===================== */
+.main-content {
+  padding: 20px 15px 120px; /* Extra bottom padding for fixed nav */
 }
 
-/* ===================== APP BAR ===================== */
-.appbar{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:var(--card);
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px 16px;
-  border-bottom:1px solid #eee;
+.page-title {
+  text-align: center;
+  margin-bottom: 20px;
 }
-.logo{
-  width:32px;height:32px;border-radius:6px;object-fit:cover
-}
-.title{font-weight:600;color:var(--primary)}
-.spacer{flex:1}
-.back-btn{
-  text-decoration:none;
-  color:var(--muted);
-  font-weight:500;
-}
-.back-btn:hover{color:var(--primary)}
+.page-title h2 { color: var(--primary-dark); font-size: 1.4rem; }
+.page-title p { color: var(--muted); font-size: 0.85rem; }
 
-/* ===================== HEADERS ===================== */
-h1{
-  margin:16px 0 6px;
-  text-align:center;
-  color:var(--primary);
-  font-size:1.5rem;
-}
-.subtitle{
-  text-align:center;
-  color:var(--muted);
-  font-size:.95rem;
-  margin-bottom:12px;
-}
+/* ===================== BUDGET ITEMS (No Borders) ===================== */
+#budgetList { margin-bottom: 20px; }
 
-/* ===================== ITEMS ===================== */
-.budget-item{
-  display:flex;
-  gap:12px;
-  padding:12px;
-  margin:12px 0;
-  background:var(--card);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  transition:.2s;
+.budget-item {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Soft shadow instead of border */
+  margin-bottom: 12px;
 }
-.budget-item:hover{
-  transform:translateY(-2px);
-  box-shadow:var(--shadow-hover);
+.item-img {
+  width: 70px; height: 70px; border-radius: 12px;
+  object-fit: cover; background: #f9f9f9; flex-shrink: 0;
 }
-.item-img{
-  width:80px;height:80px;border-radius:12px;
-  object-fit:cover;background:#eee;flex-shrink:0;
-}
-.item-info{flex:1}
-.item-name{font-weight:600}
-.item-price{font-size:.85rem;color:var(--muted)}
+.item-info { flex: 1; }
+.item-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 2px; }
+.item-price { font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; }
 
-.qty-control{
-  display:flex;align-items:center;gap:10px;margin-top:8px;
+.qty-control {
+  display: flex; align-items: center; gap: 12px;
 }
-.qty-control button{
-  width:32px;height:32px;border:none;border-radius:8px;
-  font-size:18px;font-weight:700;
-  cursor:pointer;background:var(--primary-2);color:#fff;
+.qty-control button {
+  width: 28px; height: 28px; border: none; border-radius: 6px;
+  font-size: 16px; font-weight: 700;
+  cursor: pointer; background: #fff3ea; color: var(--primary-dark);
 }
-.qty-control button:hover{background:var(--primary)}
-.qty-control span{min-width:24px;text-align:center;font-weight:600}
+.qty-control span { font-weight: 600; font-size: 0.9rem; min-width: 20px; text-align: center; }
 
-.subtotal{margin-top:6px;font-weight:600;font-size:.9rem}
+.subtotal { margin-top: 8px; font-weight: 700; font-size: 0.85rem; color: var(--primary-dark); }
 
-/* ===================== SUMMARY ===================== */
-.summary{padding:15px;margin-top:10px}
-.summary-row{
-  display:flex;justify-content:space-between;
-  font-size:1.05rem;font-weight:600;color:var(--primary);
+/* ===================== SUMMARY SECTION ===================== */
+.summary-card {
+  background: #fdf2e9;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  margin-bottom: 20px;
 }
+.total-text { font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); }
 
-/* ===================== BUTTONS ===================== */
-.button-row{
-  display:flex;gap:12px;margin-top:20px;
+/* ===================== ACTION BUTTONS ===================== */
+.action-buttons { display: flex; flex-direction: column; gap: 10px; }
+.btn {
+  padding: 14px; border: none; border-radius: 12px;
+  font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s;
 }
-.button-row button{
-  flex:1;padding:14px;border:none;border-radius:10px;
-  font-weight:600;font-size:1rem;cursor:pointer;
-  transition:.25s;
-}
-.btn-back{
-  background:linear-gradient(135deg,var(--primary-2),var(--primary));
-  color:#fff;
-}
-.btn-order{
-  background:linear-gradient(135deg,#66bb6a,var(--success));
-  color:#fff;
-}
-.button-row button:hover{
-  transform:translateY(-1px);
-  box-shadow:0 6px 16px rgba(0,0,0,.15);
-}
-button:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-checkout { background: var(--primary); color: #fff; }
+.btn-add-more { background: #f2f2f2; color: #666; }
+.btn:disabled { opacity: 0.5; }
 
-/* ===================== EMPTY ===================== */
-.empty{text-align:center;color:var(--muted);padding:20px}
+/* ===================== FIXED FOOTER NAV ===================== */
+.footer-nav { 
+    position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
+    display: flex; justify-content: space-around; padding: 12px 0; 
+    box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; 
+}
+.footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
+.footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
+.footer-nav a.active { color: var(--primary); }
 
-/* ===================== MODAL ===================== */
-.modal{
-  position:fixed;inset:0;display:flex;
-  justify-content:center;align-items:center;
-  background:rgba(0,0,0,.5);z-index:999;
+.contact-legal {
+  text-align: center;
+  margin-top: 30px;
+  padding-bottom: 20px;
 }
-.modal.hidden{display:none}
-.modal-content{
-  background:#fff;padding:20px;border-radius:14px;
-  width:85%;max-width:400px;text-align:center;
-  box-shadow:var(--shadow);animation:pop .25s ease;
-}
-.modal-actions{display:flex;gap:12px;margin-top:16px}
-.modal-actions button{
-  flex:1;padding:10px;border:none;border-radius:8px;
-  font-weight:600;color:#fff;cursor:pointer;
-}
-.yes{background:var(--success)}
-.no{background:var(--danger)}
-@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+.contact-legal p { font-size: 0.8rem; color: #bbb; line-height: 1.6; }
+.contact-legal a { color: var(--primary); text-decoration: none; }
 
-/* ===================== FOOTER ===================== */
-footer{
-  margin-top:24px;padding:20px;background:var(--card);
-  border-top:1px solid #eee;text-align:center;
-  font-size:.92rem;color:var(--muted);
-  border-radius:var(--radius);box-shadow:var(--shadow);
-}
-.footer-nav{
-  display:flex;justify-content:space-around;
-  flex-wrap:wrap;gap:8px 14px;margin-bottom:14px;
-}
-.footer-nav a{
-  text-decoration:none;color:#444;font-weight:500;
-  display:inline-flex;align-items:center;gap:6px;
-  padding:8px 10px;border-radius:8px;transition:.2s;
-}
-.footer-nav a:hover{background:#f8f8f8;color:var(--primary)}
-.contact-info{margin-top:8px}
-.contact-info a{color:var(--success);font-weight:600;text-decoration:none}
-.contact-info a:hover{text-decoration:underline}
-.legal{margin-top:10px}
+/* ===================== MODAL (Preserved) ===================== */
+.modal{ position:fixed; inset:0; display:flex; justify:center; align-items:center; background:rgba(0,0,0,.5); z-index:3000; }
+.modal.hidden{ display:none; }
+.modal-content{ background:#fff; padding:25px; border-radius:20px; width:85%; max-width:350px; text-align:center; }
+.modal-actions{ display:flex; gap:10px; margin-top:20px; }
+.modal-actions button{ flex:1; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; color:#fff; }
+.yes{ background: var(--success); }
+.no{ background: var(--danger); }
 
-.bottom-space{height:12px}
+.empty-state { text-align: center; padding: 40px 20px; color: #aaa; }
 </style>
 </head>
 
 <body>
-<div class="container">
 
-  <!-- App Bar -->
-  <div class="appbar">
-    <img src="images/tent.jpeg" class="logo">
-    <div class="title">Campus Bite</div>
-    <div class="spacer"></div>
-    <a href="home.html" class="back-btn">
-      <i class="fa fa-arrow-left"></i> Back
-    </a>
-  </div>
+  <header>
+    <img src="images/tent.jpeg" class="header-logo" alt="Logo">
+    <h1 id="welcomeUser">Campus Bite</h1>
+  </header>
 
-  <h1>Your Budget</h1>
-  <p class="subtitle">Adjust quantities before proceeding to checkout</p>
+  <div class="main-content">
+    <div class="page-title">
+      <h2>Your Budget</h2>
+      <p>Adjust quantities or proceed to order</p>
+    </div>
 
-  <div id="budgetList"></div>
+    <div id="budgetList"></div>
 
-  <div class="summary card">
-    <div class="summary-row" id="grandTotal"></div>
-  </div>
+    <div class="summary-card" id="summaryArea">
+      <div class="total-text" id="grandTotal">Total: UGX 0</div>
+    </div>
 
-  <div class="button-row">
-    <button id="backBtn" class="btn-back">Add More Items</button>
-    <button id="orderBtn" class="btn-order">Proceed to Checkout ✅</button>
-  </div>
+    <div class="action-buttons">
+      <button id="orderBtn" class="btn btn-checkout">Proceed to Checkout ✅</button>
+      <button id="backBtn" class="btn btn-add-more">Add More Items</button>
+    </div>
 
-  <div class="bottom-space"></div>
-
-  <!-- Footer -->
-  <footer>
-    <nav class="footer-nav">
-      <a href="profile.html"><i class="fa fa-user"></i>Profile</a>
-      <a href="home.html"><i class="fa fa-utensils"></i>Menu</a>
-      <a href="confirm-order.html"><i class="fa fa-shopping-cart"></i>Cart</a>
-      <a href="order-history.html"><i class="fa fa-list"></i>Orders</a>
-      <a href="comments.html"><i class="fa fa-comments"></i>Comments</a>
-    </nav>
-
-    <div class="contact-info">
+    <div class="contact-legal">
       <p>📞 <a href="tel:+256748372023">+256 748 372 023</a></p>
       <p>✉️ <a href="mailto:campusbite@muni.ac.ug">campusbite@muni.ac.ug</a></p>
-    </div>
-
-    <p class="legal">
-      © 2026 Campus Bite. All rights reserved.<br>
-      Muni University | Arua, Uganda
-    </p>
-  </footer>
-
-</div>
-
-<!-- Modal -->
-<div id="confirmModal" class="modal hidden">
-  <div class="modal-content">
-    <p id="confirmMessage"></p>
-    <div class="modal-actions">
-      <button id="confirmYes" class="yes">Yes</button>
-      <button id="confirmNo" class="no">No</button>
+      <p>© 2026 Campus Bite. All rights reserved.<br>Muni University | Arua, Uganda</p>
     </div>
   </div>
-</div>
+
+  <nav class="footer-nav">
+    <a href="profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
+    <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
+    <a href="budget.html" class="active"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+    <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
+    <a href="comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
+  </nav>
+
+  <div id="confirmModal" class="modal hidden">
+    <div class="modal-content">
+      <p id="confirmMessage" style="font-weight: 600;"></p>
+      <div class="modal-actions">
+        <button id="confirmYes" class="yes">Confirm</button>
+        <button id="confirmNo" class="no">Cancel</button>
+      </div>
+    </div>
+  </div>
 
 <script>
 const STORAGE_KEY="campusbite_budget_items_v1";
@@ -282,12 +203,13 @@ function loadBudget(){
   list.innerHTML="";
 
   if(Object.keys(items).length===0){
-    list.innerHTML='<div class="empty">Your budget is empty. Add meals from the menu.</div>';
-    document.getElementById("grandTotal").textContent="";
+    list.innerHTML='<div class="empty-state"><i class="fa fa-shopping-basket" style="font-size: 3rem; margin-bottom: 15px; display: block;"></i>Your cart is empty.</div>';
+    document.getElementById("summaryArea").style.display="none";
     document.getElementById("orderBtn").disabled=true;
     return;
   }
 
+  document.getElementById("summaryArea").style.display="block";
   document.getElementById("orderBtn").disabled=false;
 
   Object.keys(items).forEach(name=>{
@@ -334,20 +256,21 @@ function save(items){
 
 function showConfirmation(msg){
   return new Promise(res=>{
-    confirmMessage.textContent=msg;
-    confirmModal.classList.remove("hidden");
-    confirmYes.onclick=()=>{confirmModal.classList.add("hidden");res(true);}
-    confirmNo.onclick=()=>{confirmModal.classList.add("hidden");res(false);}
+    const modal = document.getElementById("confirmModal");
+    const msgEl = document.getElementById("confirmMessage");
+    msgEl.textContent=msg;
+    modal.classList.remove("hidden");
+    document.getElementById("confirmYes").onclick=()=>{modal.classList.add("hidden");res(true);}
+    document.getElementById("confirmNo").onclick=()=>{modal.classList.add("hidden");res(false);}
   });
 }
 
-backBtn.onclick=async()=>{
-  if(await showConfirmation("Go back to add more items?")){
+document.getElementById("backBtn").onclick=async()=>{
     location.href="home.html";
-  }
 };
-orderBtn.onclick=async()=>{
-  if(await showConfirmation("Proceed to checkout?")){
+
+document.getElementById("orderBtn").onclick=async()=>{
+  if(await showConfirmation("Ready to proceed to checkout?")){
     location.href="confirm-order.html";
   }
 };
@@ -355,6 +278,10 @@ orderBtn.onclick=async()=>{
 loadBudget();
 </script>
 </body>
+<<<<<<< HEAD
 </html>
 
 
+=======
+</html>
+>>>>>>> cd6448a (m)
