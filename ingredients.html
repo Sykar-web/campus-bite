@@ -1,52 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="canonical" href="https://campusbite.xyz/">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Campus Bite – Meal Details</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<meta name="theme-color" content="#ff914d">
-<link rel="icon" href="images/tent.jpeg" type="image/jpeg">
-  <link rel="shortcut icon" href="images/tent.jpeg" type="image/jpeg">
-  <!-- Apple / iOS icon (optional but good) -->
-  <link rel="apple-touch-icon" href="images/tent.jpeg">
-<style>
-body{font-family:"Poppins",sans-serif;margin:0;padding:0;background-size:cover;background-position:center;background-repeat:no-repeat;color:#fff;min-height:100vh;display:flex;flex-direction:column;position:relative;}
-#overlay{background:rgba(0,0,0,0.5);flex:1;padding:20px;overflow-y:auto;}
-header{text-align:center;padding:20px;}
-header h1{font-size:1.3rem;font-weight:600;margin:0;color:#ff914d;}
-main{max-width:700px;margin:0 auto;}
-.meal-details{background:rgba(255,255,255,0.95);color:#333;border-radius:12px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.3);margin-bottom:20px;}
-.meal-details h2{color:#ff6a00;margin-bottom:10px;}
-.meal-details h3{margin-top:15px;margin-bottom:5px;}
-ul, ol{margin-left:20px;}
-button{padding:8px 12px;margin:5px;border:none;border-radius:8px;cursor:pointer;transition:0.25s;}
-button.favorite{background:#ff7a30;color:#fff;}
-button.favorite:hover{background:#ff5400;}
-button.share{background:#ffa94d;color:#fff;}
-button.share:hover{background:#ff8a00;}
-.comments-section{margin-top:25px;}
-.comment{background:#f5f5f5;padding:10px;border-radius:8px;margin-bottom:10px;}
-.comment strong{color:#ff6a00;}
-.comment-form textarea{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #ddd;resize:none;}
-.comment-form button{margin-top:8px;background:#ff7a30;color:white;border:none;padding:10px 14px;border-radius:8px;cursor:pointer;transition:0.25s;}
-.comment-form button:hover{background:#ff5400;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meal Details | Campus Bite</title>
+  
+  <link rel="icon" href="images/tent.jpeg" type="image/jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    :root {
+      --brand: #ff914d;
+      --brand-dark: #e67e39;
+      --glass: rgba(255, 255, 255, 0.96);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+    body {
+      min-height: 100vh;
+      background-color: #000;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* --- KEN BURNS MOTION BACKGROUND --- */
+    .bg-wrapper {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
+    }
+
+    #mealBg {
+      width: 110%;
+      height: 110%;
+      position: absolute;
+      top: -5%;
+      left: -5%;
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.5);
+      animation: kenBurns 20s infinite alternate ease-in-out;
+    }
+
+    @keyframes kenBurns {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.15) translate(-2%, -2%); }
+    }
+
+    #overlay {
+      position: relative;
+      z-index: 1;
+      padding: 40px 20px;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    header { text-align: center; margin-bottom: 30px; }
+    header h1 { font-family: 'Poppins', sans-serif; color: var(--brand); font-size: 1.8rem; }
+    .subtitle { font-size: 0.9rem; opacity: 0.8; }
+
+    /* --- GLASS CARD --- */
+    .meal-details {
+      background: var(--glass);
+      color: #1a1a1a;
+      border-radius: 28px;
+      padding: 30px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+    }
+
+    .action-bar { display: flex; gap: 12px; margin-bottom: 30px; }
+    
+    button {
+      flex: 1; padding: 14px; border: none; border-radius: 12px;
+      font-weight: 600; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+    }
+
+    button.favorite { background: var(--brand); color: white; }
+    button.share { background: #f0f0f0; color: #444; }
+
+    h3 { font-family: 'Poppins', sans-serif; margin: 25px 0 15px; color: #333; font-size: 1.1rem; }
+    h3 i { color: var(--brand); margin-right: 8px; }
+
+    ul, ol { list-style: none; margin-bottom: 20px; }
+    li { margin-bottom: 12px; line-height: 1.5; font-size: 0.95rem; display: flex; align-items: flex-start; gap: 10px; }
+
+    .ingredient-check { accent-color: var(--brand); width: 18px; height: 18px; margin-top: 2px; }
+    .step-num { background: var(--brand); color: white; min-width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; }
+
+    /* Comments Section */
+    .comments-section { margin-top: 40px; border-top: 1px solid #eee; padding-top: 25px; }
+    .comment { background: #f8f9fa; padding: 15px; border-radius: 14px; margin-bottom: 12px; border: 1px solid #efefef; }
+    .comment strong { color: var(--brand); font-size: 0.85rem; }
+    
+    textarea { width: 100%; padding: 15px; border-radius: 14px; border: 1.5px solid #eee; background: #fafafa; outline: none; transition: 0.3s; resize: none; }
+    textarea:focus { border-color: var(--brand); background: #fff; }
+
+    footer { text-align: center; margin-top: 50px; font-size: 0.8rem; opacity: 0.6; padding-bottom: 20px; }
+  </style>
 </head>
-<body id="body">
+<body>
+
+<div class="bg-wrapper"><div id="mealBg"></div></div>
 
 <div id="overlay">
-<header>
-  <h1 id="mealTitle">Meal Details 🍴</h1>
-  <p class="subtitle">Ingredients and Preparation Steps</p>
-</header>
+  <header>
+    <h1 id="mealTitleDisplay">Meal Details</h1>
+    <p class="subtitle">Campus Bite Kitchen • Muni University</p>
+  </header>
 
-<main id="mealContainer">
-  <!-- Selected meal will appear here -->
-</main>
+  <main id="mealContainer"></main>
 
-<footer>© 2025 Campus Bite. Muni University | Arua Uganda</footer>
+  <footer>© 2026 Campus Bite | Arua, Uganda</footer>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
@@ -54,271 +123,123 @@ button.share:hover{background:#ff8a00;}
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <script>
-// ---------- Firebase ----------
-const firebaseConfig={apiKey:"AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",authDomain:"campus-bite-9dbaa.firebaseapp.com",projectId:"campus-bite-9dbaa",storageBucket:"campus-bite-9dbaa.appspot.com",messagingSenderId:"294389261625",appId:"1:294389261625:web:095d6e5f85f4e8"};
-firebase.initializeApp(firebaseConfig);
-const auth=firebase.auth();
-const db=firebase.firestore();
+  const firebaseConfig={apiKey:"AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
+  authDomain:"campus-bite-9dbaa.firebaseapp.com",
+  projectId:"campus-bite-9dbaa",
+  storageBucket:"campus-bite-9dbaa.appspot.com",
+  messagingSenderId:"294389261625",
+  appId:"1:294389261625:web:095d6e5f85f4e8"};
+  firebase.initializeApp(firebaseConfig);
+  const auth=firebase.auth();
+  const db=firebase.firestore();
 
-const container=document.getElementById("mealContainer");
-const body=document.getElementById("body");
-const mealTitle=document.getElementById("mealTitle");
-
-// ---------- Meals Data ----------
-const meals = [
-    {name:"Mandazi", img:"images/mandazi.png", ingredients:["2 cups all-purpose flour","1/2 cup sugar","1 tsp baking powder","1/4 tsp salt","1/2 cup coconut milk or water","Oil for deep frying"], steps:[
-      "Combine flour, sugar, baking powder, and salt in a bowl.",
-      "Gradually add coconut milk or water and knead to a smooth dough.",
-      "Cover and let rest 30 minutes.",
-      "Divide into balls, flatten, and heat oil.",
-      "Fry until golden brown and serve warm."
-    ]},
-    {name:"Chapati", img:"images/chapati.jpg", ingredients:["2 cups all-purpose flour","1/2 tsp salt","1/2 cup water","2 tbsp oil"], steps:[
-      "Mix flour and salt.",
-      "Add water and knead into smooth dough.",
-      "Rest for 30 minutes, then divide into balls.",
-      "Roll thin circles, cook on hot skillet until golden.",
-      "Brush with oil if desired and serve."
-    ]},
-    {name:"Fried Cassava", img:"images/fried cassava.jpg", ingredients:["500g cassava, peeled","Salt to taste","Oil for frying"], steps:[
-      "Peel and cut cassava into sticks or cubes.",
-      "Boil until soft, drain and pat dry.",
-      "Heat oil and fry until golden.",
-      "Drain excess oil and season with salt."
-    ]},
-    {name:"Pan Cakes", img:"images/pancakes.png", ingredients:["1 cup flour","2 tbsp sugar","1 tsp baking powder","1 cup milk","1 egg","1 tsp vanilla extract","Butter for cooking"], steps:[
-      "Mix flour, sugar, and baking powder.",
-      "Whisk milk, egg, and vanilla.",
-      "Combine wet and dry ingredients.",
-      "Cook on greased skillet until golden on both sides.",
-      "Serve with syrup or fruits."
-    ]},
-    {name:"Samosas", img:"images/samosa.jpg", ingredients:["2 cups flour","1/2 tsp salt","Water for dough","Vegetable or meat filling","Oil for frying"], steps:[
-      "Make dough from flour, salt, and water.",
-      "Prepare filling and cook until done.",
-      "Roll dough, cut into halves, fold cones, fill, and seal.",
-      "Fry until golden brown and serve."
-    ]},
-    {name:"Boiled Eggs", img:"images/eggs.jpg", ingredients:["Eggs","Water","Salt (optional)"], steps:[
-      "Place eggs in water, bring to boil.",
-      "Boil 8-10 mins depending on firmness.",
-      "Cool in cold water, peel, and serve."
-    ]},
-    {name:"Black Tea", img:"images/tea.webp", ingredients:["2 cups water","1 tsp black tea leaves","Sugar or milk optional"], steps:[
-      "Boil water, add tea leaves.",
-      "Simmer for 2-3 mins, strain into cups.",
-      "Add sugar or milk as desired."
-    ]},
-    {name:"Toasted Bread", img:"images/Bread.jpg", ingredients:["Bread slices","Butter or margarine"], steps:[
-      "Heat toaster or pan.",
-      "Toast bread slices until golden.",
-      "Spread butter and serve."
-    ]},
-    {name:"Vegetable Samosa (A pair)", img:"images/vegetable.jpg", ingredients:["Samosa pastry","Vegetable filling","Oil for frying"], steps:[
-      "Fill pastry with cooked vegetable mix.",
-      "Fold into triangles and seal.",
-      "Fry until golden brown and crisp."
-    ]},
-    {name:"Beef Samosa(A pair)", img:"images/beef.png", ingredients:["Samosa pastry","Minced beef filling","Oil for frying"], steps:[
-      "Prepare beef filling and cook thoroughly.",
-      "Fill pastry, fold into triangles, seal edges.",
-      "Fry until golden and serve hot."
-    ]},
-    {name:"Mandazi (A pair)", img:"images/mandazi.jpg", ingredients:["Dough from Mandazi recipe"], steps:[
-      "Take dough, shape into small discs.",
-      "Fry in hot oil until golden brown.",
-      "Drain and serve warm."
-    ]},
-    {name:"Beef Pie", img:"images/beef pie.jpg", ingredients:["Pie crust","Minced beef filling","Oil for frying or baking"], steps:[
-      "Prepare beef filling with onions and spices.",
-      "Fill pie crust, seal edges.",
-      "Bake or fry until golden brown."
-    ]},
-    {name:"Cookies", img:"images/cookies.webp", ingredients:["2 cups flour","1 cup sugar","1/2 cup butter","1 tsp vanilla","1 egg"], steps:[
-      "Mix butter and sugar until smooth.",
-      "Add egg and vanilla, then flour gradually.",
-      "Shape into cookies, bake at 180°C for 10-12 mins."
-    ]},
-    {name:"Home fries", img:"images/fries.jpg", ingredients:["Potatoes","Oil","Salt and spices"], steps:[
-      "Peel and cube potatoes.",
-      "Parboil until slightly soft.",
-      "Fry until golden, season, and serve."
-    ]},
-    {name:"Baked Beans", img:"images/beans.jpg", ingredients:["Canned beans","Onions","Tomato paste","Spices"], steps:[
-      "Sauté onions, add tomato paste and spices.",
-      "Add beans and simmer 10 mins.",
-      "Serve hot."
-    ]},
-    {name:"Egg Rolls (A pair)", img:"images/egg rolls.jpg", ingredients:["Egg roll pastry","Filling of choice","Oil for frying"], steps:[
-      "Prepare filling (vegetables or meat).",
-      "Roll filling in pastry, seal edges.",
-      "Deep fry until golden and crispy."
-    ]},
-    {name:"American Pancake", img:"images/american.jpg", ingredients:["1 cup flour","1 tbsp sugar","1 tsp baking powder","1 egg","3/4 cup milk","Butter"], steps:[
-      "Mix dry ingredients, then add wet ingredients to form batter.",
-      "Cook pancakes on greased skillet until bubbles form and flip.",
-      "Serve warm with syrup."
-    ]},
-    {name:"Kikomando", img:"images/kikomando.jpg", ingredients:["Chapati","Beans","Spices"], steps:[
-      "Heat chapati, prepare beans with spices.",
-      "Cut chapati into pieces and mix with beans.",
-      "Serve warm."
-    ]},
-    {name:"Fried Rice", img:"images/rice.webp", ingredients:["Rice","Vegetables","Oil","Soy sauce"], steps:[
-      "Cook rice and set aside.",
-      "Stir fry vegetables in oil, add rice and soy sauce.",
-      "Mix well and serve hot."
-    ]},
-    {name:"Matooke", img:"images/matooke.jpg", ingredients:["Matooke (green bananas)","Salt","Water"], steps:[
-      "Peel and mash matooke.",
-      "Steam or boil until soft.",
-      "Serve with sauce or stew."
-    ]},
-    {name:"White Rice & Beans", img:"images/white rice.jpg", ingredients:["Rice","Beans","Salt","Oil"], steps:[
-      "Cook rice separately.",
-      "Cook beans with seasoning.",
-      "Serve together hot."
-    ]},
-    {name:"Anyoya", img:"images/anyoya.jpeg", ingredients:["Maize flour","Water","Salt"], steps:[
-      "Mix maize flour with water to form dough.",
-      "Cook over medium heat, stirring constantly until firm.",
-      "Serve hot."  
-    ]},
-    {name:"Chicken/Liver/Goat/Beef Stew", img:"images/chicken stew.jpg", ingredients:["Meat of choice","Onions","Tomatoes","Spices","Oil"], steps:[
-      "Sauté onions in oil, add meat and brown.",
-      "Add tomatoes and spices, simmer until meat is tender.",
-      "Serve hot with rice or bread."
-    ]},
+  const meals = [
+    {name:"Mandazi", img:"images/mandazi.png", ingredients:["2 cups flour","1/2 cup sugar","1 tsp baking powder","1/4 tsp salt","1/2 cup coconut milk","Oil"], steps:["Combine dry ingredients.","Knead with coconut milk.","Rest for 30 mins.","Fry until golden brown."]},
+    {name:"Chapati", img:"images/chapati.jpg", ingredients:["2 cups flour","1/2 tsp salt","1/2 cup water","2 tbsp oil"], steps:["Mix flour/salt.","Knead with water.","Rest 30 mins.","Roll thin and cook on skillet."]},
+    {name:"Fried Cassava", img:"images/fried cassava.jpg", ingredients:["500g cassava","Salt","Oil"], steps:["Peel and cut cassava.","Boil until soft.","Fry until golden."]},
+    {name:"Pan Cakes", img:"images/pancakes.png", ingredients:["1 cup flour","2 tbsp sugar","1 tsp baking powder","1 cup milk","1 egg","Vanilla"], steps:["Mix dry ingredients.","Whisk wet ingredients.","Combine and cook on skillet."]},
+    {name:"Samosas", img:"images/samosa.jpg", ingredients:["2 cups flour","Salt","Water","Filling","Oil"], steps:["Make dough.","Prepare filling.","Fold cones, fill and seal.","Deep fry."]},
+    {name:"Boiled Eggs", img:"images/eggs.jpg", ingredients:["Eggs","Water","Salt"], steps:["Boil eggs for 8-10 mins.","Cool and peel."]},
+    {name:"Black Tea", img:"images/tea.webp", ingredients:["2 cups water","1 tsp tea leaves","Sugar"], steps:["Boil water with tea.","Simmer and strain."]},
+    {name:"Toasted Bread", img:"images/Bread.jpg", ingredients:["Bread slices","Butter"], steps:["Heat pan.","Toast until golden.","Spread butter."]},
+    {name:"Vegetable Samosa (A pair)", img:"images/vegetable.jpg", ingredients:["Samosa pastry","Veggie filling","Oil"], steps:["Fill pastry.","Fold and seal.","Fry until crisp."]},
+    {name:"Beef Samosa(A pair)", img:"images/beef.png", ingredients:["Samosa pastry","Minced beef","Oil"], steps:["Cook beef filling.","Fold into pastry.","Fry until hot and golden."]},
+    {name:"Mandazi (A pair)", img:"images/mandazi.jpg", ingredients:["Dough from recipe"], steps:["Shape discs.","Fry in hot oil."]},
+    {name:"Beef Pie", img:"images/beef pie.jpg", ingredients:["Pie crust","Minced beef","Oil"], steps:["Prepare filling.","Fill crust and seal.","Bake or fry."]},
+    {name:"Cookies", img:"images/cookies.webp", ingredients:["2 cups flour","1 cup sugar","1/2 cup butter","Vanilla","1 egg"], steps:["Cream butter/sugar.","Add egg/flour.","Bake at 180°C for 12 mins."]},
+    {name:"Home fries", img:"images/fries.jpg", ingredients:["Potatoes","Oil","Spices"], steps:["Cube potatoes.","Parboil.","Fry until golden."]},
+    {name:"Baked Beans", img:"images/beans.jpg", ingredients:["Canned beans","Onions","Tomato paste"], steps:["Sauté onions.","Add beans/paste.","Simmer 10 mins."]},
+    {name:"Egg Rolls (A pair)", img:"images/egg rolls.jpg", ingredients:["Pastry","Filling","Oil"], steps:["Roll filling in pastry.","Seal edges.","Deep fry."]},
+    {name:"American Pancake", img:"images/american.jpg", ingredients:["1 cup flour","Sugar","Baking powder","1 egg","3/4 cup milk"], steps:["Form batter.","Cook until bubbles form.","Flip and serve."]},
+    {name:"Kikomando", img:"images/kikomando.jpg", ingredients:["Chapati","Beans","Spices"], steps:["Cut chapati.","Prepare beans.","Mix together."]},
+    {name:"Fried Rice", img:"images/rice.webp", ingredients:["Rice","Veggies","Oil","Soy sauce"], steps:["Cook rice.","Stir fry veggies.","Mix with soy sauce."]},
+    {name:"Matooke", img:"images/matooke.jpg", ingredients:["Matooke","Salt","Water"], steps:["Peel and mash.","Steam until soft."]},
+    {name:"White Rice & Beans", img:"images/white rice.jpg", ingredients:["Rice","Beans","Salt"], steps:["Cook separately.","Serve together."]},
+    {name:"Anyoya", img:"images/anyoya.jpeg", ingredients:["Maize flour","Water","Salt"], steps:["Mix flour/water.","Cook until firm."]},
+    {name:"Chicken/Liver/Goat/Beef Stew", img:"images/chicken stew.jpg", ingredients:["Meat","Onions","Tomatoes","Spices"], steps:["Brown meat.","Add tomatoes/spices.","Simmer until tender."]},
     {name:"Cold Water", img:"images/nivana.jpg", ingredients:["Bottled water"], steps:["Serve chilled."]},
-    {name:"Fresh Juice", img:"images/juice.jpg", ingredients:["Seasonal fruits","Water","Sugar"], steps:[
-      "Wash and cut fruits.",
-      "Blend with water and sugar to taste.",
-      "Serve chilled."
-    ]},{name:"Cold sodas", ingredients:["Carbonated water","Sugar","Flavoring"], steps:[
-      "Pour soda into a glass with ice.",
-      "Serve chilled."
-    ]},
-    {name:"Bongo", ingredients:["Carbonated water","Sugar","Flavoring"], steps:[
-      "Pour into glass over ice.",
-      "Serve immediately."
-    ]},
-    {name:"Guiness", ingredients:["Guinness beer"], steps:[
-      "Pour into glass carefully to maintain head.",
-      "Serve chilled."
-    ]},
-    {name:"Bond 7", ingredients:["Bond 7 beverage"], steps:[
-      "Pour over ice if desired.",
-      "Serve chilled."
-    ]},
-    {name:"Smirnoff", ingredients:["Smirnoff vodka"], steps:[
-      "Serve chilled or mix with beverage."
-    ]},
-    {name:"Club Pilsener", ingredients:["Pilsner beer"], steps:[
-      "Pour carefully to maintain carbonation.",
-      "Serve chilled."
-    ]},
-    {name:"Minute maid", ingredients:["Fruit juice"], steps:[
-      "Pour chilled into glass and serve."
-    ]},
-    {name:"Bushera", ingredients:["Millet flour","Water","Sugar"], steps:[
-      "Mix millet flour with water and sugar.",
-      "Boil mixture until thickened.",
-      "Serve warm."
-    ]},
-    {name:"Oner", ingredients:["Oner beverage"], steps:[
-      "Serve chilled."
-    ]},
-    {name:"Yorghurt", ingredients:["Milk","Yogurt culture"], steps:[
-      "Mix milk and yogurt culture.",
-      "Ferment at warm temperature until thickened.",
-      "Serve chilled."
-    ]},
-    {name:"Fresh Juice", ingredients:["Seasonal fruits","Water","Sugar"], steps:[
-      "Wash and cut fruits.",
-      "Blend with water and sugar to taste.",
-      "Serve chilled."
-    ]}
+    {name:"Fresh Juice", img:"images/juice.jpg", ingredients:["Fruits","Water","Sugar"], steps:["Blend fruits.","Strain and chill."]},
+    {name:"Cold sodas", img:"images/soda.jpg", ingredients:["Carbonated water","Flavor"], steps:["Pour over ice."]},
+    {name:"Bongo", img:"images/bongo.jpg", ingredients:["Ingredients"], steps:["Serve over ice."]},
+    {name:"Guiness", img:"images/guiness.jpg", ingredients:["Guinness"], steps:["Pour carefully."]},
+    {name:"Bond 7", img:"images/bond7.jpg", ingredients:["Bond 7"], steps:["Serve chilled."]},
+    {name:"Smirnoff", img:"images/smirnoff.jpg", ingredients:["Smirnoff"], steps:["Serve or mix."]},
+    {name:"Club Pilsener", img:"images/club.jpg", ingredients:["Pilsner"], steps:["Serve chilled."]},
+    {name:"Minute maid", img:"images/maid.jpg", ingredients:["Juice"], steps:["Pour chilled."]},
+    {name:"Bushera", img:"images/bushera.jpg", ingredients:["Millet flour","Water","Sugar"], steps:["Mix and boil until thick."]},
+    {name:"Oner", img:"images/oner.jpg", ingredients:["Oner"], steps:["Serve chilled."]},
+    {name:"Yorghurt", img:"images/yogurt.jpg", ingredients:["Milk","Culture"], steps:["Ferment and chill."]}
   ];
 
-// ---------- Get selected meal ----------
-const params=new URLSearchParams(window.location.search);
-const selectedMealName=params.get("meal");
+  const params = new URLSearchParams(window.location.search);
+  const selectedMealName = params.get("meal");
+  const container = document.getElementById("mealContainer");
+  const mealBg = document.getElementById("mealBg");
 
-auth.onAuthStateChanged(user=>{
-  if(!user){window.location.href="index.html"; return;}
-  loadMeal(user);
-});
-
-async function loadMeal(user){
-  if(!selectedMealName){container.innerHTML="<p>No meal selected. Please go back to Home and select a meal.</p>";return;}
-  const meal=meals.find(m=>m.name===selectedMealName);
-  if(!meal){container.innerHTML="<p>Meal not found.</p>"; return;}
-
-  // Background
-  body.style.backgroundImage=`linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${meal.img}')`;
-
-  // Meal container
-  const div=document.createElement("div");
-  div.className="meal-details";
-  div.innerHTML=`
-    <h2>${meal.name}</h2>
-    <div>
-      <button class="favorite" id="favoriteBtn">Favorite</button>
-      <button class="share" id="shareBtn">Share</button>
-    </div>
-    <h3>Ingredients:</h3>
-    <ul id="ingredientsList">${meal.ingredients.map(i=>`<li><input type="checkbox"> ${i}</li>`).join("")}</ul>
-    <h3>Preparation Steps:</h3>
-    <ol>${meal.steps.map(s=>`<li>${s}</li>`).join("")}</ol>
-    <div class="comments-section">
-      <h3>Comments</h3>
-      <div id="commentsContainer"></div>
-      <form id="commentForm" class="comment-form">
-        <textarea id="commentInput" rows="3" placeholder="Add a comment..."></textarea>
-        <button type="submit">Post Comment</button>
-      </form>
-    </div>
-  `;
-  container.appendChild(div);
-
-  // Favorite button
-  document.getElementById("favoriteBtn").addEventListener("click", async()=>{
-    await db.collection("users").doc(user.uid).collection("favorites").doc(meal.name).set({mealName:meal.name});
-    alert("Added to favorites!");
+  auth.onAuthStateChanged(user => {
+    if(!user) { window.location.href="index.html"; return; }
+    loadMeal(user);
   });
 
-  // Share button
-  document.getElementById("shareBtn").addEventListener("click",()=>{
-    navigator.clipboard.writeText(window.location.href);
-    alert("Recipe link copied!");
-  });
+  function loadMeal(user) {
+    const meal = meals.find(m => m.name === selectedMealName) || meals[0];
+    document.getElementById("mealTitleDisplay").innerText = meal.name;
+    mealBg.style.backgroundImage = `url('${meal.img || 'images/default.jpg'}')`;
 
-  // Comments
-  const commentsContainer=document.getElementById("commentsContainer");
-  const commentForm=document.getElementById("commentForm");
-  const commentInput=document.getElementById("commentInput");
+    container.innerHTML = `
+      <div class="meal-details">
+        <div class="action-bar">
+          <button class="favorite" id="favoriteBtn"><i class="fa-solid fa-heart"></i> Favorite</button>
+          <button class="share" id="shareBtn"><i class="fa-solid fa-link"></i> Share</button>
+        </div>
+        <h3><i class="fa-solid fa-list-check"></i> Ingredients</h3>
+        <ul>${meal.ingredients.map(i => `<li><input type="checkbox" class="ingredient-check"> ${i}</li>`).join('')}</ul>
+        <h3><i class="fa-solid fa-fire-burner"></i> Method</h3>
+        <ol>${meal.steps.map((s, idx) => `<li><span class="step-num">${idx+1}</span> ${s}</li>`).join('')}</ol>
+        <div class="comments-section">
+          <div id="commentsContainer"></div>
+          <form id="commentForm">
+            <textarea id="commentInput" rows="2" placeholder="Tell us how it was..."></textarea>
+            <button type="submit" class="favorite" style="width:auto; padding: 10px 20px; margin-top:10px;">Post Review</button>
+          </form>
+        </div>
+      </div>
+    `;
 
-  commentForm.addEventListener("submit",async(e)=>{
-    e.preventDefault();
-    const text=commentInput.value.trim();
-    if(!text) return;
-    await db.collection("meals").doc(meal.name).collection("comments").add({userId:user.uid,text,timestamp:Date.now()});
-    commentInput.value="";
-  });
+    document.getElementById("favoriteBtn").onclick = async () => {
+      await db.collection("users").doc(user.uid).collection("favorites").doc(meal.name).set({mealName:meal.name});
+      alert("Added to favorites!");
+    };
 
-  // Load comments in real-time
-  db.collection("meals").doc(meal.name).collection("comments").orderBy("timestamp","desc")
-    .onSnapshot(snapshot=>{
-      commentsContainer.innerHTML="";
-      snapshot.forEach(doc=>{
-        const data=doc.data();
-        const div=document.createElement("div");
-        div.className="comment";
-        div.innerHTML=`<strong>${data.userId}</strong>: ${data.text}`;
-        commentsContainer.appendChild(div);
+    document.getElementById("shareBtn").onclick = () => {
+      navigator.clipboard.writeText(window.location.href);
+      alert("Link copied!");
+    };
+
+    const commCont = document.getElementById("commentsContainer");
+    const commForm = document.getElementById("commentForm");
+    
+    commForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const val = document.getElementById("commentInput").value.trim();
+      if(!val) return;
+      await db.collection("meals").doc(meal.name).collection("comments").add({
+        userId: user.email.split('@')[0],
+        text: val,
+        timestamp: Date.now()
       });
-    });
-}
+      document.getElementById("commentInput").value = "";
+    };
+
+    db.collection("meals").doc(meal.name).collection("comments").orderBy("timestamp","desc")
+      .onSnapshot(snap => {
+        commCont.innerHTML = snap.empty ? '<p style="color:#999; font-size:0.8rem;">No reviews yet.</p>' : '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          commCont.innerHTML += `<div class="comment"><strong>@${d.userId}</strong><p>${d.text}</p></div>`;
+        });
+      });
+  }
 </script>
 </body>
 </html>

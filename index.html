@@ -3,97 +3,153 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Campus Bite | Muni University</title>
-  <meta name="description" content="Campus Bite lets students locate and order affordable meals, drinks, and snacks with fast on-campus delivery. Easy ordering, live budget tracking, and quick checkout.">
-  <meta name="keywords" content="Campus Bite, campus food, student meals, food delivery, muni, muni university, cheap meals, university food app">
-  <meta name="robots" content="index, follow">
-
-  <!-- changing apperance for social media preview -->
-  <meta property="og:title" content="Campus Bite | Muni University">
-  <meta property="og:description" content="Locate and order meals and snacks, delivered fast on campus.">
-  <meta property="og:image" content="images/tent.jpeg">
-  <meta property="og:url" content="https://campusbite.xyz/">
-  <meta property="og:type" content="website">
-
+  <title>Login | Campus Bite</title>
+  
   <link rel="icon" href="images/tent.jpeg" type="image/jpeg">
-  <link rel="shortcut icon" href="images/tent.jpeg" type="image/jpeg">
-  <!-- Apple / iOS icon (optional but good) -->
-  <link rel="apple-touch-icon" href="images/tent.jpeg">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+    :root {
+      --brand: #ff914d;
+      --brand-dark: #e67e39;
+      --text-main: #1a1a1a;
+      --text-muted: #666;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
     body {
       height: 100vh;
-      background: url("https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=1950&q=80") center/cover no-repeat;
-      display: flex; justify-content: center; align-items: center; position: relative; color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background-color: #000;
+      position: relative;
     }
-    .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
-    .container { position: relative; z-index: 1; width: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; }
-    .login-card {
-      background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-      border-radius: 16px; padding: 40px 35px; width: 340px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+
+    /* --- THE MOVING BACKGROUND LOGIC --- */
+    .bg-wrapper {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
     }
-    .title { font-size: 2rem; font-weight: 700; color: #ff914d; margin-bottom: 10px; }
-    .subtitle { font-size: 0.9rem; color: #fff5ee; margin-bottom: 25px; }
-    .input-group { position: relative; width: 100%; }
-    input { width: 100%; padding: 12px 14px; margin: 8px 0; border: none; border-radius: 8px; outline: none; font-size: 0.95rem; }
-    .toggle-eye {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      cursor: pointer; font-size: 1.1rem; color: #555;
+
+    .moving-bg {
+      width: 110%; /* Slightly larger to allow for movement without showing edges */
+      height: 110%;
+      position: absolute;
+      top: -5%;
+      left: -5%;
+      background: url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1950&q=80") center/cover no-repeat;
+      animation: kenBurns 20s infinite alternate ease-in-out;
     }
-    button {
-      width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #ff914d; color: #fff; font-size: 1rem; cursor: pointer; transition: 0.3s;
+
+    @keyframes kenBurns {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.1) translate(-2%, -2%); }
     }
-    button:hover { background: #ff6a00; }
-    button.secondary { background: transparent; border: 2px solid #ff914d; color: #ff914d; }
-    button.secondary:hover { background: #ff914d; color: #fff; }
-    p a { color: #ff914d; text-decoration: none; font-weight: 600; }
-    p a:hover { text-decoration: underline; }
-    @media (max-width: 480px) { .login-card { width: 90%; padding: 30px 20px; } .title { font-size: 1.7rem; } }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark layer */
+    }
+
+    /* --- LOGIN CARD --- */
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      z-index: 2;
+    }
+
+    .auth-card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(15px);
+      padding: 50px 40px;
+      border-radius: 30px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .brand-logo {
+      width: 75px; height: 75px; border-radius: 20px;
+      margin-bottom: 20px; object-fit: cover;
+      box-shadow: 0 8px 15px rgba(255, 145, 77, 0.3);
+    }
+
+    .auth-card h1 {
+      font-family: 'Poppins', sans-serif; font-size: 1.8rem;
+      color: var(--text-main); margin-bottom: 8px;
+    }
+
+    .input-wrapper { position: relative; margin-bottom: 18px; text-align: left; }
+    .input-wrapper i.field-icon {
+      position: absolute; left: 15px; top: 50%;
+      transform: translateY(-50%); color: #aaa; font-size: 1rem;
+    }
+
+    .input-wrapper input {
+      width: 100%; padding: 14px 15px 14px 45px;
+      border: 1.5px solid #eee; border-radius: 12px;
+      font-size: 0.95rem; outline: none; transition: 0.3s; background: #fafafa;
+    }
+
+    .input-wrapper input:focus { border-color: var(--brand); background: #fff; }
+
+    .primary-btn {
+      width: 100%; padding: 15px; background: var(--brand); color: white;
+      border: none; border-radius: 12px; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: 0.3s; margin-top: 10px;
+    }
+
+    .secondary-btn {
+      width: 100%; padding: 14px; background: transparent; color: var(--brand);
+      border: 1.5px solid var(--brand); border-radius: 12px;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 12px;
+    }
+
+    .forgot-link { display: inline-block; margin-top: 25px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; }
   </style>
-  <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "Campus Bite",
-  "applicationCategory": "FoodOrderingApplication",
-  "operatingSystem": "Web",
-  "url": "https://campusbite.xyz"
-}
-</script>
-<link rel="canonical" href="https://campusbite.xyz/">
 </head>
 <body>
+
+  <div class="bg-wrapper">
+    <div class="moving-bg"></div>
+  </div>
   <div class="overlay"></div>
 
-  <div class="container">
-    <div class="login-card">
-      <h1 class="title">Campus Bite 🍽️</h1>
-      <p class="subtitle">Plan your meals, save your budget.</p>
+  <div class="login-container">
+    <div class="auth-card">
+      <img src="images/tent.jpeg" class="brand-logo" alt="Logo">
+      <h1>Welcome Back</h1>
+      <p style="color:#777; font-size: 0.9rem; margin-bottom: 30px;">Muni University's Student Food Hub</p>
 
-      <input type="email" id="email" placeholder="Email address" />
-
-      <!-- Password field with eye toggle -->
-      <div class="input-group">
-        <input type="password" id="password" placeholder="Password" />
-        <span class="toggle-eye" id="togglePassword">👁️</span>
+      <div class="input-wrapper">
+        <i class="fa-regular fa-envelope field-icon"></i>
+        <input type="email" id="email" placeholder="Student Email" />
       </div>
 
-      <button id="loginBtn">Login</button>
-      <button id="signupBtn" class="secondary">Sign Up</button>
-      <button id="forgotPasswordBtn" class="secondary">Forgot Password?</button>
+      <div class="input-wrapper">
+        <i class="fa-solid fa-lock field-icon"></i>
+        <input type="password" id="password" placeholder="Password" />
+      </div>
+
+      <button class="primary-btn" id="loginBtn">Sign In</button>
+      <button class="secondary-btn" id="signupBtn">Join Campus Bite</button>
+      
+      <span class="forgot-link" id="forgotBtn">Forgot your password?</span>
     </div>
   </div>
 
-  <footer style="position: absolute; bottom: 10px; width: 100%; text-align: center; color: #fff5ee; font-size: 0.85rem;">
-    Campus Bite | Muni University &copy All rights reserved.</footer>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
@@ -107,56 +163,30 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const loginBtn = document.getElementById("loginBtn");
-    const signupBtn = document.getElementById("signupBtn");
-    const forgotPasswordBtn = document.getElementById("forgotPasswordBtn");
-    const togglePassword = document.getElementById("togglePassword");
-    const passwordInput = document.getElementById("password");
-
-    // Toggle password visibility
-    togglePassword.addEventListener("click", () => {
-      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-      passwordInput.setAttribute("type", type);
-      togglePassword.textContent = type === "password" ? "👁️" : "🙈";
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.href = "home.html";
     });
 
-    // Login
-    loginBtn.addEventListener("click", async () => {
+    document.getElementById("loginBtn").onclick = async () => {
       const email = document.getElementById("email").value.trim();
-      const password = passwordInput.value.trim();
-      if (!email || !password) return alert("Enter both email and password.");
+      const pass = document.getElementById("password").value.trim();
+      const btn = document.getElementById("loginBtn");
+
+      if (!email || !pass) return alert("Please fill in all fields.");
+      
+      btn.disabled = true;
+      btn.innerText = "Authenticating...";
 
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "home.html"; // redirect to your main app
-      } catch (error) {
-        if (error.code === "auth/user-not-found") {
-          alert("No account found. Please sign up first.");
-        } else if (error.code === "auth/wrong-password") {
-          alert("Incorrect password. Try again.");
-        } else {
-          alert("Login failed: " + error.message);
-        }
+        await signInWithEmailAndPassword(auth, email, pass);
+      } catch (e) {
+        alert("Login Failed. Please check your credentials.");
+        btn.disabled = false;
+        btn.innerText = "Sign In";
       }
-    });
+    };
 
-    // Signup redirect
-    signupBtn.addEventListener("click", () => {
-      window.location.href = "signup.html";
-    });
-
-    // Forgot password
-    forgotPasswordBtn.addEventListener("click", async () => {
-      const email = document.getElementById("email").value.trim();
-      if (!email) return alert("Please enter your email to reset password.");
-
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert("Password reset email sent! Check your inbox.");
-      } catch (error) {
-        alert("Error: " + error.message);
-      }
-    });
+    document.getElementById("signupBtn").onclick = () => window.location.href = "signup.html";
   </script>
 </body>
 </html>

@@ -1,67 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="canonical" href="https://campusbite.xyz/">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#ff914d">
-<link rel="icon" href="images/tent.jpeg" type="image/jpeg">
-  <link rel="shortcut icon" href="images/tent.jpeg" type="image/jpeg">
-  <!-- Apple / iOS icon (optional but good) -->
-  <link rel="apple-touch-icon" href="images/tent.jpeg">
-  <title>Campus Bite – Student Sign Up</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <title>Create Account | Campus Bite</title>
+  
+  <link rel="icon" href="images/tent.jpeg" type="image/jpeg">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+    :root {
+      --brand: #ff914d;
+      --brand-dark: #e67e39;
+      --text-main: #1a1a1a;
+      --text-muted: #666;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
     body {
       height: 100vh;
-      background: url("https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=1950&q=80") center/cover no-repeat;
-      display: flex; justify-content: center; align-items: center; position: relative; color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background-color: #000;
+      position: relative;
     }
-    .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.45); }
-    .container { position: relative; z-index: 1; width: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; }
-    .signup-card {
-      background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-      border-radius: 16px; padding: 40px 35px; width: 360px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+
+    /* --- MATCHING MOVING BACKGROUND --- */
+    .bg-wrapper {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
     }
-    .title { font-size: 2rem; font-weight: 700; color: #ff914d; margin-bottom: 10px; }
-    .subtitle { font-size: 0.9rem; color: #fff5ee; margin-bottom: 25px; }
-    input, select { width: 100%; padding: 12px 14px; margin: 8px 0; border: none; border-radius: 8px; outline: none; font-size: 0.95rem; }
-    button {
-      width: 100%; padding: 12px; margin-top: 10px; border: none; border-radius: 8px; background: #ff914d; color: #fff; font-size: 1rem; cursor: pointer; transition: 0.3s;
+
+    .moving-bg {
+      width: 110%;
+      height: 110%;
+      position: absolute;
+      top: -5%;
+      left: -5%;
+      /* Exact same image as index.html */
+      background: url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1950&q=80") center/cover no-repeat;
+      animation: kenBurns 20s infinite alternate ease-in-out;
     }
-    button:hover { background: #ff6a00; }
-    p a { color: #ff914d; text-decoration: none; font-weight: 600; }
-    p a:hover { text-decoration: underline; }
-    @media (max-width: 480px) { .signup-card { width: 90%; padding: 30px 20px; } .title { font-size: 1.7rem; } }
+
+    @keyframes kenBurns {
+      0% { transform: scale(1) translate(0, 0); }
+      100% { transform: scale(1.1) translate(-2%, -2%); }
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    /* --- SIGNUP CARD --- */
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+      z-index: 2;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .auth-card {
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(15px);
+      padding: 40px;
+      border-radius: 30px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .auth-card h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.7rem;
+      color: var(--text-main);
+      margin-bottom: 5px;
+    }
+
+    .auth-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+    }
+
+    /* Input Rows */
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    
+    .input-wrapper { position: relative; margin-bottom: 15px; text-align: left; }
+    
+    .input-wrapper i {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%); color: #aaa; font-size: 0.9rem;
+    }
+
+    .input-wrapper input, .input-wrapper select {
+      width: 100%; padding: 12px 12px 12px 40px;
+      border: 1.5px solid #eee; border-radius: 12px;
+      font-size: 0.9rem; outline: none; transition: 0.3s; background: #fafafa;
+    }
+
+    .input-wrapper input:focus, .input-wrapper select:focus {
+      border-color: var(--brand); background: #fff;
+    }
+
+    .primary-btn {
+      width: 100%; padding: 14px; background: var(--brand); color: white;
+      border: none; border-radius: 12px; font-size: 1rem; font-weight: 600;
+      cursor: pointer; transition: 0.3s; margin-top: 10px;
+    }
+
+    .primary-btn:hover { background: var(--brand-dark); transform: translateY(-1px); }
+
+    .footer-text { margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); }
+    .footer-text a { color: var(--brand); text-decoration: none; font-weight: 600; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 480px) { .input-row { grid-template-columns: 1fr; } .auth-card { padding: 30px 20px; } }
   </style>
 </head>
 <body>
+
+  <div class="bg-wrapper">
+    <div class="moving-bg"></div>
+  </div>
   <div class="overlay"></div>
-  <div class="container">
-    <div class="signup-card">
-      <h1 class="title">Join Campus Bite 🍴</h1>
-      <p class="subtitle">Create your student account</p>
 
-      <input type="text" id="name" placeholder="User Name" required />
-      <input type="email" id="email" placeholder="Email Address" required />
-      <select id="faculty" required>
-        <option value="" disabled selected>Select Faculty</option>
-        <option value="Technoscience">Faculty of Technoscience</option>
-        <option value="Business">Faculty of Management Science</option>
-        <option value="Engineering">Faculty of Health Sciences</option>
-        <option value="Arts">Faculty of Agric & Env't Sciences</option>
-        <option value="Education">Faculty of Education</option>
-        <option value="Science">Faculty of Science</option>
-      </select>
-      <input type="text" id="course" placeholder="Course (e.g. Information Technology)" required />
-      <input type="text" id="hostel" placeholder="Hostel" required />
-      <input type="password" id="password" placeholder="Password (min 6 chars)" required />
+  <div class="auth-container">
+    <div class="auth-card">
+      <h1>Create Account</h1>
+      <p>Join the Muni University food community</p>
 
-      <button id="signupBtn">Sign Up</button>
-      <p>Already have an account? <a href="index.html">Login here</a></p>
+      <div class="input-wrapper">
+        <i class="fa-regular fa-user"></i>
+        <input type="text" id="name" placeholder="Full Name" />
+      </div>
+
+      <div class="input-wrapper">
+        <i class="fa-regular fa-envelope"></i>
+        <input type="email" id="email" placeholder="Student Email" />
+      </div>
+
+      <div class="input-row">
+        <div class="input-wrapper">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <select id="faculty">
+            <option value="" disabled selected>Faculty</option>
+            <option value="Technoscience">Technoscience</option>
+            <option value="Business">Management</option>
+            <option value="Health">Health Science</option>
+            <option value="Education">Education</option>
+            <option value="Agriculture">Agriculture</option>
+          </select>
+        </div>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-book-open"></i>
+          <input type="text" id="course" placeholder="Course" />
+        </div>
+      </div>
+
+      <div class="input-wrapper">
+        <i class="fa-solid fa-hotel"></i>
+        <input type="text" id="hostel" placeholder="Hostel Name" />
+      </div>
+
+      <div class="input-wrapper">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="password" placeholder="Create Password" />
+      </div>
+
+      <button class="primary-btn" id="signupBtn">Sign Up Now</button>
+      
+      <div class="footer-text">
+        Joined already? <a href="index.html">Sign In</a>
+      </div>
     </div>
   </div>
 
@@ -76,16 +197,15 @@
       projectId: "campus-bite-9dbaa",
       storageBucket: "campus-bite-9dbaa.appspot.com",
       messagingSenderId: "294389261625",
-      appId: "1:294389261625:web:095d6e5e7557555f85f4e8"
+      appId: "1:294389261625:web:095d6e5f85f4e8"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const signupBtn = document.getElementById("signupBtn");
-
-    signupBtn.addEventListener("click", async () => {
+    document.getElementById("signupBtn").onclick = async () => {
+      const btn = document.getElementById("signupBtn");
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       const faculty = document.getElementById("faculty").value;
@@ -94,38 +214,24 @@
       const password = document.getElementById("password").value.trim();
 
       if (!name || !email || !faculty || !course || !hostel || !password) {
-        alert("Please fill out all fields!");
-        return;
+        return alert("Please complete all fields.");
       }
 
-      if (password.length < 6) {
-        alert("Password must be at least 6 characters.");
-        return;
-      }
+      btn.disabled = true;
+      btn.innerText = "Processing...";
 
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // Save user data in Firestore
-        await setDoc(doc(db, "students", user.uid), {
-          name,
-          email,
-          faculty,
-          course,
-          hostel,
-          createdAt: serverTimestamp()  // Firestore timestamp
+        const res = await createUserWithEmailAndPassword(auth, email, password);
+        await setDoc(doc(db, "students", res.user.uid), {
+          name, email, faculty, course, hostel, uid: res.user.uid, createdAt: serverTimestamp()
         });
-
-        // Welcome alert with user name and faculty
-        alert(`Welcome, ${name} from ${faculty}!`);
-
-        // Redirect to home page
         window.location.href = "home.html";
-      } catch (error) {
-        alert(error.message);
+      } catch (e) {
+        alert(e.message);
+        btn.disabled = false;
+        btn.innerText = "Sign Up Now";
       }
-    });
+    };
   </script>
 </body>
 </html>
