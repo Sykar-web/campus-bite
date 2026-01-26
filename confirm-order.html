@@ -238,34 +238,38 @@
     const fee = methodSelected === 'delivery' ? parseInt(document.getElementById("areaSelector").value) : 0;
     const areaText = methodSelected === 'delivery' ? document.getElementById("areaSelector").options[document.getElementById("areaSelector").selectedIndex].text : "Pickup";
 
-    try {
-      await db.collection("orders").add({
-        userId: user.uid,
-        userName: user.displayName || "Muni Student",
-        items: Object.keys(cart).map(k => ({ name: k, qty: cart[k].qty, price: cart[k].price })),
-        subtotal: subtotal,
-        deliveryFee: fee,
-        totalAmount: subtotal + fee,
-        orderMethod: methodSelected,
-        area: areaText,
-        deliveryPhone: document.getElementById("deliveryPhone").value,
-        deliveryLocation: methodSelected === 'delivery' ? document.getElementById("deliveryLocation").value : "N/A (Pickup)",
-        paymentMode: document.getElementById("paymentMode").value,
-        transactionId: document.getElementById("transactionId").value || "CASH",
-        status: "pending",
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
+        try {
+      // Corrected Path: orders -> {uid} -> userOrders
+      await db.collection("orders")
+        .doc(user.uid)
+        .collection("userOrders")
+        .add({
+          userId: user.uid,
+          userName: user.displayName || "Muni Student",
+          items: Object.keys(cart).map(k => ({ name: k, qty: cart[k].qty, price: cart[k].price })),
+          subtotal: subtotal,
+          deliveryFee: fee,
+          totalAmount: subtotal + fee,
+          orderMethod: methodSelected,
+          area: areaText,
+          deliveryPhone: document.getElementById("deliveryPhone").value,
+          deliveryLocation: methodSelected === 'delivery' ? document.getElementById("deliveryLocation").value : "N/A (Pickup)",
+          paymentMode: document.getElementById("paymentMode").value,
+          transactionId: document.getElementById("transactionId").value || "CASH",
+          status: "pending",
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
       localStorage.removeItem("campusbite_budget_items_v1");
       window.location.href = "order-history.html";
     } catch(e) { 
+      console.error("Path Error:", e);
       alert("Error: " + e.message); 
       btn.disabled = false; 
       btn.innerText = "Place Order Now";
     }
-  }
 
-  init();
 </script>
 </body>
+
 </html>
