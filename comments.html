@@ -23,12 +23,12 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
 
     header { 
       background: var(--primary); color: #fff; padding: 12px 20px; 
       display: flex; align-items: center; z-index: 1000;
+      position: sticky; top: 0;
     }
     .header-logo { width: 30px; height: 30px; border-radius: 6px; margin-right: 12px; }
     header h1 { font-size: 1rem; flex-grow: 1; }
@@ -39,62 +39,67 @@
       padding: 15px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
+      padding-bottom: 140px; /* Space for input + nav */
       -webkit-overflow-scrolling: touch;
     }
 
     .comment-bubble {
-      max-width: 80%;
+      max-width: 85%;
       padding: 10px 14px;
       background: var(--white);
       border-radius: 4px 18px 18px 18px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      animation: popIn 0.3s ease;
-    }
-    @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-    .my-message {
-      align-self: flex-end;
-      background: #fff0e6;
-      border-radius: 18px 4px 18px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      position: relative;
     }
 
-    .comment-user { font-weight: 600; color: var(--primary); font-size: 0.7rem; margin-bottom: 2px; display: block; }
-    .comment-body { font-size: 0.85rem; color: #444; line-height: 1.4; }
+    /* Admin and "Me" Styling */
+    .my-message { align-self: flex-end; background: #fff0e6; border-radius: 18px 4px 18px 18px; }
+    .admin-message { border: 1px solid var(--primary); background: #fffaf0; }
+    .admin-badge { background: var(--primary); color: white; font-size: 0.5rem; padding: 2px 5px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; }
 
-    .comment-footer { display: flex; gap: 12px; margin-top: 6px; font-size: 0.65rem; align-items: center; }
-    .reaction-link { color: #aaa; text-decoration: none; cursor: pointer; }
-    .reaction-link.active { color: var(--primary); font-weight: 600; }
-    .time-stamp { color: #ccc; margin-left: auto; }
+    .comment-user { font-weight: 700; color: var(--primary); font-size: 0.75rem; margin-bottom: 2px; display: block; }
+    .comment-body { font-size: 0.9rem; color: #444; line-height: 1.4; word-wrap: break-word; }
 
+    .comment-footer { display: flex; gap: 15px; margin-top: 6px; font-size: 0.7rem; align-items: center; border-top: 1px solid rgba(0,0,0,0.03); padding-top: 4px; }
+    .reaction-link { color: #aaa; text-decoration: none; cursor: pointer; transition: 0.2s; }
+    .reaction-link.active { color: var(--primary); }
+    .time-stamp { color: #ccc; margin-left: auto; font-size: 0.6rem; }
+
+    /* WHATSAPP STYLE FIXED INPUT */
     .comment-input-section {
+      position: fixed;
+      bottom: 65px; /* Above Footer */
+      left: 0;
+      width: 100%;
       padding: 10px 15px;
       background: #fff;
       display: flex;
       gap: 10px;
       border-top: 1px solid #eee;
-      padding-bottom: 75px; /* Margin for footer nav */
+      z-index: 1001;
+      align-items: center;
     }
 
     .comment-input-section input {
-      flex: 1; padding: 10px 18px; border-radius: 20px;
-      border: 1px solid #eee; background: #f9f9f9; outline: none; font-size: 0.9rem;
+      flex: 1; padding: 12px 18px; border-radius: 25px;
+      border: 1px solid #ddd; background: #f9f9f9; outline: none; font-size: 0.95rem;
     }
 
     .comment-input-section button {
       background: var(--primary); color: #fff; border: none;
-      border-radius: 50%; width: 40px; height: 40px; display: flex;
-      align-items: center; justify-content: center;
+      border-radius: 50%; width: 45px; height: 45px; display: flex;
+      align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
     }
 
     .footer-nav { 
       position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
-      display: flex; justify-content: space-around; padding: 12px 0; 
+      display: flex; justify-content: space-around; padding: 10px 0; 
       box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; 
     }
     .footer-nav a { text-decoration: none; color: #ccc; display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; }
     .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
-    .footer-nav a.active { color: var(--primary); }
+    .footer-nav a.active { color: var(--primary); font-weight: 600; }
   </style>
 </head>
 <body>
@@ -105,10 +110,11 @@
 </header>
 
 <div class="comments-wrapper" id="commentsContainer">
-  </div>
+    <div style="text-align:center; padding:20px; color:#aaa;">Loading messages...</div>
+</div>
 
 <div class="comment-input-section">
-  <input type="text" id="commentInput" placeholder="Write a message..." autocomplete="off"/>
+  <input type="text" id="commentInput" placeholder="Message..." autocomplete="off"/>
   <button id="postCommentBtn"><i class="fa fa-paper-plane"></i></button>
 </div>
 
@@ -138,15 +144,16 @@ const container = document.getElementById("commentsContainer");
 const input = document.getElementById("commentInput");
 const btn = document.getElementById("postCommentBtn");
 
-// Helper for relative time
+const ADMIN_EMAIL = "ezrasykar@gmail.com";
+
 function timeAgo(date) {
-  if(!date) return "Just now";
+  if(!date) return "Now";
   const seconds = Math.floor((new Date() - date.toDate()) / 1000);
+  if (seconds < 60) return "Just now";
   let interval = seconds / 3600;
   if (interval > 1) return Math.floor(interval) + "h ago";
   interval = seconds / 60;
-  if (interval > 1) return Math.floor(interval) + "m ago";
-  return "Just now";
+  return Math.floor(interval) + "m ago";
 }
 
 btn.onclick = async () => {
@@ -155,52 +162,68 @@ btn.onclick = async () => {
   const user = auth.currentUser;
   if(!user) return alert("Please log in to chat");
 
-  const studentDoc = await db.collection("students").doc(user.uid).get();
-  const displayName = studentDoc.exists ? studentDoc.data().name : "User";
+  btn.disabled = true;
+  try {
+    const studentDoc = await db.collection("students").doc(user.uid).get();
+    let displayName = studentDoc.exists ? studentDoc.data().name : (user.displayName || "Muni Student");
+    
+    // Force Admin label if it's you
+    if(user.email === ADMIN_EMAIL) displayName = "Executive Admin";
 
-  await db.collection("comments").add({
-    userId: user.uid,
-    userName: displayName,
-    text: text,
-    likes: [],
-    dislikes: [],
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-  input.value = "";
-  container.scrollTop = container.scrollHeight;
+    await db.collection("comments").add({
+      userId: user.uid,
+      userEmail: user.email,
+      userName: displayName,
+      text: text,
+      likes: [],
+      dislikes: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    input.value = "";
+    scrollToBottom();
+  } catch(e) { alert(e.message); }
+  btn.disabled = false;
 };
 
-// Listen for Enter key
-input.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") btn.click();
-});
+input.addEventListener("keypress", (e) => { if (e.key === "Enter") btn.click(); });
 
-db.collection("comments").orderBy("createdAt", "asc").limitToLast(50).onSnapshot(snap => {
-  container.innerHTML = "";
-  const uid = auth.currentUser?.uid;
-
-  snap.forEach(doc => {
-    const d = doc.data();
-    const isMe = d.userId === uid;
-    const bubble = document.createElement("div");
-    bubble.className = `comment-bubble ${isMe ? 'my-message' : ''}`;
-
-    bubble.innerHTML = `
-      <span class="comment-user">${isMe ? 'Me' : d.userName}</span>
-      <div class="comment-body">${d.text}</div>
-      <div class="comment-footer">
-        <span class="reaction-link ${d.likes?.includes(uid) ? 'active' : ''}" onclick="react('${doc.id}','like')">
-          <i class="fa fa-thumbs-up"></i> ${d.likes?.length || 0}
-        </span>
-        <span class="reaction-link ${d.dislikes?.includes(uid) ? 'active' : ''}" onclick="react('${doc.id}','dislike')">
-          <i class="fa fa-thumbs-down"></i> ${d.dislikes?.length || 0}
-        </span>
-        <span class="time-stamp">${timeAgo(d.createdAt)}</span>
-      </div>
-    `;
-    container.appendChild(bubble);
-  });
+function scrollToBottom() {
   container.scrollTop = container.scrollHeight;
+}
+
+auth.onAuthStateChanged(user => {
+  db.collection("comments").orderBy("createdAt", "asc").limitToLast(50).onSnapshot(snap => {
+    container.innerHTML = "";
+    const uid = user?.uid;
+
+    snap.forEach(doc => {
+      const d = doc.data();
+      const isMe = d.userId === uid;
+      const isAdmin = d.userEmail === ADMIN_EMAIL;
+      
+      const bubble = document.createElement("div");
+      bubble.className = `comment-bubble ${isMe ? 'my-message' : ''} ${isAdmin ? 'admin-message' : ''}`;
+
+      bubble.innerHTML = `
+        <span class="comment-user">
+          ${isMe ? 'Me' : d.userName} 
+          ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
+        </span>
+        <div class="comment-body">${d.text}</div>
+        <div class="comment-footer">
+          <span class="reaction-link ${d.likes?.includes(uid) ? 'active' : ''}" onclick="react('${doc.id}','like')">
+            <i class="fa fa-thumbs-up"></i> ${d.likes?.length || 0}
+          </span>
+          <span class="reaction-link ${d.dislikes?.includes(uid) ? 'active' : ''}" onclick="react('${doc.id}','dislike')">
+            <i class="fa fa-thumbs-down"></i> ${d.dislikes?.length || 0}
+          </span>
+          <span class="time-stamp">${timeAgo(d.createdAt)}</span>
+        </div>
+      `;
+      container.appendChild(bubble);
+    });
+    scrollToBottom();
+  });
 });
 
 async function react(id, type) {
@@ -219,10 +242,6 @@ async function react(id, type) {
     else { dislikes.push(uid); likes = likes.filter(i => i !== uid); }
   }
   await ref.update({ likes, dislikes });
-}
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
 }
 </script>
 </body>
