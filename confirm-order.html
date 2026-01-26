@@ -42,14 +42,12 @@
 
     input, select { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #ddd; margin-top: 8px; margin-bottom: 15px; font-family: inherit; font-size: 1rem; }
 
-    /* Service Choice Toggle */
     .choice-grid { display: flex; gap: 10px; margin-bottom: 15px; }
     .choice-btn { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid #eee; background: #fff; cursor: pointer; font-weight: 600; transition: 0.3s; text-align: center; }
     .choice-btn.active { border-color: var(--primary); color: var(--primary); background: #fff3ea; }
 
     #deliveryOptions { display: none; border-top: 1px solid #f0f0f0; padding-top: 15px; }
 
-    /* MoMo Section */
     #momoWizard { display:none; background: #f0f7ff; padding: 15px; border-radius: 12px; border: 1px solid #dbeafe; }
     .net-grid { display: flex; gap: 10px; margin-bottom: 15px; }
     .net-btn { flex:1; padding: 12px; border-radius: 8px; border: 2px solid #ddd; background: #fff; font-weight: 700; cursor: pointer; }
@@ -155,7 +153,6 @@
   let methodSelected = "pickup";
   const cart = JSON.parse(localStorage.getItem("campusbite_budget_items_v1") || "{}");
 
-  // --- EMPTY CART GUARD ---
   if (Object.keys(cart).length === 0) {
       alert("Your cart is empty! Redirecting to menu...");
       window.location.href = "home.html";
@@ -189,8 +186,6 @@
     document.getElementById("subTotal").innerText = "UGX " + subtotal.toLocaleString();
     document.getElementById("deliveryFee").innerText = "UGX " + fee.toLocaleString();
     document.getElementById("finalTotal").innerText = "UGX " + final.toLocaleString();
-    
-    // Update USSD if network is selected
     if(netSelected) setNet(netSelected);
     validate();
   }
@@ -204,10 +199,8 @@
     netSelected = net;
     document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn'+net).classList.add('active');
-    
     const finalVal = subtotal + (methodSelected === 'delivery' ? parseInt(document.getElementById("areaSelector").value) : 0);
     let ussd = (net === 'MTN') ? `*165*3*${MERCHANT_MTN}*${finalVal}#` : `*185*9*${MERCHANT_AIRTEL}*${finalVal}#`;
-    
     document.getElementById("ussdDisplay").innerText = ussd;
     document.getElementById("payNowBtn").href = "tel:" + ussd.replace(/#/g, "%23");
     document.getElementById("momoActions").style.display = "block";
@@ -219,14 +212,13 @@
     const mode = document.getElementById("paymentMode").value;
     const tx = document.getElementById("transactionId").value.trim();
     const loc = document.getElementById("deliveryLocation").value.trim();
-
     let basicOk = phone.length >= 10;
     if (methodSelected === 'delivery') basicOk = basicOk && loc.length >= 2;
     if (mode === "Mobile Money") basicOk = basicOk && netSelected && tx.length > 5;
-    
     document.getElementById("confirmOrderBtn").disabled = !basicOk;
   }
 
+  // --- UPDATED PLACE ORDER FUNCTION ---
   async function placeOrder() {
     const user = auth.currentUser;
     if(!user) return alert("Please log in to place an order.");
@@ -238,38 +230,42 @@
     const fee = methodSelected === 'delivery' ? parseInt(document.getElementById("areaSelector").value) : 0;
     const areaText = methodSelected === 'delivery' ? document.getElementById("areaSelector").options[document.getElementById("areaSelector").selectedIndex].text : "Pickup";
 
-        try {
-      // Corrected Path: orders -> {uid} -> userOrders
-      await db.collection("orders")
-        .doc(user.uid)
-        .collection("userOrders")
-        .add({
-          userId: user.uid,
-          userName: user.displayName || "Muni Student",
-          items: Object.keys(cart).map(k => ({ name: k, qty: cart[k].qty, price: cart[k].price })),
-          subtotal: subtotal,
-          deliveryFee: fee,
-          totalAmount: subtotal + fee,
-          orderMethod: methodSelected,
-          area: areaText,
-          deliveryPhone: document.getElementById("deliveryPhone").value,
-          deliveryLocation: methodSelected === 'delivery' ? document.getElementById("deliveryLocation").value : "N/A (Pickup)",
-          paymentMode: document.getElementById("paymentMode").value,
-          transactionId: document.getElementById("transactionId").value || "CASH",
-          status: "pending",
-          timestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
+    try {
+      // 1. Initialize Parent Doc (Necessary for Nested Rules)
+      await db.collection("orders").doc(user.uid).set({
+        userName: user.displayName || "Muni Student",
+        lastActivity: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+
+      // 2. Add Order to Sub-collection (orders/uid/userOrders)
+      await db.collection("orders").doc(user.uid).collection("userOrders").add({
+        userId: user.uid,
+        userName: user.displayName || "Muni Student",
+        items: Object.keys(cart).map(k => ({ name: k, qty: cart[k].qty, price: cart[k].price })),
+        subtotal: subtotal,
+        deliveryFee: fee,
+        totalAmount: subtotal + fee,
+        orderMethod: methodSelected,
+        area: areaText,
+        deliveryPhone: document.getElementById("deliveryPhone").value,
+        deliveryLocation: methodSelected === 'delivery' ? document.getElementById("deliveryLocation").value : "N/A (Pickup)",
+        paymentMode: document.getElementById("paymentMode").value,
+        transactionId: document.getElementById("transactionId").value || "CASH",
+        status: "pending",
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
 
       localStorage.removeItem("campusbite_budget_items_v1");
       window.location.href = "order-history.html";
     } catch(e) { 
-      console.error("Path Error:", e);
+      console.error("Save Error: ", e);
       alert("Error: " + e.message); 
       btn.disabled = false; 
       btn.innerText = "Place Order Now";
     }
+  }
 
+  init();
 </script>
 </body>
-
 </html>
