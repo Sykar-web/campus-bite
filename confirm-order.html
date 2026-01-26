@@ -241,7 +241,14 @@
       await db.collection("orders").doc(user.uid).collection("userOrders").add({
         userId: user.uid,
         userName: user.displayName || "Muni Student",
-        items: Object.keys(cart).map(k => ({ name: k, qty: cart[k].qty, price: cart[k].price })),
+        // Add the image field so it's saved with the order
+items: Object.keys(cart).map(k => ({ 
+    name: k, 
+    qty: cart[k].qty, 
+    price: cart[k].price,
+    image: cart[k].img // Ensure this matches what is in your localStorage
+})),
+
         subtotal: subtotal,
         deliveryFee: fee,
         totalAmount: subtotal + fee,
@@ -269,3 +276,4 @@
 </script>
 </body>
 </html>
+
