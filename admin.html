@@ -6,6 +6,12 @@
   <title>Executive Admin | Campus Bite</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="manifest" href="/manifest.json">
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="images/tent.jpeg">
+  <meta name="theme-color" content="#ff914d">
 
   <style>
     :root { --primary: #ff914d; --dark: #121212; --bg: #f8fafb; --white: #ffffff; --red: #ff4d4d; --green: #2ecc71; --blue: #2563eb; }
@@ -42,16 +48,14 @@
     
     .student-item { background: white; padding: 15px 25px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; cursor: pointer; transition: 0.2s; }
     .student-item:hover { border-color: var(--primary); background: #fffaf7; }
-    .student-info h4 { margin: 0; font-size: 1rem; }
-    .student-info p { margin: 0; font-size: 0.8rem; color: #888; }
 
     /* Badges */
     .badge { padding: 6px 14px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
     .pending { background: #fff9c4; color: #fbc02d; border: 1px solid #fbc02d; }
+    .preparing { background: #e3f2fd; color: var(--blue); border: 1px solid var(--blue); }
     .delivered { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
-    .paid-badge { background: #e8f5e9; color: #2e7d32; font-size: 0.6rem; padding: 2px 8px; border-radius: 5px; margin-left: 5px; }
 
-    /* Modals & Inputs */
+    /* Modals */
     .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px; }
     .modal-content { background: var(--white); width: 100%; max-width: 550px; padding: 35px; border-radius: 35px; max-height: 85vh; overflow-y: auto; position: relative; }
     .close-modal { position: absolute; top: 25px; right: 25px; font-size: 1.5rem; color: #ccc; cursor: pointer; }
@@ -59,11 +63,10 @@
     .edit-input { width: 100%; padding: 12px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #eee; border-radius: 12px; font-family: inherit; font-size: 0.9rem; outline-color: var(--primary); }
     .label-small { font-size: 0.65rem; color: #aaa; font-weight: 700; text-transform: uppercase; }
 
-    /* Buttons */
     .btn-save { width: 100%; padding: 16px; background: var(--dark); color: white; border: none; border-radius: 18px; font-weight: 600; cursor: pointer; transition: 0.3s; }
     .btn-verify { width: 100%; padding: 12px; background: var(--green); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 10px; }
-    
-    /* Navigation Components */
+    .btn-notify { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
     .nav-item { padding: 15px 20px; border-radius: 15px; color: #888; display: flex; align-items: center; gap: 15px; cursor: pointer; margin-bottom: 8px; text-decoration: none; }
     .nav-item.active { background: rgba(255,145,77,0.15); color: var(--primary); font-weight: 600; }
     .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 15px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 900; border-top-left-radius: 30px; border-top-right-radius: 30px; }
@@ -75,7 +78,7 @@
 <body>
 
 <aside class="sidebar">
-  <div style="text-align:center; margin-bottom:50px;"><h2 style="color:var(--primary);">Campus Bite</h2><p style="font-size:0.6rem; color:#666;">Admin Dashboard v4.0</p></div>
+  <div style="text-align:center; margin-bottom:50px;"><h2 style="color:var(--primary);">Campus Bite</h2><p style="font-size:0.6rem; color:#666;">Admin Dashboard v4.2</p></div>
   <div class="nav-item active" onclick="switchView('orders', this)"><i class="fa fa-shopping-cart"></i> Live Orders</div>
   <div class="nav-item" onclick="switchView('students', this)"><i class="fa fa-users"></i> Students List</div>
   <div class="nav-item" onclick="switchView('comments', this)"><i class="fa fa-comment-alt"></i> Feedback</div>
@@ -87,7 +90,6 @@
     <div style="max-width:1100px; margin:0 auto;">
       <h1 id="viewTitle">Live Orders</h1>
       <p style="opacity:0.6; font-size:0.9rem;">Real-time business oversight</p>
-      
       <div class="stats-container">
         <div class="stat-card"><span>Active</span><h2 id="statActive">0</h2></div>
         <div class="stat-card"><span>Revenue</span><h2 id="statRevenue">UGX 0</h2></div>
@@ -119,22 +121,16 @@
         <p id="sID" style="font-size: 0.7rem; color: #888;"></p>
     </div>
     
-    <div>
-        <label class="label-small">Full Name</label>
-        <input type="text" id="editSName" class="edit-input">
-
-        <label class="label-small">Phone Number</label>
-        <input type="text" id="editSPhone" class="edit-input">
-
-        <label class="label-small">Hostel / Hall</label>
-        <input type="text" id="editSHostel" class="edit-input">
-
-        <label class="label-small">Department / Course</label>
-        <input type="text" id="editSDepartment" class="edit-input">
-
-        <label class="label-small">Email (Read-only)</label>
-        <p id="displaySEmail" style="font-size: 0.9rem; padding: 10px 0; font-weight: 600;"></p>
-    </div>
+    <label class="label-small">Full Name</label>
+    <input type="text" id="editSName" class="edit-input">
+    <label class="label-small">Phone Number</label>
+    <input type="text" id="editSPhone" class="edit-input">
+    <label class="label-small">Hostel / Hall</label>
+    <input type="text" id="editSHostel" class="edit-input">
+    <label class="label-small">Department / Course</label>
+    <input type="text" id="editSDepartment" class="edit-input">
+    <label class="label-small">Email (Read-only)</label>
+    <p id="displaySEmail" style="font-size: 0.9rem; padding: 10px 0; font-weight: 600;"></p>
     
     <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
         <button id="btnSaveStudent" class="btn-save">Save Changes</button>
@@ -147,19 +143,14 @@
   <div class="modal-content">
     <i class="fa fa-times close-modal" onclick="closeModals()"></i>
     <div style="display:flex; justify-content:space-between;">
-        <div>
-            <h3 id="mOrderID">Order Details</h3>
-            <p id="mCustomerName" style="color:var(--primary); font-weight:600;"></p>
-        </div>
+        <div><h3 id="mOrderID">Order Details</h3><p id="mCustomerName" style="color:var(--primary); font-weight:600;"></p></div>
         <div id="mContactActions"></div>
     </div>
-    
     <div id="orderBody" style="margin-top:20px;"></div>
     <div id="mPaymentSection" style="margin-top:20px;"></div>
     <button class="btn-verify" id="btnConfirmPayment">Mark as Paid (Verified)</button>
-
     <div style="margin-top:25px; border-top:1px solid #eee; padding-top:20px;">
-      <label class="label-small">Status Update</label>
+      <label class="label-small">Status & Alerts</label>
       <select id="mStatus" class="edit-input">
         <option value="pending">Pending</option>
         <option value="preparing">Preparing</option>
@@ -167,7 +158,9 @@
         <option value="delivered">Delivered</option>
         <option value="cancelled">Cancelled</option>
       </select>
-      <button class="btn-save" id="btnUpdateStatus">Update Status Now</button>
+      <button class="btn-save" id="btnUpdateStatus">Update Status</button>
+      <button class="btn-notify" id="btnNotifyStudent" style="display:none;"><i class="fa fa-bell"></i> Send PWA Alert</button>
+      <p id="notifStatus" style="font-size: 0.65rem; text-align: center; margin-top: 8px; font-weight: 600;"></p>
     </div>
   </div>
 </div>
@@ -183,11 +176,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
-    authDomain: "campus-bite-9dbaa.firebaseapp.com",
-    projectId: "campus-bite-9dbaa"
-  };
+  const firebaseConfig = { apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI", authDomain: "campus-bite-9dbaa.firebaseapp.com", projectId: "campus-bite-9dbaa" };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const auth = firebase.auth();
@@ -205,14 +194,7 @@
       sList.innerHTML = "";
       snap.forEach(doc => {
         const s = doc.data(); s.id = doc.id;
-        sList.innerHTML += `
-          <div class="student-item" onclick='openStudentModal(${JSON.stringify(s)})'>
-            <div class="student-info">
-              <h4>${s.name || 'Unknown'}</h4>
-              <p>${s.hostel || 'No Hostel'} • ${s.phone || 'No Phone'}</p>
-            </div>
-            <i class="fa fa-chevron-right" style="color:#ddd;"></i>
-          </div>`;
+        sList.innerHTML += `<div class="student-item" onclick='openStudentModal(${JSON.stringify(s)})'><div class="student-info"><h4>${s.name || 'Unknown'}</h4><p>${s.hostel || 'No Hostel'} • ${s.phone || 'No Phone'}</p></div><i class="fa fa-chevron-right" style="color:#ddd;"></i></div>`;
       });
     });
 
@@ -222,47 +204,117 @@
       list.innerHTML = ""; let rev = 0; let act = 0;
       let all = [];
       snap.forEach(doc => { 
-        let d = doc.data(); d.id = doc.id; d.fullPath = doc.ref.path; 
+        let d = doc.data(); d.id = doc.id; d.fullPath = doc.ref.path; d.userId = doc.ref.parent.parent.id;
         all.push(d); 
       });
       all.sort((a,b) => (a.status === 'pending' ? -1 : 1));
-
       all.forEach(o => {
         if(o.status === 'delivered') rev += (Number(o.totalAmount) || 0);
         if(o.status === 'pending' || o.status === 'preparing') act++;
-        
-        list.innerHTML += `
-          <div class="order-card" onclick='openOrderModal(${JSON.stringify(o)})'>
-            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
-              <small style="color:var(--primary); font-weight:700;">#${o.id.slice(-5).toUpperCase()}</small>
-              <span class="badge ${o.status || 'pending'}">${o.status || 'pending'}</span>
-            </div>
-            <h4>${o.userName || 'Guest'} ${o.paymentStatus === 'Paid' ? '<span class="paid-badge">PAID</span>' : ''}</h4>
-            <p style="font-size:0.8rem; color:#888;"><i class="fa fa-map-marker-alt"></i> ${o.deliveryLocation || 'N/A'}</p>
-            <div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:700;">UGX ${(o.totalAmount || 0).toLocaleString()}</span>
-                <small>${o.paymentMode}</small>
-            </div>
-          </div>`;
+        list.innerHTML += `<div class="order-card" onclick='openOrderModal(${JSON.stringify(o)})'><div style="display:flex; justify-content:space-between; margin-bottom:12px;"><small style="color:var(--primary); font-weight:700;">#${o.id.slice(-5).toUpperCase()}</small><span class="badge ${o.status || 'pending'}">${o.status || 'pending'}</span></div><h4>${o.userName || 'Guest'} ${o.paymentStatus === 'Paid' ? '<span class="paid-badge">PAID</span>' : ''}</h4><p style="font-size:0.8rem; color:#888;"><i class="fa fa-map-marker-alt"></i> ${o.deliveryLocation || 'N/A'}</p><div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700;">UGX ${(o.totalAmount || 0).toLocaleString()}</span><small>${o.paymentMode}</small></div></div>`;
       });
       document.getElementById("statActive").innerText = act;
       document.getElementById("statRevenue").innerText = "UGX " + rev.toLocaleString();
     });
 
-    // 3. COMMENTS SYNC
+    // 3. RESTORED COMMENTS SYNC
     db.collection("comments").orderBy("createdAt", "desc").onSnapshot(snap => {
       const clist = document.getElementById("commentList");
       clist.innerHTML = "";
       snap.forEach(doc => {
         const c = doc.data();
-        clist.innerHTML += `
-          <div class="student-item" style="cursor:default;">
-            <div><strong>${c.userName || 'User'}</strong><p>${c.text}</p></div>
-            <button onclick="deleteComment('${doc.id}')" style="border:none; color:var(--red); background:none; cursor:pointer;"><i class="fa fa-trash"></i></button>
-          </div>`;
+        clist.innerHTML += `<div class="student-item" style="cursor:default;"><div><strong>${c.userName || 'User'}</strong><p>${c.text}</p></div><button onclick="deleteComment('${doc.id}')" style="border:none; color:var(--red); background:none; cursor:pointer;"><i class="fa fa-trash"></i></button></div>`;
       });
     });
   }
+
+  // NOTIFICATION LOGIC
+  async function notifyStudent(order) {
+    const feedback = document.getElementById("notifStatus");
+    feedback.innerText = "⏳ Connecting...";
+    try {
+        const studentDoc = await db.collection("students").doc(order.userId).get();
+        if (!studentDoc.exists || !studentDoc.data().fcmToken) {
+            feedback.innerText = "❌ No Token Found (PWA alert disabled)"; feedback.style.color = "var(--red)"; return;
+        }
+        feedback.innerText = `✅ Alert queued for ${order.userName}!`; feedback.style.color = "var(--green)";
+    } catch (e) { feedback.innerText = "❌ Error."; }
+  }
+
+  function openOrderModal(o) {
+    document.getElementById("mOrderID").innerText = "Order #" + o.id.slice(-5).toUpperCase();
+    document.getElementById("mCustomerName").innerText = o.userName || "Customer";
+    document.getElementById("mStatus").value = o.status || "pending";
+    document.getElementById("notifStatus").innerText = "";
+
+    // Notification Button Logic
+    const notifyBtn = document.getElementById("btnNotifyStudent");
+    if (o.userId) {
+        notifyBtn.style.display = "block";
+        notifyBtn.onclick = () => notifyStudent(o);
+    }
+
+    // Contact Actions (Call/SMS)
+    const phone = o.deliveryPhone || "";
+    document.getElementById("mContactActions").innerHTML = phone ? `
+        <a href="tel:${phone}" style="color:var(--green); font-size:1.4rem; margin-right:15px;"><i class="fa fa-phone-alt"></i></a>
+        <a href="sms:${phone}" style="color:var(--primary); font-size:1.4rem;"><i class="fa fa-comment-dots"></i></a>
+    ` : "";
+
+    // RESTORED: Payment Section with Transaction ID
+    let paymentHtml = "";
+    if (o.paymentMode === "Mobile Money") {
+        paymentHtml = `
+            <div style="background:#eef2ff; border:1px solid #c7d2fe; padding:15px; border-radius:18px; margin-bottom:15px;">
+                <label class="label-small" style="color:#4338ca;">Mobile Money Transaction</label>
+                <div style="font-weight:700; color:#1e1b4b; font-size:1rem; margin:5px 0;">ID: ${o.transactionId || 'NOT PROVIDED'}</div>
+                <div style="font-size:0.75rem; color:#4338ca;">Status: ${o.paymentStatus || 'Unpaid'}</div>
+            </div>`;
+    } else {
+        paymentHtml = `
+            <div style="background:#f9f9f9; padding:12px; border-radius:15px; text-align:center; margin-bottom:15px;">
+                <span class="label-small">Cash on Delivery</span> • <strong>${o.paymentStatus || 'Unpaid'}</strong>
+            </div>`;
+    }
+    document.getElementById("mPaymentSection").innerHTML = paymentHtml;
+
+    // RESTORED: Order Items with Images
+    document.getElementById("orderBody").innerHTML = `
+      <div style="margin-bottom:15px;">
+        <label class="label-small">Delivery Location</label><br>
+        <strong style="font-size:0.9rem;"><i class="fa fa-map-marker-alt" style="color:var(--red)"></i> ${o.deliveryLocation || 'N/A'}</strong>
+      </div>
+      <div style="background:#f9f9f9; padding:15px; border-radius:20px;">
+        ${(o.items || []).map(i => `
+          <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:12px;">
+            <img src="${i.img || i.image || 'images/tent.jpeg'}" 
+                 style="width:45px; height:45px; border-radius:10px; object-fit:cover; background:#eee;"
+                 onerror="this.src='images/tent.jpeg'">
+            <div style="flex:1;">
+                <div style="font-size:0.85rem; font-weight:600;">${i.name}</div>
+                <small style="color:#888;">Qty: ${i.qty}</small>
+            </div>
+            <strong style="font-size:0.85rem;">UGX ${(i.price * i.qty).toLocaleString()}</strong>
+          </div>`).join('')}
+        <div style="text-align:right; color:var(--primary); font-weight:700; font-size:1.1rem; margin-top:5px;">
+            Total: UGX ${(o.totalAmount || 0).toLocaleString()}
+        </div>
+      </div>`;
+
+    // Button Actions
+    document.getElementById("btnConfirmPayment").onclick = async () => {
+        await db.doc(o.fullPath).update({ paymentStatus: 'Paid' });
+        alert("Payment verified successfully!");
+        closeModals();
+    };
+
+    document.getElementById("btnUpdateStatus").onclick = async () => {
+        await db.doc(o.fullPath).update({ status: document.getElementById("mStatus").value });
+        alert("Order status updated.");
+    };
+
+    document.getElementById("orderModal").style.display = "flex";
+}
 
   function openStudentModal(s) {
     document.getElementById("sInitials").innerText = (s.name || "U")[0].toUpperCase();
@@ -274,80 +326,25 @@
     document.getElementById("editSHostel").value = s.hostel || "";
     document.getElementById("editSDepartment").value = s.department || "";
     document.getElementById("sCallBtn").href = "tel:" + s.phone;
-
     document.getElementById("btnSaveStudent").onclick = async () => {
-        try {
-            await db.collection("students").doc(s.id).update({
-                name: document.getElementById("editSName").value,
-                phone: document.getElementById("editSPhone").value,
-                hostel: document.getElementById("editSHostel").value,
-                department: document.getElementById("editSDepartment").value
-            });
-            alert("Updated Successfully!");
-            closeModals();
-        } catch(e) { alert("Error: " + e.message); }
+        await db.collection("students").doc(s.id).update({ name: document.getElementById("editSName").value, phone: document.getElementById("editSPhone").value, hostel: document.getElementById("editSHostel").value, department: document.getElementById("editSDepartment").value });
+        alert("Saved!"); closeModals();
     };
     document.getElementById("studentModal").style.display = "flex";
-  }
-
-  function openOrderModal(o) {
-    document.getElementById("mOrderID").innerText = "Order #" + o.id.slice(-5).toUpperCase();
-    document.getElementById("mCustomerName").innerText = o.userName || "Customer";
-    document.getElementById("mStatus").value = o.status || "pending";
-    
-    const phone = o.deliveryPhone || "";
-    document.getElementById("mContactActions").innerHTML = phone ? `
-        <a href="tel:${phone}" style="color:var(--green); font-size:1.4rem; margin-right:15px;"><i class="fa fa-phone-alt"></i></a>
-        <a href="sms:${phone}" style="color:var(--primary); font-size:1.4rem;"><i class="fa fa-comment-dots"></i></a>
-    ` : "";
-
-    document.getElementById("mPaymentSection").innerHTML = o.paymentMode === "Mobile Money" ? `
-        <div style="background:#f0f7ff; border:1px solid #dbeafe; padding:15px; border-radius:18px;">
-            <label class="label-small" style="color:#2563eb;">Payment: ${o.paymentStatus || 'Unpaid'}</label>
-            <div style="font-weight:700;">Transaction ID: ${o.transactionId || '---'}</div>
-        </div>` : `<div style="background:#f9f9f9; padding:12px; border-radius:15px; text-align:center;">Cash Status: ${o.paymentStatus || 'Unpaid'}</div>`;
-
-    document.getElementById("orderBody").innerHTML = `
-      <div style="margin-bottom:15px;"><label class="label-small">Delivery Point</label><br><strong>${o.deliveryLocation || 'N/A'}</strong></div>
-      <div style="background:#f9f9f9; padding:15px; border-radius:20px;">
-        ${(o.items || []).map(i => `
-          <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px; border-bottom:1px solid #eee; padding-bottom:10px;">
-            <img src="${i.image || 'images/tent.jpeg'}" style="width:40px; height:40px; border-radius:8px; object-fit:cover;">
-            <div style="flex:1;"><small>${i.qty}x ${i.name}</small></div>
-            <strong>${(i.price * i.qty).toLocaleString()}</strong>
-          </div>`).join('')}
-        <div style="text-align:right; color:var(--primary); font-weight:700; font-size:1.1rem;">Total: UGX ${(o.totalAmount || 0).toLocaleString()}</div>
-      </div>`;
-
-    document.getElementById("btnConfirmPayment").onclick = async () => {
-        await db.doc(o.fullPath).update({ paymentStatus: 'Paid' });
-        alert("Marked as Paid!"); closeModals();
-    };
-
-    document.getElementById("btnUpdateStatus").onclick = async () => {
-        await db.doc(o.fullPath).update({ status: document.getElementById("mStatus").value });
-        closeModals();
-    };
-
-    document.getElementById("orderModal").style.display = "flex";
   }
 
   function switchView(view, el) {
     document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-item, .nav-btn').forEach(i => i.classList.remove('active'));
-    document.getElementById(view + 'View').classList.add('active');
-    el.classList.add('active');
+    document.getElementById(view + 'View').classList.add('active'); el.classList.add('active');
     document.getElementById('viewTitle').innerText = view === 'orders' ? 'Live Orders' : (view === 'students' ? 'Students List' : 'User Feedback');
   }
 
   function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); }
-  async function deleteComment(id) { if(confirm("Delete this feedback?")) await db.collection("comments").doc(id).delete(); }
-  
+  async function deleteComment(id) { if(confirm("Delete this?")) await db.collection("comments").doc(id).delete(); }
   function filterData() {
     const q = document.getElementById("adminSearch").value.toLowerCase();
-    document.querySelectorAll(".order-card, .student-item").forEach(c => {
-      c.style.display = c.innerText.toLowerCase().includes(q) ? "" : "none";
-    });
+    document.querySelectorAll(".order-card, .student-item").forEach(c => { c.style.display = c.innerText.toLowerCase().includes(q) ? "" : "none"; });
   }
 </script>
 </body>

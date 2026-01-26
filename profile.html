@@ -8,138 +8,67 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="icon" href="images/tent.jpeg" type="image/jpeg" />
+  
+  <link rel="icon" href="/images/tent.jpeg" type="image/jpeg" />
+  <link rel="manifest" href="/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#ff914d">
 
   <style>
-    :root {
-      --primary: #ff914d;
-      --bg: #fdfdfd;
-      --dark: #1a1a1a;
-      --text: #2d3436;
-      --danger: #eb4d4b;
-    }
-
+    :root { --primary: #ff914d; --bg: #fdfdfd; --dark: #1a1a1a; --text: #2d3436; --danger: #eb4d4b; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Poppins", sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      padding-bottom: 100px;
-    }
+    body { font-family: "Poppins", sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 110px; }
 
-    /* Premium Curved Header */
     .profile-header {
       background: linear-gradient(135deg, var(--primary), #ff6a00);
-      height: 180px;
-      padding: 40px 20px;
-      text-align: center;
-      color: white;
-      border-bottom-left-radius: 50px;
-      border-bottom-right-radius: 50px;
-      position: relative;
-      margin-bottom: 60px;
+      height: 180px; padding: 40px 20px; text-align: center; color: white;
+      border-bottom-left-radius: 50px; border-bottom-right-radius: 50px;
+      position: relative; margin-bottom: 60px;
     }
+    .profile-header h2 { font-weight: 500; font-size: 0.9rem; opacity: 0.9; word-break: break-all; }
 
-    .profile-header h2 { font-weight: 500; font-size: 1.1rem; opacity: 0.9; }
-
-    /* Squircle Avatar */
-    .avatar-wrapper {
-      position: absolute;
-      bottom: -40px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
+    .avatar-wrapper { position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%); }
     .avatar-circle {
-      width: 100px;
-      height: 100px;
-      background: white;
-      border-radius: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      color: var(--primary);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      width: 100px; height: 100px; background: white; border-radius: 30px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; color: var(--primary); box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
 
     .container { padding: 0 25px; max-width: 500px; margin: 0 auto; }
 
-    /* Admin Feature Bar */
     #adminPortal {
-      background: var(--dark);
-      color: white;
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 25px;
-      display: none; /* Hidden by default */
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+      background: var(--dark); color: white; border-radius: 20px; padding: 18px;
+      margin-bottom: 25px; display: none; align-items: center; justify-content: space-between;
+      cursor: pointer; box-shadow: 0 8px 15px rgba(0,0,0,0.15);
     }
     .admin-text h4 { font-size: 0.9rem; margin-bottom: 2px; }
     .admin-text p { font-size: 0.7rem; color: #888; }
 
-    /* Input Rows */
     .section-label { font-size: 0.7rem; color: #b2bec3; text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px 5px; display: block; }
     
     .input-row {
-      background: white;
-      padding: 15px 20px;
-      border-radius: 18px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      border: 1px solid #f1f1f1;
+      background: white; padding: 15px 20px; border-radius: 18px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 15px; border: 1px solid #f1f1f1;
     }
     .input-row i:first-child { color: var(--primary); width: 20px; text-align: center; }
     .input-row div { flex: 1; }
     .input-row label { display: block; font-size: 0.65rem; color: #b2bec3; }
     .input-row input, .input-row select {
-      width: 100%;
-      border: none;
-      outline: none;
-      font-family: inherit;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: var(--text);
-      background: transparent;
+      width: 100%; border: none; outline: none; font-family: inherit;
+      font-size: 0.95rem; font-weight: 500; color: var(--text); background: transparent;
     }
 
-    /* Password Toggle Icon */
-    .toggle-pass { color: #ccc; cursor: pointer; padding: 5px; transition: 0.3s; }
-    .toggle-pass:hover { color: var(--primary); }
+    .toggle-pass { color: #ccc; cursor: pointer; padding: 5px; }
 
-    /* Buttons */
     .btn {
-      width: 100%;
-      padding: 18px;
-      border-radius: 20px;
-      border: none;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      width: 100%; padding: 18px; border-radius: 20px; border: none;
+      font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
     }
-    .btn:active { transform: scale(0.98); }
-
     .save-btn { background: var(--primary); color: white; margin-top: 15px; box-shadow: 0 8px 20px rgba(255, 145, 77, 0.3); }
-    
-    .logout-btn {
-      background: #fff;
-      color: var(--danger);
-      border: 1px solid #ffebeb;
-      margin-top: 30px;
-      box-shadow: 0 4px 10px rgba(235, 77, 75, 0.05);
-    }
+    .logout-btn { background: #fff; color: var(--danger); border: 1px solid #ffebeb; margin-top: 30px; }
 
-    /* Footer Nav */
     .footer-nav { 
       position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
       display: flex; justify-content: space-around; padding: 12px 0; 
@@ -153,14 +82,13 @@
 <body>
 
 <div class="profile-header">
-  <h2 id="displayEmail">My Profile</h2>
+  <h2 id="displayEmail">Loading Profile...</h2>
   <div class="avatar-wrapper">
     <div class="avatar-circle"><i class="fa fa-user"></i></div>
   </div>
 </div>
 
 <div class="container">
-  
   <div id="adminPortal" onclick="location.href='admin.html'">
     <div class="admin-text">
       <h4>Command Center</h4>
@@ -174,7 +102,7 @@
     <i class="fa fa-user-edit"></i>
     <div>
       <label>Full Name</label>
-      <input type="text" id="name" placeholder="Enter your name">
+      <input type="text" id="name" placeholder="Full name">
     </div>
   </div>
 
@@ -190,7 +118,7 @@
     <i class="fa fa-university"></i>
     <div>
       <label>Department</label>
-      <input type="text" id="dept" placeholder="e.g. ICT">
+      <input type="text" id="dept" placeholder="e.g. ICT or Nursing">
     </div>
   </div>
 
@@ -211,21 +139,20 @@
   <div class="input-row">
     <i class="fa fa-lock"></i>
     <div>
-      <label>New Password</label>
+      <label>Change Password</label>
       <input type="password" id="newPassword" placeholder="••••••••">
     </div>
-    <i class="fa fa-eye toggle-pass" onclick="togglePass()"></i>
+    <i class="fa fa-eye toggle-pass" id="eyeIcon"></i>
   </div>
 
-  <button class="btn save-btn" id="saveBtn"><i class="fa fa-check-circle"></i> Save All Changes</button>
-
+  <button class="btn save-btn" id="saveBtn"><i class="fa fa-check-circle"></i> Save Changes</button>
   <button class="btn logout-btn" id="logoutBtn"><i class="fa fa-power-off"></i> Log Out</button>
 </div>
 
 <nav class="footer-nav">
   <a href="profile.html" class="active"><i class="fa fa-user"></i><span>Profile</span></a>
   <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
-  <a href="confirm-order.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+  <a href="budget.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
   <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
   <a href="comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
 </nav>
@@ -235,7 +162,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
 
 <script>
-// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
   authDomain: "campus-bite-9dbaa.firebaseapp.com",
@@ -245,81 +171,90 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// 🔸 CHANGE TO YOUR ADMIN EMAIL
 const ADMIN_EMAIL = "ezrasykar@gmail.com";
 
-// Password Visibility Toggle
-function togglePass() {
+// Password visibility
+document.getElementById("eyeIcon").onclick = function() {
   const input = document.getElementById("newPassword");
-  const icon = event.target;
   if(input.type === "password") {
     input.type = "text";
-    icon.classList.replace("fa-eye", "fa-eye-slash");
+    this.classList.replace("fa-eye", "fa-eye-slash");
   } else {
     input.type = "password";
-    icon.classList.replace("fa-eye-slash", "fa-eye");
+    this.classList.replace("fa-eye-slash", "fa-eye");
   }
-}
+};
 
 auth.onAuthStateChanged(async user => {
   if(!user) return location.href="index.html";
   document.getElementById("displayEmail").textContent = user.email;
 
-  // Check Admin Access
   if(user.email === ADMIN_EMAIL) {
     document.getElementById("adminPortal").style.display = "flex";
   }
 
-  // Load Profile Data
-  const doc = await db.collection("students").doc(user.uid).get();
-  if(doc.exists) {
-    const d = doc.data();
-    document.getElementById("name").value = d.name || "";
-    document.getElementById("phone").value = d.phone || "";
-    document.getElementById("dept").value = d.department || "";
-    document.getElementById("year").value = d.year || "1";
-  }
+  // Fetch student data
+  try {
+    const doc = await db.collection("students").doc(user.uid).get();
+    if(doc.exists) {
+      const d = doc.data();
+      document.getElementById("name").value = d.name || "";
+      document.getElementById("phone").value = d.phone || "";
+      document.getElementById("dept").value = d.department || "";
+      document.getElementById("year").value = d.year || "1";
+    }
+  } catch(e) { console.error("Error loading profile:", e); }
 });
 
-// Update Profile & Password
-document.getElementById("saveBtn").onclick = async () => {
+document.getElementById("saveBtn").onclick = async function() {
   const user = auth.currentUser;
   const newPass = document.getElementById("newPassword").value;
+  this.disabled = true;
+  this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
 
   try {
-    // 1. Update Password if provided
+    // 1. Password Update
     if(newPass.length >= 6) {
       await user.updatePassword(newPass);
     } else if (newPass.length > 0) {
+      this.disabled = false;
+      this.innerHTML = '<i class="fa fa-check-circle"></i> Save Changes';
       return alert("Password must be at least 6 characters!");
     }
 
-    // 2. Update Profile Info
+    // 2. Profile Update
     await db.collection("students").doc(user.uid).set({
       name: document.getElementById("name").value,
       phone: document.getElementById("phone").value,
       department: document.getElementById("dept").value,
       year: document.getElementById("year").value,
-      email: user.email
+      email: user.email,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
     }, {merge: true});
 
-    alert("Profile Updated Successfully ✨");
+    alert("Profile Updated Successfully!");
     document.getElementById("newPassword").value = "";
   } catch(e) {
     if (e.code === 'auth/requires-recent-login') {
-      alert("Please log out and log back in to change your password for security.");
+      alert("Please log out and log back in to verify your identity before changing password.");
     } else {
-      alert("Error: " + e.message);
+      alert("Update failed: " + e.message);
     }
   }
+  this.disabled = false;
+  this.innerHTML = '<i class="fa fa-check-circle"></i> Save Changes';
 };
 
-// Logout Logic
 document.getElementById("logoutBtn").onclick = () => {
-  if(confirm("Are you sure you want to log out?")) {
+  if(confirm("Log out of Campus Bite?")) {
     auth.signOut().then(() => location.href = "index.html");
   }
 };
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 </script>
 </body>
 </html>

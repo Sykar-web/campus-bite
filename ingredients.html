@@ -1,106 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="canonical" href="https://campusbite.xyz/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meal Details | Campus Bite</title>
   
-  <link rel="icon" href="images/tent.jpeg" type="image/jpeg">
+  <link rel="icon" href="/images/tent.jpeg" type="image/jpeg">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Poppins:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="manifest" href="/manifest.json">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#ff914d">
 
   <style>
-    :root {
-      --brand: #ff914d;
-      --brand-dark: #e67e39;
-      --glass: rgba(255, 255, 255, 0.96);
-    }
-
+    :root { --brand: #ff914d; --brand-dark: #e67e39; --glass: rgba(255, 255, 255, 0.96); }
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
-    body {
-      min-height: 100vh;
-      background-color: #000;
-      color: #fff;
-      overflow-x: hidden;
-    }
+    body { min-height: 100vh; background-color: #000; color: #fff; overflow-x: hidden; }
 
-    /* --- KEN BURNS MOTION BACKGROUND --- */
-    .bg-wrapper {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      overflow: hidden;
-    }
-
+    .bg-wrapper { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
     #mealBg {
-      width: 110%;
-      height: 110%;
-      position: absolute;
-      top: -5%;
-      left: -5%;
-      background-size: cover;
-      background-position: center;
-      filter: brightness(0.5);
+      width: 110%; height: 110%; position: absolute; top: -5%; left: -5%;
+      background-size: cover; background-position: center; filter: brightness(0.4);
       animation: kenBurns 20s infinite alternate ease-in-out;
     }
 
-    @keyframes kenBurns {
-      0% { transform: scale(1); }
-      100% { transform: scale(1.15) translate(-2%, -2%); }
-    }
+    @keyframes kenBurns { 0% { transform: scale(1); } 100% { transform: scale(1.1) translate(-1%, -1%); } }
 
-    #overlay {
-      position: relative;
-      z-index: 1;
-      padding: 40px 20px;
-      max-width: 750px;
-      margin: 0 auto;
-    }
+    #overlay { position: relative; z-index: 1; padding: 40px 20px; max-width: 750px; margin: 0 auto; }
 
     header { text-align: center; margin-bottom: 30px; }
-    header h1 { font-family: 'Poppins', sans-serif; color: var(--brand); font-size: 1.8rem; }
-    .subtitle { font-size: 0.9rem; opacity: 0.8; }
+    header h1 { font-family: 'Poppins', sans-serif; color: var(--brand); font-size: 1.8rem; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    .subtitle { font-size: 0.8rem; opacity: 0.8; letter-spacing: 1px; text-transform: uppercase; }
 
-    /* --- GLASS CARD --- */
     .meal-details {
-      background: var(--glass);
-      color: #1a1a1a;
-      border-radius: 28px;
-      padding: 30px;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-      backdrop-filter: blur(12px);
+      background: var(--glass); color: #1a1a1a; border-radius: 32px; padding: 30px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5); backdrop-filter: blur(12px);
     }
 
     .action-bar { display: flex; gap: 12px; margin-bottom: 30px; }
     
     button {
-      flex: 1; padding: 14px; border: none; border-radius: 12px;
+      flex: 1; padding: 14px; border: none; border-radius: 14px;
       font-weight: 600; cursor: pointer; display: flex;
       align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
     }
 
     button.favorite { background: var(--brand); color: white; }
     button.share { background: #f0f0f0; color: #444; }
+    button:active { transform: scale(0.96); }
 
     h3 { font-family: 'Poppins', sans-serif; margin: 25px 0 15px; color: #333; font-size: 1.1rem; }
     h3 i { color: var(--brand); margin-right: 8px; }
 
-    ul, ol { list-style: none; margin-bottom: 20px; }
-    li { margin-bottom: 12px; line-height: 1.5; font-size: 0.95rem; display: flex; align-items: flex-start; gap: 10px; }
-
+    li { margin-bottom: 12px; line-height: 1.5; font-size: 0.95rem; display: flex; align-items: flex-start; gap: 12px; }
     .ingredient-check { accent-color: var(--brand); width: 18px; height: 18px; margin-top: 2px; }
-    .step-num { background: var(--brand); color: white; min-width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; }
+    .step-num { background: var(--brand); color: white; min-width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: bold; }
 
-    /* Comments Section */
+    /* Reviews */
     .comments-section { margin-top: 40px; border-top: 1px solid #eee; padding-top: 25px; }
-    .comment { background: #f8f9fa; padding: 15px; border-radius: 14px; margin-bottom: 12px; border: 1px solid #efefef; }
-    .comment strong { color: var(--brand); font-size: 0.85rem; }
+    .comment { background: #f8f9fa; padding: 15px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #efefef; }
+    .comment strong { color: var(--brand); font-size: 0.8rem; }
     
-    textarea { width: 100%; padding: 15px; border-radius: 14px; border: 1.5px solid #eee; background: #fafafa; outline: none; transition: 0.3s; resize: none; }
+    textarea { 
+      width: 100%; padding: 15px; border-radius: 16px; border: 1.5px solid #eee; 
+      background: #fafafa; outline: none; transition: 0.3s; resize: none; font-size: 0.9rem;
+    }
     textarea:focus { border-color: var(--brand); background: #fff; }
 
-    footer { text-align: center; margin-top: 50px; font-size: 0.8rem; opacity: 0.6; padding-bottom: 20px; }
+    footer { text-align: center; margin-top: 50px; font-size: 0.75rem; opacity: 0.5; padding-bottom: 30px; }
   </style>
 </head>
 <body>
@@ -109,11 +80,12 @@
 
 <div id="overlay">
   <header>
-    <h1 id="mealTitleDisplay">Meal Details</h1>
+    <h1 id="mealTitleDisplay">Loading...</h1>
     <p class="subtitle">Campus Bite Kitchen • Muni University</p>
   </header>
 
-  <main id="mealContainer"></main>
+  <main id="mealContainer">
+    </main>
 
   <footer>© 2026 Campus Bite | Arua, Uganda</footer>
 </div>
@@ -121,55 +93,17 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="/ingredients.js"></script>
 
 <script>
-  const firebaseConfig={apiKey:"AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
-  authDomain:"campus-bite-9dbaa.firebaseapp.com",
-  projectId:"campus-bite-9dbaa",
-  storageBucket:"campus-bite-9dbaa.appspot.com",
-  messagingSenderId:"294389261625",
-  appId:"1:294389261625:web:095d6e5f85f4e8"};
+  const firebaseConfig = {
+    apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
+    authDomain: "campus-bite-9dbaa.firebaseapp.com",
+    projectId: "campus-bite-9dbaa"
+  };
   firebase.initializeApp(firebaseConfig);
-  const auth=firebase.auth();
-  const db=firebase.firestore();
-
-  const meals = [
-    {name:"Mandazi", img:"images/mandazi.png", ingredients:["2 cups flour","1/2 cup sugar","1 tsp baking powder","1/4 tsp salt","1/2 cup coconut milk","Oil"], steps:["Combine dry ingredients.","Knead with coconut milk.","Rest for 30 mins.","Fry until golden brown."]},
-    {name:"Chapati", img:"images/chapati.jpg", ingredients:["2 cups flour","1/2 tsp salt","1/2 cup water","2 tbsp oil"], steps:["Mix flour/salt.","Knead with water.","Rest 30 mins.","Roll thin and cook on skillet."]},
-    {name:"Fried Cassava", img:"images/fried cassava.jpg", ingredients:["500g cassava","Salt","Oil"], steps:["Peel and cut cassava.","Boil until soft.","Fry until golden."]},
-    {name:"Pan Cakes", img:"images/pancakes.png", ingredients:["1 cup flour","2 tbsp sugar","1 tsp baking powder","1 cup milk","1 egg","Vanilla"], steps:["Mix dry ingredients.","Whisk wet ingredients.","Combine and cook on skillet."]},
-    {name:"Samosas", img:"images/samosa.jpg", ingredients:["2 cups flour","Salt","Water","Filling","Oil"], steps:["Make dough.","Prepare filling.","Fold cones, fill and seal.","Deep fry."]},
-    {name:"Boiled Eggs", img:"images/eggs.jpg", ingredients:["Eggs","Water","Salt"], steps:["Boil eggs for 8-10 mins.","Cool and peel."]},
-    {name:"Black Tea", img:"images/tea.webp", ingredients:["2 cups water","1 tsp tea leaves","Sugar"], steps:["Boil water with tea.","Simmer and strain."]},
-    {name:"Toasted Bread", img:"images/Bread.jpg", ingredients:["Bread slices","Butter"], steps:["Heat pan.","Toast until golden.","Spread butter."]},
-    {name:"Vegetable Samosa (A pair)", img:"images/vegetable.jpg", ingredients:["Samosa pastry","Veggie filling","Oil"], steps:["Fill pastry.","Fold and seal.","Fry until crisp."]},
-    {name:"Beef Samosa(A pair)", img:"images/beef.png", ingredients:["Samosa pastry","Minced beef","Oil"], steps:["Cook beef filling.","Fold into pastry.","Fry until hot and golden."]},
-    {name:"Mandazi (A pair)", img:"images/mandazi.jpg", ingredients:["Dough from recipe"], steps:["Shape discs.","Fry in hot oil."]},
-    {name:"Beef Pie", img:"images/beef pie.jpg", ingredients:["Pie crust","Minced beef","Oil"], steps:["Prepare filling.","Fill crust and seal.","Bake or fry."]},
-    {name:"Cookies", img:"images/cookies.webp", ingredients:["2 cups flour","1 cup sugar","1/2 cup butter","Vanilla","1 egg"], steps:["Cream butter/sugar.","Add egg/flour.","Bake at 180°C for 12 mins."]},
-    {name:"Home fries", img:"images/fries.jpg", ingredients:["Potatoes","Oil","Spices"], steps:["Cube potatoes.","Parboil.","Fry until golden."]},
-    {name:"Baked Beans", img:"images/beans.jpg", ingredients:["Canned beans","Onions","Tomato paste"], steps:["Sauté onions.","Add beans/paste.","Simmer 10 mins."]},
-    {name:"Egg Rolls (A pair)", img:"images/egg rolls.jpg", ingredients:["Pastry","Filling","Oil"], steps:["Roll filling in pastry.","Seal edges.","Deep fry."]},
-    {name:"American Pancake", img:"images/american.jpg", ingredients:["1 cup flour","Sugar","Baking powder","1 egg","3/4 cup milk"], steps:["Form batter.","Cook until bubbles form.","Flip and serve."]},
-    {name:"Kikomando", img:"images/kikomando.jpg", ingredients:["Chapati","Beans","Spices"], steps:["Cut chapati.","Prepare beans.","Mix together."]},
-    {name:"Fried Rice", img:"images/rice.webp", ingredients:["Rice","Veggies","Oil","Soy sauce"], steps:["Cook rice.","Stir fry veggies.","Mix with soy sauce."]},
-    {name:"Matooke", img:"images/matooke.jpg", ingredients:["Matooke","Salt","Water"], steps:["Peel and mash.","Steam until soft."]},
-    {name:"White Rice & Beans", img:"images/white rice.jpg", ingredients:["Rice","Beans","Salt"], steps:["Cook separately.","Serve together."]},
-    {name:"Anyoya", img:"images/anyoya.jpeg", ingredients:["Maize flour","Water","Salt"], steps:["Mix flour/water.","Cook until firm."]},
-    {name:"Chicken/Liver/Goat/Beef Stew", img:"images/chicken stew.jpg", ingredients:["Meat","Onions","Tomatoes","Spices"], steps:["Brown meat.","Add tomatoes/spices.","Simmer until tender."]},
-    {name:"Cold Water", img:"images/nivana.jpg", ingredients:["Bottled water"], steps:["Serve chilled."]},
-    {name:"Fresh Juice", img:"images/juice.jpg", ingredients:["Fruits","Water","Sugar"], steps:["Blend fruits.","Strain and chill."]},
-    {name:"Cold sodas", img:"images/soda.jpg", ingredients:["Carbonated water","Flavor"], steps:["Pour over ice."]},
-    {name:"Bongo", img:"images/bongo.jpg", ingredients:["Ingredients"], steps:["Serve over ice."]},
-    {name:"Guiness", img:"images/guiness.jpg", ingredients:["Guinness"], steps:["Pour carefully."]},
-    {name:"Bond 7", img:"images/bond7.jpg", ingredients:["Bond 7"], steps:["Serve chilled."]},
-    {name:"Smirnoff", img:"images/smirnoff.jpg", ingredients:["Smirnoff"], steps:["Serve or mix."]},
-    {name:"Club Pilsener", img:"images/club.jpg", ingredients:["Pilsner"], steps:["Serve chilled."]},
-    {name:"Minute maid", img:"images/maid.jpg", ingredients:["Juice"], steps:["Pour chilled."]},
-    {name:"Bushera", img:"images/bushera.jpg", ingredients:["Millet flour","Water","Sugar"], steps:["Mix and boil until thick."]},
-    {name:"Oner", img:"images/oner.jpg", ingredients:["Oner"], steps:["Serve chilled."]},
-    {name:"Yorghurt", img:"images/yogurt.jpg", ingredients:["Milk","Culture"], steps:["Ferment and chill."]}
-  ];
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
   const params = new URLSearchParams(window.location.search);
   const selectedMealName = params.get("meal");
@@ -177,14 +111,21 @@
   const mealBg = document.getElementById("mealBg");
 
   auth.onAuthStateChanged(user => {
-    if(!user) { window.location.href="index.html"; return; }
+    if(!user) { window.location.href="login.html"; return; }
     loadMeal(user);
   });
 
   function loadMeal(user) {
-    const meal = meals.find(m => m.name === selectedMealName) || meals[0];
+    // 1. Find meal in the array (imported from ingredients.js)
+    const meal = typeof meals !== 'undefined' ? meals.find(m => m.name === selectedMealName) : null;
+    
+    if(!meal) {
+      container.innerHTML = `<div class="meal-details" style="text-align:center;"><h3>Meal not found</h3><a href="home.html" style="color:var(--brand)">Return to Menu</a></div>`;
+      return;
+    }
+
     document.getElementById("mealTitleDisplay").innerText = meal.name;
-    mealBg.style.backgroundImage = `url('${meal.img || 'images/default.jpg'}')`;
+    mealBg.style.backgroundImage = `url('${meal.img || '/images/tent.jpeg'}')`;
 
     container.innerHTML = `
       <div class="meal-details">
@@ -192,53 +133,76 @@
           <button class="favorite" id="favoriteBtn"><i class="fa-solid fa-heart"></i> Favorite</button>
           <button class="share" id="shareBtn"><i class="fa-solid fa-link"></i> Share</button>
         </div>
+        
         <h3><i class="fa-solid fa-list-check"></i> Ingredients</h3>
-        <ul>${meal.ingredients.map(i => `<li><input type="checkbox" class="ingredient-check"> ${i}</li>`).join('')}</ul>
+        <ul>${(meal.ingredients || []).map(i => `<li><input type="checkbox" class="ingredient-check"> ${i}</li>`).join('')}</ul>
+        
         <h3><i class="fa-solid fa-fire-burner"></i> Method</h3>
-        <ol>${meal.steps.map((s, idx) => `<li><span class="step-num">${idx+1}</span> ${s}</li>`).join('')}</ol>
+        <ol>${(meal.steps || []).map((s, idx) => `<li><span class="step-num">${idx+1}</span> ${s}</li>`).join('')}</ol>
+        
         <div class="comments-section">
-          <div id="commentsContainer"></div>
-          <form id="commentForm">
-            <textarea id="commentInput" rows="2" placeholder="Tell us how it was..."></textarea>
-            <button type="submit" class="favorite" style="width:auto; padding: 10px 20px; margin-top:10px;">Post Review</button>
+          <h3><i class="fa-solid fa-star"></i> Student Reviews</h3>
+          <div id="commentsContainer">Loading reviews...</div>
+          <form id="commentForm" style="margin-top:20px;">
+            <textarea id="commentInput" rows="2" placeholder="How did it taste?"></textarea>
+            <button type="submit" class="favorite" style="width:auto; padding: 12px 25px; margin-top:10px;">Post Review</button>
           </form>
         </div>
       </div>
     `;
 
+    // Favorites Logic
     document.getElementById("favoriteBtn").onclick = async () => {
-      await db.collection("users").doc(user.uid).collection("favorites").doc(meal.name).set({mealName:meal.name});
-      alert("Added to favorites!");
+      try {
+        await db.collection("users").doc(user.uid).collection("favorites").doc(meal.name).set({
+          mealName: meal.name,
+          savedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert("Added to your favorites! ❤️");
+      } catch(e) { console.error(e); }
     };
 
+    // Share Logic
     document.getElementById("shareBtn").onclick = () => {
       navigator.clipboard.writeText(window.location.href);
-      alert("Link copied!");
+      alert("Link copied to clipboard! 🔗");
     };
 
+    // Real-time Comments
     const commCont = document.getElementById("commentsContainer");
     const commForm = document.getElementById("commentForm");
     
+    db.collection("meals").doc(meal.name).collection("comments").orderBy("timestamp","desc").limit(10)
+      .onSnapshot(snap => {
+        commCont.innerHTML = snap.empty ? '<p style="color:#999; font-size:0.8rem; text-align:center;">No reviews yet. Be the first!</p>' : '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const commentDiv = document.createElement("div");
+          commentDiv.className = "comment";
+          commentDiv.innerHTML = `<strong>@${d.userId}</strong><p>${d.text}</p>`;
+          commCont.appendChild(commentDiv);
+        });
+      });
+
     commForm.onsubmit = async (e) => {
       e.preventDefault();
       const val = document.getElementById("commentInput").value.trim();
       if(!val) return;
-      await db.collection("meals").doc(meal.name).collection("comments").add({
-        userId: user.email.split('@')[0],
-        text: val,
-        timestamp: Date.now()
-      });
-      document.getElementById("commentInput").value = "";
-    };
-
-    db.collection("meals").doc(meal.name).collection("comments").orderBy("timestamp","desc")
-      .onSnapshot(snap => {
-        commCont.innerHTML = snap.empty ? '<p style="color:#999; font-size:0.8rem;">No reviews yet.</p>' : '';
-        snap.forEach(doc => {
-          const d = doc.data();
-          commCont.innerHTML += `<div class="comment"><strong>@${d.userId}</strong><p>${d.text}</p></div>`;
+      
+      try {
+        await db.collection("meals").doc(meal.name).collection("comments").add({
+          userId: user.email.split('@')[0],
+          text: val,
+          timestamp: Date.now()
         });
-      });
+        document.getElementById("commentInput").value = "";
+      } catch(e) { alert("Error posting review."); }
+    };
+  }
+
+  // PWA SW
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
   }
 </script>
 </body>

@@ -1,112 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<link rel="canonical" href="https://campusbite.xyz/">
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Campus Bite – Meals & Budget</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-<meta name="theme-color" content="#ff914d">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="icon" href="images/tent.jpeg" type="image/jpeg">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Bite – Meals & Budget</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff914d">
+  <link rel="icon" href="/images/tent.jpeg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="/images/tent.jpeg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<style>
-* { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins", sans-serif; }
-body { background:#fff; color:#333; -webkit-font-smoothing:antialiased; overflow-x: hidden; }
+  <style>
+    :root { --brand: #ff914d; --brand-light: #fdf2e9; --text-muted: #888; }
+    * { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins", sans-serif; }
+    body { background:#fff; color:#333; -webkit-font-smoothing:antialiased; overflow-x: hidden; padding-bottom: 90px; }
 
-/* Header & App Bar */
-header { 
-    background:#ff914d; 
-    color:#fff; 
-    padding:15px 20px; 
-    display:flex; 
-    align-items:center; 
-    box-shadow:0 2px 10px rgba(0,0,0,0.1); 
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-.header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
-header h1 { font-size:1.1rem; font-weight:600; flex-grow: 1; }
+    /* Header */
+    header { 
+        background: var(--brand); color:#fff; padding:15px 20px; 
+        display:flex; align-items:center; box-shadow:0 2px 10px rgba(0,0,0,0.1); 
+        position: sticky; top: 0; z-index: 1000;
+    }
+    .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
+    header h1 { font-size:1.1rem; font-weight:600; flex-grow: 1; }
 
-/* Filters & Search - No Borders */
-.filter-section { 
-    padding:15px; 
-    display:flex; 
-    flex-direction: column;
-    gap:12px; 
-    background: #fff;
-}
-.search-container { position: relative; width: 100%; }
-.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #ff914d; }
-#mealSearch { 
-    width: 100%; padding: 12px 12px 12px 38px; border-radius: 25px; 
-    border: 1px solid #f0f0f0; background: #f9f9f9; outline: none; 
-}
-.select-group { display: flex; gap: 10px; }
-.select-group select { 
-    flex: 1; padding: 10px; border-radius: 12px; border: none; 
-    background: #fdf2e9; color: #ff6a00; font-weight: 600;
-}
+    /* Search & Filters */
+    .filter-section { padding:15px; display:flex; flex-direction: column; gap:12px; background: #fff; }
+    .search-container { position: relative; width: 100%; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--brand); }
+    #mealSearch { 
+        width: 100%; padding: 12px 12px 12px 38px; border-radius: 25px; 
+        border: 1px solid #f0f0f0; background: #f9f9f9; outline: none; 
+    }
+    .select-group { display: flex; gap: 10px; }
+    .select-group select { 
+        flex: 1; padding: 10px; border-radius: 12px; border: none; 
+        background: var(--brand-light); color: #ff6a00; font-weight: 600; font-size: 0.85rem;
+    }
 
-/* Meal Grid - 8 items per page focus */
-.meal-section { 
-    padding: 10px; 
-    display:grid; 
-    grid-template-columns:repeat(2, 1fr); 
-    gap:12px; 
-}
-.meal-card { 
-    background:#fff; border-radius: 15px; overflow:hidden; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* No borders */
-    transition: transform 0.2s;
-}
-.meal-card img { width:100%; height:140px; object-fit:cover; border: none; }
-.meal-info { padding:10px; }
-.meal-info h3 { font-size: 0.95rem; color: #333; margin-bottom: 2px; cursor: pointer; }
-.meal-place { font-size: 0.75rem; color: #888; margin-bottom: 6px; }
-.meal-price { font-size: 0.9rem; font-weight: 700; color: #ff6a00; margin-bottom: 8px; }
+    /* Meal Grid */
+    .meal-section { padding: 10px; display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; }
+    .meal-card { background:#fff; border-radius: 15px; overflow:hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    .meal-card img { width:100%; height:130px; object-fit:cover; cursor: pointer; }
+    .meal-info { padding:10px; }
+    .meal-info h3 { font-size: 0.9rem; color: #333; margin-bottom: 2px; cursor: pointer; }
+    .meal-place { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px; }
+    .meal-price { font-size: 0.85rem; font-weight: 700; color: #ff6a00; margin-bottom: 8px; }
 
-/* Counter & Buttons */
-.add-btn { 
-    background:#ff914d; color:#fff; border:none; border-radius:8px; 
-    padding:8px; width: 100%; font-weight:600; cursor: pointer;
-}
-.counter { display: flex; justify-content: space-between; align-items: center; background: #fff3ea; border-radius: 8px; }
-.counter button { background: none; border: none; padding: 8px; color: #ff6a00; font-weight: bold; width: 30px; }
+    .add-btn { background: var(--brand); color:#fff; border:none; border-radius:8px; padding:8px; width: 100%; font-weight:600; cursor: pointer; font-size: 0.8rem; }
+    .counter { display: flex; justify-content: space-between; align-items: center; background: var(--brand-light); border-radius: 8px; }
+    .counter button { background: none; border: none; padding: 8px; color: #ff6a00; font-weight: bold; width: 30px; cursor: pointer; }
 
-/* Pagination */
-.pagination { display: flex; justify-content: center; align-items: center; padding: 20px; gap: 15px; }
-.page-btn { background: #ff914d; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; }
-.page-btn:disabled { background: #eee; color: #aaa; }
+    .pagination { display: flex; justify-content: center; align-items: center; padding: 20px; gap: 15px; }
+    .page-btn { background: var(--brand); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .page-btn:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
 
-/* Footer Nav */
-footer { background: #fdfdfd; padding: 40px 20px 100px; text-align: center; }
-.footer-nav { 
-    position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
-    display: flex; justify-content: space-around; padding: 12px 0; 
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; 
-}
-.footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
-.footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
-.footer-nav a.active { color: #ff914d; }
+    /* Contact Footer */
+    .contact-footer { background: #fff; color: #333; padding: 40px 20px; text-align: center; border-top: 1px solid #f0f0f0; margin-top: 20px; }
+    .contact-container h3 { color: var(--brand); font-size: 1.2rem; margin-bottom: 5px; }
+    .contact-container p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 25px; }
+    .contact-details { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-bottom: 25px; }
+    .contact-item { text-decoration: none; color: #333; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--brand-light); border-radius: 12px; width: 100%; max-width: 280px; }
+    .contact-item i { color: var(--brand); }
+    .share-app-btn { background: #333; color: #fff; border: none; padding: 12px 25px; border-radius: 25px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 30px; }
+    .location-tag { font-size: 0.7rem; color: #aaa; margin-bottom: 10px; }
+    .copyright { font-size: 0.6rem; color: #ccc; border-top: 1px solid #f9f9f9; padding-top: 15px; }
 
-.contact-info { margin: 20px 0; font-size: 0.85rem; }
-.contact-info a { color: #ff914d; text-decoration: none; }
-.legal { font-size: 0.75rem; color: #bbb; line-height: 1.4; }
+    /* Footer Nav */
+    .footer-nav { 
+        position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
+        display: flex; justify-content: space-around; padding: 12px 0; 
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; 
+    }
+    .footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; }
+    .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
+    .footer-nav a.active { color: var(--brand); }
 
-@media (min-width: 768px) {
-    .meal-section { grid-template-columns: repeat(4, 1fr); }
-}
-</style>
+    @media (min-width: 768px) { .meal-section { grid-template-columns: repeat(4, 1fr); } }
+  </style>
 </head>
 <body>
 
 <header>
-    <img src="images/tent.jpeg" class="header-logo" alt="Campus Bite Logo">
+    <img src="/images/tent.jpeg" class="header-logo" alt="Logo">
     <div>
-    <h1 id="welcomeUser">Welcome to Campus Bite 🍽️</h1>
-    <p>Plan your meals with Campus Bite</p>
+      <h1 id="welcomeUser">Welcome to Campus Bite 🍽️</h1>
+      <p style="font-size: 0.75rem; opacity: 0.9;">Plan your meals,Save your budget</p>
     </div>
 </header>
 
@@ -139,72 +123,82 @@ footer { background: #fdfdfd; padding: 40px 20px 100px; text-align: center; }
 
 <div class="pagination">
     <button class="page-btn" id="prevBtn">Prev</button>
-    <span id="pageIndicator" style="font-weight: 600;">Page 1</span>
+    <span id="pageIndicator" style="font-weight: 600; font-size: 0.9rem;">Page 1</span>
     <button class="page-btn" id="nextBtn">Next</button>
 </div>
 
-<footer>
-    <nav class="footer-nav" aria-label="Bottom navigation">
-      <a href="profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
-      <a href="home.html" class="active"><i class="fa fa-utensils"></i><span>Menu</span></a>
-      <a href="budget.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
-      <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
-      <a href="comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
-    </nav>
-
-    <div class="contact-info">
-      <p>📞 <a href="tel:+256748372023">+256 748 372 023</a></p>
-      <p>✉️ <a href="mailto:campusbite@muni.ac.ug">campusbite@muni.ac.ug</a></p>
+<footer class="contact-footer">
+  <div class="contact-container">
+    <h3>Campus Bite</h3>
+    <p>Muni University • Delicious Foods Service</p>
+    
+    <div class="contact-details">
+      <a href="mailto:ezrasykar@gmail.com?subject=Campus%20Bite%20Support" class="contact-item">
+        <i class="fa fa-envelope"></i>
+        <span>campusbite@muni.ac.ug</span>
+      </a>
+      <a href="tel:+256748372023" class="contact-item">
+        <i class="fa fa-phone"></i>
+        <span>+256 748 372 023</span>
+      </a>
     </div>
-    <p class="legal">© 2026 Campus Bite. All rights reserved.<br/>Muni University | Arua, Uganda</p>
+
+    <button class="share-app-btn" onclick="shareApp()">
+      <i class="fa fa-share-nodes"></i> Share with Friends
+    </button>
+
+    <div class="location-tag">
+      <i class="fa fa-map-marker-alt"></i>
+      <span>Arua, Uganda (Arua Hill)</span>
+    </div>
+    <p class="copyright">© 2026 Campus Bite. All Rights Reserved.</p>
+  </div>
 </footer>
+
+<nav class="footer-nav">
+  <a href="/profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
+  <a href="/home.html" class="active"><i class="fa fa-utensils"></i><span>Menu</span></a>
+  <a href="/budget.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+  <a href="/order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
+  <a href="/comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
+</nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
-<script src="meals.js"></script>
+<script src="/meals.js"></script>
 
 <script>
-// ---------- Firebase Config (Preserved) ----------
 const firebaseConfig = {
   apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
   authDomain: "campus-bite-9dbaa.firebaseapp.com",
-  projectId: "campus-bite-9dbaa",
-  storageBucket: "campus-bite-9dbaa.appspot.com",
-  messagingSenderId: "294389261625",
-  appId: "1:294389261625:web:095d6e5f85f4e8"
+  projectId: "campus-bite-9dbaa"
 };
+
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// ---------- Global State ----------
 const STORAGE_KEY = "campusbite_budget_items_v1";
-let totalBudget = 0;
 let addedMeals = {};
 let currentPage = 1;
 const itemsPerPage = 8;
 
-// ---------- Logic (Preserved & Enhanced) ----------
+auth.onAuthStateChanged(user => {
+    if(!user) { window.location.href="index.html"; }
+    else {
+        db.collection("students").doc(user.uid).get().then(doc => {
+            if(doc.exists) document.getElementById("welcomeUser").textContent = `Welcome, ${doc.data().name} 🍽️`;
+        });
+    }
+});
+
 function loadFromStorage(){
-    try { const raw = localStorage.getItem(STORAGE_KEY); addedMeals = raw ? JSON.parse(raw) : {}; }
-    catch(e){ addedMeals = {}; }
-    calculateTotal();
+    const raw = localStorage.getItem(STORAGE_KEY);
+    addedMeals = raw ? JSON.parse(raw) : {};
 }
 
 function saveToStorage(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(addedMeals)); }
-
-function calculateTotal() {
-    totalBudget = 0;
-    Object.values(addedMeals).forEach(i => { totalBudget += (i.price * i.qty); });
-}
-
-auth.onAuthStateChanged(user => {
-    if(!user){ window.location.href="index.html"; }
-    else db.collection("students").doc(user.uid).get().then(doc => {
-        if(doc.exists){ document.getElementById("welcomeUser").textContent = `Welcome, ${doc.data().name} 🍽️`; }
-    });
-});
 
 function renderMeals() {
     const mealSection = document.getElementById("mealSection");
@@ -212,8 +206,7 @@ function renderMeals() {
     const search = document.getElementById("mealSearch").value.toLowerCase();
     
     mealSection.innerHTML = "";
-
-    const filtered = meals.filter(m => {
+    const filtered = (typeof meals !== 'undefined' ? meals : []).filter(m => {
         const matchCat = (category === "All" || m.category === category);
         const matchSearch = m.name.toLowerCase().includes(search) || m.place.toLowerCase().includes(search);
         return matchCat && matchSearch;
@@ -253,35 +246,45 @@ function renderMeals() {
     document.getElementById("nextBtn").disabled = end >= filtered.length;
 }
 
-function updateQty(name, change) {
+window.updateQty = function(name, change) {
     const meal = meals.find(m => m.name === name);
     if (!addedMeals[name]) {
         addedMeals[name] = { price: meal.price, qty: 0, img: meal.img };
     }
-    
     addedMeals[name].qty += change;
-    
     if (addedMeals[name].qty <= 0) delete addedMeals[name];
-    
     saveToStorage();
-    calculateTotal();
     renderMeals();
 }
 
-function viewDetails(name) {
+window.viewDetails = function(name) {
     window.location.href = `ingredients.html?meal=${encodeURIComponent(name)}`;
 }
 
-// ---------- Event Listeners ----------
+window.shareApp = function() {
+  if (navigator.share) {
+    navigator.share({
+      title: 'Campus Bite',
+      text: 'Order your Muni University meals easily with Campus Bite!',
+      url: window.location.origin
+    }).catch(console.error);
+  } else {
+    navigator.clipboard.writeText(window.location.origin);
+    alert("App link copied to clipboard!");
+  }
+}
+
 document.getElementById("categoryFilter").addEventListener("change", () => { currentPage = 1; renderMeals(); });
 document.getElementById("mealSearch").addEventListener("input", () => { currentPage = 1; renderMeals(); });
 document.getElementById("prevBtn").addEventListener("click", () => { if(currentPage > 1) { currentPage--; renderMeals(); window.scrollTo(0,0); } });
 document.getElementById("nextBtn").addEventListener("click", () => { currentPage++; renderMeals(); window.scrollTo(0,0); });
 
-// ---------- Init ----------
 loadFromStorage();
 renderMeals();
-</script>
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
+</script>
 </body>
 </html>

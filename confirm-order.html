@@ -4,95 +4,50 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <title>Confirm Order | Campus Bite</title>
+  
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff914d">
+  <link rel="icon" href="/images/tent.jpeg" type="image/jpeg" />
+  <link rel="apple-touch-icon" href="/images/tent.jpeg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="icon" href="images/tent.jpeg" type="image/jpeg" />
-
+  
   <style>
     :root { --primary: #ff914d; --primary-dark: #ff6a00; --bg: #ffffff; --text: #333; --white: #fff; }
-    
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    body { 
-      font-family: 'Poppins', sans-serif; 
-      background: var(--bg); 
-      color: var(--text); 
-      padding-bottom: 120px; /* Space for footer */
-      width: 100%;
-      overflow-x: hidden;
-    }
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 120px; width: 100%; overflow-x: hidden; }
 
-    /* Standard App Bar */
-    header { 
-      background: var(--primary); 
-      color: #fff; 
-      padding: 15px 20px; 
-      display: flex; 
-      align-items: center; 
-      position: sticky; 
-      top: 0; 
-      z-index: 1000;
-      width: 100%;
-    }
+    header { background: var(--primary); color: #fff; padding: 15px 20px; display: flex; align-items: center; position: sticky; top: 0; z-index: 1000; }
     .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
     header h1 { font-size: 1.1rem; flex-grow: 1; }
     .back-btn { color: white; text-decoration: none; margin-right: 15px; font-size: 1.1rem; }
 
-    /* Full Width Content */
-    .main-content { 
-      padding: 20px; 
-      width: 100%; 
-    }
-    
+    .main-content { padding: 20px; width: 100%; }
     .section-title { font-size: 0.85rem; font-weight: 700; color: #888; text-transform: uppercase; margin: 25px 0 10px; display: block; }
     
-    /* Order Items */
-    #itemsContainer {
-      display: grid;
-      grid-template-columns: 1fr; /* Full width on mobile */
-      gap: 15px;
-    }
-
-    /* Responsive Grid for Big Screens */
-    @media (min-width: 768px) {
-      #itemsContainer { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (min-width: 1200px) {
-      #itemsContainer { grid-template-columns: repeat(3, 1fr); }
-    }
-
-    .order-card {
-      background: var(--white);
-      border-radius: 15px;
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-      border: 1px solid #f0f0f0;
-    }
+    #itemsContainer { display: grid; grid-template-columns: 1fr; gap: 15px; }
+    .order-card { background: var(--white); border-radius: 15px; display: flex; align-items: center; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; }
     .item-img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; margin-right: 15px; }
     .item-details { flex: 1; }
     .item-name { font-weight: 600; font-size: 1rem; }
     .item-price { color: var(--primary); font-weight: 600; }
 
-    /* Forms and Summary */
-    .form-group, .summary-card { 
-      background: #fff; 
-      padding: 20px; 
-      border-radius: 15px; 
-      margin-bottom: 20px; 
-      border: 1px solid #eee; 
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-    }
+    .form-group, .summary-card { background: #fff; padding: 20px; border-radius: 15px; margin-bottom: 20px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
     .summary-card { background: #fffaf7; border-color: #ffe0cc; }
-    
     .row { display: flex; justify-content: space-between; margin-bottom: 8px; }
     .total-row { border-top: 1px dashed #ff914d; padding-top: 10px; margin-top: 10px; font-weight: 700; font-size: 1.3rem; color: var(--primary-dark); }
 
-    input, select { 
-      width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #ddd; 
-      margin-top: 8px; margin-bottom: 15px; font-family: inherit; font-size: 1rem;
-    }
+    input, select { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #ddd; margin-top: 8px; margin-bottom: 15px; font-family: inherit; font-size: 1rem; }
+
+    /* Service Choice Toggle */
+    .choice-grid { display: flex; gap: 10px; margin-bottom: 15px; }
+    .choice-btn { flex: 1; padding: 12px; border-radius: 10px; border: 2px solid #eee; background: #fff; cursor: pointer; font-weight: 600; transition: 0.3s; text-align: center; }
+    .choice-btn.active { border-color: var(--primary); color: var(--primary); background: #fff3ea; }
+
+    #deliveryOptions { display: none; border-top: 1px solid #f0f0f0; padding-top: 15px; }
 
     /* MoMo Section */
     #momoWizard { display:none; background: #f0f7ff; padding: 15px; border-radius: 12px; border: 1px solid #dbeafe; }
@@ -100,19 +55,10 @@
     .net-btn { flex:1; padding: 12px; border-radius: 8px; border: 2px solid #ddd; background: #fff; font-weight: 700; cursor: pointer; }
     .net-btn.active { border-color: var(--primary); color: var(--primary); }
 
-    #confirmOrderBtn { 
-      background: var(--primary); color: white; border: none; padding: 18px; 
-      border-radius: 12px; width: 100%; font-weight: 700; font-size: 1.1rem; 
-      cursor: pointer; transition: 0.3s;
-    }
+    #confirmOrderBtn { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; width: 100%; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
     #confirmOrderBtn:disabled { background: #ccc; }
 
-    /* FOOTER - FULL WIDTH EXACT MATCH */
-    .footer-nav { 
-      position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
-      display: flex; justify-content: space-around; padding: 12px 0; 
-      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; 
-    }
+    .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; }
     .footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
     .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
     .footer-nav a.active { color: var(--primary); }
@@ -122,32 +68,43 @@
 
 <header>
   <a href="home.html" class="back-btn"><i class="fa fa-chevron-left"></i></a>
-  <img src="images/tent.jpeg" class="header-logo">
-  <h1>Campus Bite</h1>
+  <img src="/images/tent.jpeg" class="header-logo">
+  <h1>Confirm Order</h1>
 </header>
 
 <div class="main-content">
-  <span class="section-title">Review Order</span>
+  <span class="section-title">Your Items</span>
   <div id="itemsContainer"></div>
 
-  <div class="summary-card">
-    <div class="row"><span>Subtotal</span><span id="subTotal">UGX 0</span></div>
-    <div class="row"><span>Delivery Fee</span><span>UGX 2,000</span></div>
-    <div class="row total-row"><span>Total</span><span id="finalTotal">UGX 0</span></div>
+  <span class="section-title">Order Method</span>
+  <div class="form-group">
+    <div class="choice-grid">
+      <div class="choice-btn active" id="btnPickup" onclick="setMethod('pickup')"><i class="fa fa-walking"></i> Pickup</div>
+      <div class="choice-btn" id="btnDelivery" onclick="setMethod('delivery')"><i class="fa fa-truck"></i> Delivery</div>
+    </div>
+
+    <div id="deliveryOptions">
+      <label>Delivery Area</label>
+      <select id="areaSelector" onchange="updateCalculations()">
+        <option value="0" selected>Muni Campus (Free)</option>
+        <option value="1000">Main Gate Area (1,000/-)</option>
+        <option value="1500">Junior Staff Quarters (1,500/-)</option>
+        <option value="2000">Arua Town / Market (2,000/-)</option>
+        <option value="2500">Extended Areas (2,500/-)</option>
+      </select>
+      <label>Specific Room / Hostel / Office</label>
+      <input type="text" id="deliveryLocation" placeholder="e.g. Mandela Hall Rm 4" oninput="validate()">
+    </div>
   </div>
 
+  <span class="section-title">Contact & Payment</span>
   <div class="form-group">
-    <label>Delivery Contact (Phone)</label>
+    <label>Phone Number</label>
     <input type="tel" id="deliveryPhone" placeholder="07XXXXXXXX" oninput="validate()">
     
-    <label>Room / Office Location</label>
-    <input type="text" id="deliveryLocation" placeholder="e.g. Mandela Hall Room 4" oninput="validate()">
-  </div>
-
-  <div class="form-group">
     <label>Payment Mode</label>
     <select id="paymentMode" onchange="toggleMomo()">
-      <option value="Cash">Cash on Delivery</option>
+      <option value="Cash">Cash (on Delivery/Pickup)</option>
       <option value="Mobile Money">Mobile Money (Pre-pay)</option>
     </select>
 
@@ -164,13 +121,19 @@
     </div>
   </div>
 
+  <div class="summary-card">
+    <div class="row"><span>Subtotal</span><span id="subTotal">UGX 0</span></div>
+    <div class="row"><span>Delivery Fee</span><span id="deliveryFee">UGX 0</span></div>
+    <div class="row total-row"><span>Total</span><span id="finalTotal">UGX 0</span></div>
+  </div>
+
   <button id="confirmOrderBtn" disabled onclick="placeOrder()">Place Order Now</button>
 </div>
 
 <nav class="footer-nav">
   <a href="profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
   <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
-  <a href="confirm-order.html" class="active"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+  <a href="budget.html" class="active"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
   <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
   <a href="comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
 </nav>
@@ -184,23 +147,52 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const auth = firebase.auth();
-const MERCHANTS = "12345678";
-  const MERCHANT = "6984477";
+
+  const MERCHANT_MTN = "12345678";
+  const MERCHANT_AIRTEL = "6984477";
   let netSelected = "";
-  let grandTotal = 0;
+  let subtotal = 0;
+  let methodSelected = "pickup";
   const cart = JSON.parse(localStorage.getItem("campusbite_budget_items_v1") || "{}");
+
+  // --- EMPTY CART GUARD ---
+  if (Object.keys(cart).length === 0) {
+      alert("Your cart is empty! Redirecting to menu...");
+      window.location.href = "home.html";
+  }
 
   function init() {
     const container = document.getElementById("itemsContainer");
-    let sub = 0;
+    subtotal = 0;
     Object.keys(cart).forEach(name => {
       const item = cart[name];
-      sub += (item.price * item.qty);
-      container.innerHTML += `<div class="order-card"><img src="${item.img || 'images/tent.jpeg'}" class="item-img"><div class="item-details"><strong>${name}</strong><br><span class="item-price">${item.qty}x — UGX ${(item.price * item.qty).toLocaleString()}</span></div></div>`;
+      subtotal += (item.price * item.qty);
+      container.innerHTML += `<div class="order-card"><img src="${item.img || '/images/tent.jpeg'}" class="item-img"><div class="item-details"><strong>${name}</strong><br><span class="item-price">${item.qty}x — UGX ${(item.price * item.qty).toLocaleString()}</span></div></div>`;
     });
-    grandTotal = sub + 2000;
-    document.getElementById("subTotal").innerText = "UGX " + sub.toLocaleString();
-    document.getElementById("finalTotal").innerText = "UGX " + grandTotal.toLocaleString();
+    updateCalculations();
+  }
+
+  function setMethod(method) {
+    methodSelected = method;
+    document.getElementById('btnPickup').classList.toggle('active', method === 'pickup');
+    document.getElementById('btnDelivery').classList.toggle('active', method === 'delivery');
+    document.getElementById('deliveryOptions').style.display = (method === 'delivery') ? 'block' : 'none';
+    updateCalculations();
+  }
+
+  function updateCalculations() {
+    let fee = 0;
+    if (methodSelected === 'delivery') {
+      fee = parseInt(document.getElementById("areaSelector").value);
+    }
+    const final = subtotal + fee;
+    document.getElementById("subTotal").innerText = "UGX " + subtotal.toLocaleString();
+    document.getElementById("deliveryFee").innerText = "UGX " + fee.toLocaleString();
+    document.getElementById("finalTotal").innerText = "UGX " + final.toLocaleString();
+    
+    // Update USSD if network is selected
+    if(netSelected) setNet(netSelected);
+    validate();
   }
 
   function toggleMomo() {
@@ -212,7 +204,10 @@ const MERCHANTS = "12345678";
     netSelected = net;
     document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn'+net).classList.add('active');
-    let ussd = (net === 'MTN') ? `*165*3*${MERCHANTS}*${grandTotal}#` : `*185*9*${MERCHANT}*${grandTotal}#`;
+    
+    const finalVal = subtotal + (methodSelected === 'delivery' ? parseInt(document.getElementById("areaSelector").value) : 0);
+    let ussd = (net === 'MTN') ? `*165*3*${MERCHANT_MTN}*${finalVal}#` : `*185*9*${MERCHANT_AIRTEL}*${finalVal}#`;
+    
     document.getElementById("ussdDisplay").innerText = ussd;
     document.getElementById("payNowBtn").href = "tel:" + ussd.replace(/#/g, "%23");
     document.getElementById("momoActions").style.display = "block";
@@ -221,37 +216,55 @@ const MERCHANTS = "12345678";
 
   function validate() {
     const phone = document.getElementById("deliveryPhone").value.trim();
-    const loc = document.getElementById("deliveryLocation").value.trim();
     const mode = document.getElementById("paymentMode").value;
     const tx = document.getElementById("transactionId").value.trim();
-    let ok = phone.length >= 10 && loc.length >= 2;
-    if(mode === "Mobile Money") ok = ok && netSelected && tx.length > 5;
-    document.getElementById("confirmOrderBtn").disabled = !ok;
+    const loc = document.getElementById("deliveryLocation").value.trim();
+
+    let basicOk = phone.length >= 10;
+    if (methodSelected === 'delivery') basicOk = basicOk && loc.length >= 2;
+    if (mode === "Mobile Money") basicOk = basicOk && netSelected && tx.length > 5;
+    
+    document.getElementById("confirmOrderBtn").disabled = !basicOk;
   }
 
-  // Function to place the order
   async function placeOrder() {
     const user = auth.currentUser;
-    if(!user) return;
+    if(!user) return alert("Please log in to place an order.");
+    
     const btn = document.getElementById("confirmOrderBtn");
     btn.disabled = true;
+    btn.innerText = "Processing...";
+
+    const fee = methodSelected === 'delivery' ? parseInt(document.getElementById("areaSelector").value) : 0;
+    const areaText = methodSelected === 'delivery' ? document.getElementById("areaSelector").options[document.getElementById("areaSelector").selectedIndex].text : "Pickup";
+
     try {
-      await db.collection("orders").doc(user.uid).collection("userOrders").add({
+      await db.collection("orders").add({
         userId: user.uid,
-        userName: user.displayName || "Client",
-        items: Object.keys(cart).map(k => ({ name: k, qty: cart[k].qty, price: cart[k].price, image: cart[k].img })),
-        totalAmount: grandTotal,
+        userName: user.displayName || "Muni Student",
+        items: Object.keys(cart).map(k => ({ name: k, qty: cart[k].qty, price: cart[k].price })),
+        subtotal: subtotal,
+        deliveryFee: fee,
+        totalAmount: subtotal + fee,
+        orderMethod: methodSelected,
+        area: areaText,
         deliveryPhone: document.getElementById("deliveryPhone").value,
-        deliveryLocation: document.getElementById("deliveryLocation").value,
+        deliveryLocation: methodSelected === 'delivery' ? document.getElementById("deliveryLocation").value : "N/A (Pickup)",
         paymentMode: document.getElementById("paymentMode").value,
         transactionId: document.getElementById("transactionId").value || "CASH",
         status: "pending",
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
+
       localStorage.removeItem("campusbite_budget_items_v1");
       window.location.href = "order-history.html";
-    } catch(e) { alert(e.message); btn.disabled = false; }
+    } catch(e) { 
+      alert("Error: " + e.message); 
+      btn.disabled = false; 
+      btn.innerText = "Place Order Now";
+    }
   }
+
   init();
 </script>
 </body>

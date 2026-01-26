@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Account | Campus Bite</title>
   
-  <link rel="icon" href="images/tent.jpeg" type="image/jpeg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff914d">
+  <link rel="icon" href="/images/tent.jpeg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="/images/tent.jpeg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
@@ -29,46 +35,16 @@
       position: relative;
     }
 
-    /* --- MATCHING MOVING BACKGROUND --- */
-    .bg-wrapper {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      overflow: hidden;
-    }
-
+    .bg-wrapper { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
     .moving-bg {
-      width: 110%;
-      height: 110%;
-      position: absolute;
-      top: -5%;
-      left: -5%;
-      /* Exact same image as index.html */
+      width: 110%; height: 110%; position: absolute; top: -5%; left: -5%;
       background: url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1950&q=80") center/cover no-repeat;
       animation: kenBurns 20s infinite alternate ease-in-out;
     }
+    @keyframes kenBurns { 0% { transform: scale(1) translate(0, 0); } 100% { transform: scale(1.1) translate(-2%, -2%); } }
+    .overlay { position: fixed; inset: 0; z-index: -1; background: rgba(0, 0, 0, 0.5); }
 
-    @keyframes kenBurns {
-      0% { transform: scale(1) translate(0, 0); }
-      100% { transform: scale(1.1) translate(-2%, -2%); }
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: rgba(0, 0, 0, 0.5);
-    }
-
-    /* --- SIGNUP CARD --- */
-    .auth-container {
-      width: 100%;
-      max-width: 440px;
-      padding: 20px;
-      z-index: 2;
-      animation: fadeIn 0.8s ease-out;
-    }
-
+    .auth-container { width: 100%; max-width: 440px; padding: 20px; z-index: 2; animation: fadeIn 0.8s ease-out; }
     .auth-card {
       background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(15px);
@@ -79,52 +55,31 @@
       border: 1px solid rgba(255,255,255,0.2);
     }
 
-    .auth-card h1 {
-      font-family: 'Poppins', sans-serif;
-      font-size: 1.7rem;
-      color: var(--text-main);
-      margin-bottom: 5px;
-    }
+    .auth-card h1 { font-family: 'Poppins', sans-serif; font-size: 1.7rem; color: var(--text-main); margin-bottom: 5px; }
+    .auth-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; }
 
-    .auth-card p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-bottom: 25px;
-    }
-
-    /* Input Rows */
     .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    
     .input-wrapper { position: relative; margin-bottom: 15px; text-align: left; }
+    .input-wrapper i.field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 0.9rem; }
     
-    .input-wrapper i {
-      position: absolute; left: 14px; top: 50%;
-      transform: translateY(-50%); color: #aaa; font-size: 0.9rem;
-    }
+    /* Eye icon for password toggle */
+    .eye-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; font-size: 0.9rem; }
 
     .input-wrapper input, .input-wrapper select {
-      width: 100%; padding: 12px 12px 12px 40px;
+      width: 100%; padding: 12px 35px 12px 40px;
       border: 1.5px solid #eee; border-radius: 12px;
       font-size: 0.9rem; outline: none; transition: 0.3s; background: #fafafa;
     }
+    .input-wrapper input:focus, .input-wrapper select:focus { border-color: var(--brand); background: #fff; }
 
-    .input-wrapper input:focus, .input-wrapper select:focus {
-      border-color: var(--brand); background: #fff;
-    }
-
-    .primary-btn {
-      width: 100%; padding: 14px; background: var(--brand); color: white;
-      border: none; border-radius: 12px; font-size: 1rem; font-weight: 600;
-      cursor: pointer; transition: 0.3s; margin-top: 10px;
-    }
-
+    .primary-btn { width: 100%; padding: 14px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
     .primary-btn:hover { background: var(--brand-dark); transform: translateY(-1px); }
+    .primary-btn:disabled { background: #ccc; cursor: not-allowed; }
 
     .footer-text { margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); }
     .footer-text a { color: var(--brand); text-decoration: none; font-weight: 600; }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
     @media (max-width: 480px) { .input-row { grid-template-columns: 1fr; } .auth-card { padding: 30px 20px; } }
   </style>
 </head>
@@ -141,18 +96,18 @@
       <p>Join the Muni University food community</p>
 
       <div class="input-wrapper">
-        <i class="fa-regular fa-user"></i>
+        <i class="fa-regular fa-user field-icon"></i>
         <input type="text" id="name" placeholder="Full Name" />
       </div>
 
       <div class="input-wrapper">
-        <i class="fa-regular fa-envelope"></i>
+        <i class="fa-regular fa-envelope field-icon"></i>
         <input type="email" id="email" placeholder="Student Email" />
       </div>
 
       <div class="input-row">
         <div class="input-wrapper">
-          <i class="fa-solid fa-graduation-cap"></i>
+          <i class="fa-solid fa-graduation-cap field-icon"></i>
           <select id="faculty">
             <option value="" disabled selected>Faculty</option>
             <option value="Technoscience">Technoscience</option>
@@ -163,19 +118,20 @@
           </select>
         </div>
         <div class="input-wrapper">
-          <i class="fa-solid fa-book-open"></i>
+          <i class="fa-solid fa-book-open field-icon"></i>
           <input type="text" id="course" placeholder="Course" />
         </div>
       </div>
 
       <div class="input-wrapper">
-        <i class="fa-solid fa-hotel"></i>
+        <i class="fa-solid fa-hotel field-icon"></i>
         <input type="text" id="hostel" placeholder="Hostel Name" />
       </div>
 
       <div class="input-wrapper">
-        <i class="fa-solid fa-lock"></i>
+        <i class="fa-solid fa-lock field-icon"></i>
         <input type="password" id="password" placeholder="Create Password" />
+        <i class="fa-regular fa-eye eye-toggle" id="togglePassword"></i>
       </div>
 
       <button class="primary-btn" id="signupBtn">Sign Up Now</button>
@@ -204,6 +160,18 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // Password Toggle Logic
+    const passwordInput = document.getElementById("password");
+    const toggleBtn = document.getElementById("togglePassword");
+
+    toggleBtn.onclick = () => {
+      const type = passwordInput.type === "password" ? "text" : "password";
+      passwordInput.type = type;
+      toggleBtn.classList.toggle("fa-eye");
+      toggleBtn.classList.toggle("fa-eye-slash");
+    };
+
+    // Signup Logic
     document.getElementById("signupBtn").onclick = async () => {
       const btn = document.getElementById("signupBtn");
       const name = document.getElementById("name").value.trim();
@@ -232,6 +200,15 @@
         btn.innerText = "Sign Up Now";
       }
     };
+
+    // SW Registration
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('✅ SW Registered'))
+          .catch(err => console.error('❌ SW Failed', err));
+      });
+    }
   </script>
 </body>
 </html>

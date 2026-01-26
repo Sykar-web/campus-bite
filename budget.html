@@ -2,151 +2,102 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>Your Budget – Campus Bite</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Budget – Campus Bite</title>
 
-  <link rel="icon" href="images/tent.jpeg">
-  <link rel="apple-touch-icon" href="images/tent.jpeg">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ff914d">
+  <link rel="icon" href="/images/tent.jpeg" type="image/jpeg">
+  <link rel="apple-touch-icon" href="/images/tent.jpeg">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<style>
-/* ===================== VARIABLES ===================== */
-:root{
-  --primary:#ff914d;
-  --primary-dark:#ff6a00;
-  --bg:#fff;
-  --text:#333;
-  --muted:#888;
-  --card-bg:#fff;
-  --success:#4CAF50;
-  --danger:#ff4d4d;
-}
+  <style>
+    :root{
+      --primary:#ff914d;
+      --primary-dark:#ff6a00;
+      --bg:#fff;
+      --text:#333;
+      --muted:#888;
+      --success:#4CAF50;
+      --danger:#ff4d4d;
+    }
 
-/* ===================== RESET & BASE ===================== */
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family: 'Poppins', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  -webkit-font-smoothing: antialiased;
-}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 80px;
+    }
 
-/* ===================== APP BAR (Sticky) ===================== */
-header { 
-    background: var(--primary); 
-    color: #fff; 
-    padding: 15px 20px; 
-    display: flex; 
-    align-items: center; 
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-.header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
-header h1 { font-size: 1.1rem; font-weight: 600; flex-grow: 1; }
+    header { 
+        background: var(--primary); color: #fff; padding: 15px 20px; 
+        display: flex; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        position: sticky; top: 0; z-index: 1000;
+    }
+    .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
+    header h1 { font-size: 1.1rem; font-weight: 600; flex-grow: 1; }
 
-/* ===================== CONTENT ===================== */
-.main-content {
-  padding: 20px 15px 120px; /* Extra bottom padding for fixed nav */
-}
+    .main-content { padding: 20px 15px; }
+    .page-title { text-align: center; margin-bottom: 20px; }
+    .page-title h2 { color: var(--primary-dark); font-size: 1.4rem; }
+    .page-title p { color: var(--muted); font-size: 0.85rem; }
 
-.page-title {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.page-title h2 { color: var(--primary-dark); font-size: 1.4rem; }
-.page-title p { color: var(--muted); font-size: 0.85rem; }
+    .budget-item {
+      display: flex; gap: 15px; padding: 15px; background: #fff;
+      border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 12px;
+    }
+    .item-img { width: 70px; height: 70px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+    .item-info { flex: 1; }
+    .item-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 2px; }
+    .item-price { font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; }
 
-/* ===================== BUDGET ITEMS (No Borders) ===================== */
-#budgetList { margin-bottom: 20px; }
+    .qty-control { display: flex; align-items: center; gap: 12px; }
+    .qty-control button {
+      width: 28px; height: 28px; border: none; border-radius: 6px;
+      font-weight: 700; cursor: pointer; background: #fff3ea; color: var(--primary-dark);
+    }
+    .subtotal { margin-top: 8px; font-weight: 700; font-size: 0.85rem; color: var(--primary-dark); }
 
-.budget-item {
-  display: flex;
-  gap: 15px;
-  padding: 15px;
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* Soft shadow instead of border */
-  margin-bottom: 12px;
-}
-.item-img {
-  width: 70px; height: 70px; border-radius: 12px;
-  object-fit: cover; background: #f9f9f9; flex-shrink: 0;
-}
-.item-info { flex: 1; }
-.item-name { font-weight: 600; font-size: 0.95rem; margin-bottom: 2px; }
-.item-price { font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; }
+    .summary-card { background: #fdf2e9; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; }
+    .total-text { font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); }
 
-.qty-control {
-  display: flex; align-items: center; gap: 12px;
-}
-.qty-control button {
-  width: 28px; height: 28px; border: none; border-radius: 6px;
-  font-size: 16px; font-weight: 700;
-  cursor: pointer; background: #fff3ea; color: var(--primary-dark);
-}
-.qty-control span { font-weight: 600; font-size: 0.9rem; min-width: 20px; text-align: center; }
+    .action-buttons { display: flex; flex-direction: column; gap: 10px; }
+    .btn { padding: 14px; border: none; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+    .btn-checkout { background: var(--primary); color: #fff; }
+    .btn-add-more { background: #f2f2f2; color: #666; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.subtotal { margin-top: 8px; font-weight: 700; font-size: 0.85rem; color: var(--primary-dark); }
+    .footer-nav { 
+        position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
+        display: flex; justify-content: space-around; padding: 12px 0; 
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; 
+    }
+    .footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
+    .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
+    .footer-nav a.active { color: var(--primary); }
 
-/* ===================== SUMMARY SECTION ===================== */
-.summary-card {
-  background: #fdf2e9;
-  padding: 20px;
-  border-radius: 15px;
-  text-align: center;
-  margin-bottom: 20px;
-}
-.total-text { font-size: 1.2rem; font-weight: 700; color: var(--primary-dark); }
-
-/* ===================== ACTION BUTTONS ===================== */
-.action-buttons { display: flex; flex-direction: column; gap: 10px; }
-.btn {
-  padding: 14px; border: none; border-radius: 12px;
-  font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.2s;
-}
-.btn-checkout { background: var(--primary); color: #fff; }
-.btn-add-more { background: #f2f2f2; color: #666; }
-.btn:disabled { opacity: 0.5; }
-
-/* ===================== FIXED FOOTER NAV ===================== */
-.footer-nav { 
-    position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
-    display: flex; justify-content: space-around; padding: 12px 0; 
-    box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; 
-}
-.footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
-.footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
-.footer-nav a.active { color: var(--primary); }
-
-.contact-legal {
-  text-align: center;
-  margin-top: 30px;
-  padding-bottom: 20px;
-}
-.contact-legal p { font-size: 0.8rem; color: #bbb; line-height: 1.6; }
-.contact-legal a { color: var(--primary); text-decoration: none; }
-
-/* ===================== MODAL (Preserved) ===================== */
-.modal{ position:fixed; inset:0; display:flex; justify:center; align-items:center; background:rgba(0,0,0,.5); z-index:3000; }
-.modal.hidden{ display:none; }
-.modal-content{ background:#fff; padding:25px; border-radius:20px; width:85%; max-width:350px; text-align:center; }
-.modal-actions{ display:flex; gap:10px; margin-top:20px; }
-.modal-actions button{ flex:1; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; color:#fff; }
-.yes{ background: var(--success); }
-.no{ background: var(--danger); }
-
-.empty-state { text-align: center; padding: 40px 20px; color: #aaa; }
-</style>
+    .modal{ position:fixed; inset:0; display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,.5); z-index:3000; }
+    .modal.hidden{ display:none; }
+    .modal-content{ background:#fff; padding:25px; border-radius:20px; width:85%; max-width:350px; text-align:center; }
+    .modal-actions{ display:flex; gap:10px; margin-top:20px; }
+    .modal-actions button{ flex:1; padding:12px; border:none; border-radius:10px; font-weight:600; cursor:pointer; color:#fff; }
+    .yes{ background: var(--success); }
+    .no{ background: var(--danger); }
+    .empty-state { text-align: center; padding: 40px 20px; color: #aaa; }
+  </style>
 </head>
 
 <body>
 
   <header>
-    <img src="images/tent.jpeg" class="header-logo" alt="Logo">
-    <h1 id="welcomeUser">Campus Bite</h1>
+    <img src="/images/tent.jpeg" class="header-logo" alt="Logo">
+    <h1>Campus Bite</h1>
   </header>
 
   <div class="main-content">
@@ -165,20 +116,14 @@ header h1 { font-size: 1.1rem; font-weight: 600; flex-grow: 1; }
       <button id="orderBtn" class="btn btn-checkout">Proceed to Checkout ✅</button>
       <button id="backBtn" class="btn btn-add-more">Add More Items</button>
     </div>
-
-    <div class="contact-legal">
-      <p>📞 <a href="tel:+256748372023">+256 748 372 023</a></p>
-      <p>✉️ <a href="mailto:campusbite@muni.ac.ug">campusbite@muni.ac.ug</a></p>
-      <p>© 2026 Campus Bite. All rights reserved.<br>Muni University | Arua, Uganda</p>
-    </div>
   </div>
 
   <nav class="footer-nav">
-    <a href="profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
-    <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
-    <a href="budget.html" class="active"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
-    <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
-    <a href="comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
+    <a href="/profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
+    <a href="/home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
+    <a href="/budget.html" class="active"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+    <a href="/order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
+    <a href="/comments.html"><i class="fa fa-comments"></i><span>Comments</span></a>
   </nav>
 
   <div id="confirmModal" class="modal hidden">
@@ -193,7 +138,6 @@ header h1 { font-size: 1.1rem; font-weight: 600; flex-grow: 1; }
 
 <script>
 const STORAGE_KEY="campusbite_budget_items_v1";
-const PLACEHOLDER_IMG="images/placeholder.png";
 
 function loadBudget(){
   const raw=localStorage.getItem(STORAGE_KEY);
@@ -220,14 +164,14 @@ function loadBudget(){
     const div=document.createElement("div");
     div.className="budget-item";
     div.innerHTML=`
-      <img src="${item.img||PLACEHOLDER_IMG}" class="item-img">
+      <img src="${item.img || '/images/tent.jpeg'}" class="item-img">
       <div class="item-info">
         <div class="item-name">${name}</div>
         <div class="item-price">UGX ${item.price.toLocaleString()}</div>
         <div class="qty-control">
-          <button class="decrease" data-name="${name}">−</button>
+          <button onclick="changeQty('${name}', -1)">−</button>
           <span>${item.qty}</span>
-          <button class="increase" data-name="${name}">+</button>
+          <button onclick="changeQty('${name}', 1)">+</button>
         </div>
         <div class="subtotal">Subtotal: UGX ${sub.toLocaleString()}</div>
       </div>`;
@@ -235,24 +179,16 @@ function loadBudget(){
   });
 
   document.getElementById("grandTotal").textContent="Total: UGX "+total.toLocaleString();
-  attachQtyHandlers(items);
 }
 
-function attachQtyHandlers(items){
-  document.querySelectorAll(".increase").forEach(b=>b.onclick=()=>{
-    items[b.dataset.name].qty++;save(items);
-  });
-  document.querySelectorAll(".decrease").forEach(b=>b.onclick=()=>{
-    const n=b.dataset.name;
-    items[n].qty--;if(items[n].qty<=0)delete items[n];
-    save(items);
-  });
-}
-
-function save(items){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(items));
+window.changeQty = (name, delta) => {
+  const raw=localStorage.getItem(STORAGE_KEY);
+  const items=JSON.parse(raw);
+  items[name].qty += delta;
+  if(items[name].qty <= 0) delete items[name];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   loadBudget();
-}
+};
 
 function showConfirmation(msg){
   return new Promise(res=>{
@@ -265,10 +201,7 @@ function showConfirmation(msg){
   });
 }
 
-document.getElementById("backBtn").onclick=async()=>{
-    location.href="home.html";
-};
-
+document.getElementById("backBtn").onclick=()=> location.href="home.html";
 document.getElementById("orderBtn").onclick=async()=>{
   if(await showConfirmation("Ready to proceed to checkout?")){
     location.href="confirm-order.html";
@@ -276,6 +209,15 @@ document.getElementById("orderBtn").onclick=async()=>{
 };
 
 loadBudget();
+
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW Registered'))
+      .catch(err => console.error('SW Failed', err));
+  });
+}
 </script>
 </body>
 </html>
