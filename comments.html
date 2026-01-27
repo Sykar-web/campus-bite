@@ -3,7 +3,7 @@
 <head>
   <link rel="canonical" href="https://campusbite.xyz/">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Community Chat | Campus Bite</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -15,12 +15,18 @@
 
   <style>
     :root { --primary: #ff914d; --bg: #f5f7fb; --text: #333; --white: #ffffff; }
+    
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
+    html, body {
+      height: 100%;
+      width: 100%;
+      overflow: hidden; /* Prevents double scrollbars */
+    }
+
     body {
       font-family: "Poppins", sans-serif;
       background: var(--bg);
-      height: 100vh;
       display: flex;
       flex-direction: column;
     }
@@ -28,20 +34,21 @@
     header { 
       background: var(--primary); color: #fff; padding: 12px 20px; 
       display: flex; align-items: center; z-index: 1000;
-      position: sticky; top: 0;
+      flex-shrink: 0; /* Header stays same size */
     }
     .header-logo { width: 30px; height: 30px; border-radius: 6px; margin-right: 12px; }
     header h1 { font-size: 1rem; flex-grow: 1; }
 
     .comments-wrapper {
-      flex: 1;
+      flex: 1; /* Takes up all available space */
       overflow-y: auto;
       padding: 15px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      padding-bottom: 140px; /* Space for input + nav */
       -webkit-overflow-scrolling: touch;
+      /* Adjusted padding so last message isn't hidden by the floating input */
+      padding-bottom: 20px; 
     }
 
     .comment-bubble {
@@ -53,7 +60,6 @@
       position: relative;
     }
 
-    /* Admin and "Me" Styling */
     .my-message { align-self: flex-end; background: #fff0e6; border-radius: 18px 4px 18px 18px; }
     .admin-message { border: 1px solid var(--primary); background: #fffaf0; }
     .admin-badge { background: var(--primary); color: white; font-size: 0.5rem; padding: 2px 5px; border-radius: 4px; margin-left: 5px; text-transform: uppercase; }
@@ -62,28 +68,26 @@
     .comment-body { font-size: 0.9rem; color: #444; line-height: 1.4; word-wrap: break-word; }
 
     .comment-footer { display: flex; gap: 15px; margin-top: 6px; font-size: 0.7rem; align-items: center; border-top: 1px solid rgba(0,0,0,0.03); padding-top: 4px; }
-    .reaction-link { color: #aaa; text-decoration: none; cursor: pointer; transition: 0.2s; }
+    .reaction-link { color: #aaa; text-decoration: none; cursor: pointer; }
     .reaction-link.active { color: var(--primary); }
     .time-stamp { color: #ccc; margin-left: auto; font-size: 0.6rem; }
 
-    /* WHATSAPP STYLE FIXED INPUT */
+    /* REVISED INPUT SECTION - No longer fixed to the absolute bottom */
     .comment-input-section {
-      position: fixed;
-      bottom: 65px; /* Above Footer */
-      left: 0;
-      width: 100%;
-      padding: 10px 15px;
       background: #fff;
       display: flex;
       gap: 10px;
+      padding: 10px 15px;
+      padding-bottom: env(safe-area-inset-bottom, 10px); /* iPhone Notch support */
       border-top: 1px solid #eee;
-      z-index: 1001;
       align-items: center;
+      z-index: 1001;
+      margin-bottom: 60px; /* Space for Footer Nav */
     }
 
     .comment-input-section input {
       flex: 1; padding: 12px 18px; border-radius: 25px;
-      border: 1px solid #ddd; background: #f9f9f9; outline: none; font-size: 0.95rem;
+      border: 1px solid #ddd; background: #f9f9f9; outline: none; font-size: 16px; /* 16px prevents iOS zoom on focus */
     }
 
     .comment-input-section button {
@@ -95,7 +99,7 @@
     .footer-nav { 
       position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
       display: flex; justify-content: space-around; padding: 10px 0; 
-      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1000; 
+      box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1002; 
     }
     .footer-nav a { text-decoration: none; color: #ccc; display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; }
     .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
@@ -156,6 +160,10 @@ function timeAgo(date) {
   return Math.floor(interval) + "m ago";
 }
 
+function scrollToBottom() {
+  container.scrollTop = container.scrollHeight;
+}
+
 btn.onclick = async () => {
   const text = input.value.trim();
   if(!text) return;
@@ -167,7 +175,6 @@ btn.onclick = async () => {
     const studentDoc = await db.collection("students").doc(user.uid).get();
     let displayName = studentDoc.exists ? studentDoc.data().name : (user.displayName || "Muni Student");
     
-    // Force Admin label if it's you
     if(user.email === ADMIN_EMAIL) displayName = "Executive Admin";
 
     await db.collection("comments").add({
@@ -180,16 +187,20 @@ btn.onclick = async () => {
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     input.value = "";
-    scrollToBottom();
+    // Small delay to allow Firestore update before scrolling
+    setTimeout(scrollToBottom, 100);
   } catch(e) { alert(e.message); }
   btn.disabled = false;
 };
 
 input.addEventListener("keypress", (e) => { if (e.key === "Enter") btn.click(); });
 
-function scrollToBottom() {
-  container.scrollTop = container.scrollHeight;
-}
+// Handle view changes when keyboard pops up
+window.addEventListener('resize', () => {
+    if (document.activeElement.tagName === 'INPUT') {
+        scrollToBottom();
+    }
+});
 
 auth.onAuthStateChanged(user => {
   db.collection("comments").orderBy("createdAt", "asc").limitToLast(50).onSnapshot(snap => {

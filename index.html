@@ -1,9 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <title>Fast Food Delivery for Muni University Students</title>
+  <meta name="description" content="Order your favorite meals from Muni University's #1 student food hub. Fast delivery to hostels, easy payment, and exclusive student discounts.">
+  <meta name="keywords" content="Muni University, Food Delivery, Campus Bite, Student Hub, Arua Food, University Meals">
+  <meta name="author" content="Campus Bite Team">
+
+  <meta property="og:title" content="Campus Bite | Muni University">
+  <meta property="og:description" content="Hungry? Join the community and order food directly to your hostel. Fast, fresh, and made for students.">
+  <meta property="og:image" content="https://campusbite.xyz/images/tent.jpeg">
+  <meta property="og:url" content="https://campusbite.xyz">
+  <meta property="og:type" content="website">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Campus Bite | Muni University Food Hub">
+  <meta name="twitter:description" content="The fastest way to get food on campus. Join the Hub today!">
+  <meta name="twitter:image" content="https://campusbite.xyz/images/tent.jpeg">
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Campus Bite</title>
   
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff914d">
@@ -50,7 +65,7 @@
     .auth-card {
       background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(15px);
-      padding: 50px 40px;
+      padding: 40px 35px;
       border-radius: 30px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.4);
       text-align: center;
@@ -60,15 +75,14 @@
     .brand-logo { width: 75px; height: 75px; border-radius: 20px; margin-bottom: 20px; object-fit: cover; box-shadow: 0 8px 15px rgba(255, 145, 77, 0.3); }
     .auth-card h1 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; color: var(--text-main); margin-bottom: 8px; }
     
-    .input-wrapper { position: relative; margin-bottom: 18px; text-align: left; }
+    .input-wrapper { position: relative; margin-bottom: 15px; text-align: left; }
     .input-wrapper i.field-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 1rem; }
     
-    /* Password Toggle Icon Style */
     .eye-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; transition: 0.2s; }
     .eye-icon:hover { color: var(--brand); }
 
     .input-wrapper input {
-      width: 100%; padding: 14px 45px 14px 45px;
+      width: 100%; padding: 14px 45px;
       border: 1.5px solid #eee; border-radius: 12px;
       font-size: 0.95rem; outline: none; transition: 0.3s; background: #fafafa;
     }
@@ -76,8 +90,20 @@
 
     .primary-btn { width: 100%; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
     .primary-btn:disabled { background: #ccc; cursor: not-allowed; }
+    
+    .google-btn { 
+      width: 100%; padding: 14px; background: #fff; color: #444; 
+      border: 1.5px solid #ddd; border-radius: 12px; font-size: 0.9rem; 
+      font-weight: 600; cursor: pointer; transition: 0.3s; 
+      margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .google-btn:hover { background: #f8f8f8; border-color: #bbb; }
+    .google-btn i { color: #4285F4; font-size: 1.1rem; }
+
     .secondary-btn { width: 100%; padding: 14px; background: transparent; color: var(--brand); border: 1.5px solid var(--brand); border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 12px; }
-    .forgot-link { display: inline-block; margin-top: 25px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; }
+    
+    .forgot-link { display: inline-block; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; text-decoration: none; }
+    .forgot-link:hover { color: var(--brand); }
   </style>
 </head>
 <body>
@@ -90,12 +116,12 @@
   <div class="login-container">
     <div class="auth-card">
       <img src="/images/tent.jpeg" class="brand-logo" alt="Logo">
-      <h1>Welcome Back</h1>
-      <p style="color:#777; font-size: 0.9rem; margin-bottom: 30px;">Muni University's Student Food Hub</p>
+      <h1 id="welcomeText">Welcome Back</h1>
+      <p style="color:#777; font-size: 0.9rem; margin-bottom: 25px;">Muni University's Student Food Hub</p>
 
       <div class="input-wrapper">
         <i class="fa-regular fa-envelope field-icon"></i>
-        <input type="email" id="email" placeholder="Student Email" />
+        <input type="email" id="email" placeholder="Email" />
       </div>
 
       <div class="input-wrapper">
@@ -105,6 +131,11 @@
       </div>
 
       <button class="primary-btn" id="loginBtn">Sign In</button>
+      
+      <button class="google-btn" id="googleBtn">
+        <i class="fa-brands fa-google"></i> Continue with Google
+      </button>
+
       <button class="secondary-btn" id="signupBtn">Join Campus Bite</button>
       
       <span class="forgot-link" id="forgotBtn">Forgot your password?</span>
@@ -112,9 +143,22 @@
   </div>
 
   <script type="module">
-    // 2. FIREBASE SETUP
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getAuth, 
+      signInWithEmailAndPassword, 
+      onAuthStateChanged,
+      sendPasswordResetEmail,
+      GoogleAuthProvider,
+      signInWithPopup 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      getDoc, 
+      serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
@@ -127,20 +171,29 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-    // Redirect if logged in
+    // DYNAMIC WELCOME LOGIC
+    const welcomeHeader = document.getElementById("welcomeText");
+    if (!localStorage.getItem("hasLoggedInBefore")) {
+      welcomeHeader.innerText = "Join the Hub";
+    }
+
     onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "home.html";
+      if (user) {
+        localStorage.setItem("hasLoggedInBefore", "true");
+        window.location.href = "home.html";
+      }
     });
 
-    // Login Logic
+    // EMAIL LOGIN
     document.getElementById("loginBtn").onclick = async () => {
       const email = document.getElementById("email").value.trim();
       const pass = document.getElementById("password").value.trim();
       const btn = document.getElementById("loginBtn");
 
       if (!email || !pass) return alert("Please fill in all fields.");
-      
       btn.disabled = true;
       btn.innerText = "Authenticating...";
 
@@ -153,13 +206,59 @@
       }
     };
 
-    // Navigation
+    // GOOGLE LOGIN + FIRESTORE SAVE
+    document.getElementById("googleBtn").onclick = async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        const studentRef = doc(db, "students", user.uid);
+        const studentSnap = await getDoc(studentRef);
+
+        if (!studentSnap.exists()) {
+          await setDoc(studentRef, {
+            name: user.displayName,
+            email: user.email,
+            profilePic: user.photoURL,
+            uid: user.uid,
+            role: "student",
+            joinedAt: serverTimestamp()
+          });
+        }
+        
+        localStorage.setItem("hasLoggedInBefore", "true");
+        window.location.href = "home.html";
+      } catch (e) {
+        if (e.code !== 'auth/popup-closed-by-user') {
+          alert("Google Sign-In Error: " + e.message);
+        }
+      }
+    };
+
+    // FORGOT PASSWORD
+    document.getElementById("forgotBtn").onclick = async () => {
+      const email = document.getElementById("email").value.trim();
+      if (!email) return alert("Please enter your email address first.");
+      
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email)) return alert("Please enter a valid email.");
+
+      if (confirm(`Send a reset link to ${email}?`)) {
+        try {
+          await sendPasswordResetEmail(auth, email);
+          alert("Reset link sent! Check your Inbox and Spam folder.");
+        } catch (e) {
+          alert("Error: " + e.message);
+        }
+      }
+    };
+
+    // NAVIGATION
     document.getElementById("signupBtn").onclick = () => window.location.href = "signup.html";
 
-    // 3. PASSWORD TOGGLE LOGIC
+    // PASSWORD TOGGLE
     const passwordInput = document.getElementById("password");
     const togglePassword = document.getElementById("togglePassword");
-
     togglePassword.onclick = () => {
       const type = passwordInput.type === "password" ? "text" : "password";
       passwordInput.type = type;
@@ -167,13 +266,8 @@
       togglePassword.classList.toggle("fa-eye-slash");
     };
 
-    // 4. SERVICE WORKER REGISTRATION (Root Path)
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('✅ Service Worker Registered'))
-          .catch(err => console.error('❌ SW Registration Failed', err));
-      });
+      window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js'); });
     }
   </script>
 </body>

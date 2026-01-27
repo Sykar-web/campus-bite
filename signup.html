@@ -48,7 +48,7 @@
     .auth-card {
       background: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(15px);
-      padding: 40px;
+      padding: 30px 40px;
       border-radius: 30px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.4);
       text-align: center;
@@ -56,13 +56,12 @@
     }
 
     .auth-card h1 { font-family: 'Poppins', sans-serif; font-size: 1.7rem; color: var(--text-main); margin-bottom: 5px; }
-    .auth-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 25px; }
+    .auth-card p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
 
     .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .input-wrapper { position: relative; margin-bottom: 15px; text-align: left; }
+    .input-wrapper { position: relative; margin-bottom: 12px; text-align: left; }
     .input-wrapper i.field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 0.9rem; }
     
-    /* Eye icon for password toggle */
     .eye-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; font-size: 0.9rem; }
 
     .input-wrapper input, .input-wrapper select {
@@ -72,15 +71,30 @@
     }
     .input-wrapper input:focus, .input-wrapper select:focus { border-color: var(--brand); background: #fff; }
 
-    .primary-btn { width: 100%; padding: 14px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+    .primary-btn { width: 100%; padding: 14px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 5px; }
     .primary-btn:hover { background: var(--brand-dark); transform: translateY(-1px); }
-    .primary-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-    .footer-text { margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); }
+    /* Success Modal Styles */
+    #successModal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+      display: none; justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-content {
+      background: white; padding: 40px; border-radius: 25px; text-align: center;
+      max-width: 320px; animation: scaleUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .modal-content i { font-size: 4rem; color: #4CAF50; margin-bottom: 15px; }
+    .install-btn { 
+      background: #000; color: #fff; border: none; padding: 12px 20px; 
+      border-radius: 10px; margin-top: 15px; width: 100%; cursor: pointer; font-weight: 600;
+    }
+
+    .footer-text { margin-top: 15px; font-size: 0.85rem; color: var(--text-muted); }
     .footer-text a { color: var(--brand); text-decoration: none; font-weight: 600; }
 
+    @keyframes scaleUp { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 480px) { .input-row { grid-template-columns: 1fr; } .auth-card { padding: 30px 20px; } }
+    @media (max-width: 480px) { .input-row { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -90,6 +104,16 @@
   </div>
   <div class="overlay"></div>
 
+  <div id="successModal">
+    <div class="modal-content">
+      <i class="fa-solid fa-circle-check"></i>
+      <h2 style="margin-bottom: 10px;">Welcome!</h2>
+      <p id="modalMsg">Account created successfully.</p>
+      <button id="installAppBtn" class="install-btn" style="display: none;">Install Campus Bite App</button>
+      <button onclick="window.location.href='home.html'" class="primary-btn" style="background: #eee; color: #333; margin-top: 10px;">Continue to Home</button>
+    </div>
+  </div>
+
   <div class="auth-container">
     <div class="auth-card">
       <h1>Create Account</h1>
@@ -97,12 +121,17 @@
 
       <div class="input-wrapper">
         <i class="fa-regular fa-user field-icon"></i>
-        <input type="text" id="name" placeholder="Full Name" />
+        <input type="text" id="name" placeholder="Name" />
       </div>
 
       <div class="input-wrapper">
         <i class="fa-regular fa-envelope field-icon"></i>
-        <input type="email" id="email" placeholder="Student Email" />
+        <input type="email" id="email" placeholder="Email" />
+      </div>
+
+      <div class="input-wrapper">
+        <i class="fa-solid fa-phone field-icon"></i>
+        <input type="tel" id="phone" placeholder="Phone Number " />
       </div>
 
       <div class="input-row">
@@ -160,10 +189,31 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // PWA Install Logic
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      // Only show install button if they aren't in standalone mode
+      if (!window.matchMedia('(display-mode: standalone)').matches) {
+        document.getElementById('installAppBtn').style.display = 'block';
+      }
+    });
+
+    document.getElementById('installAppBtn').onclick = async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          document.getElementById('installAppBtn').style.display = 'none';
+        }
+        deferredPrompt = null;
+      }
+    };
+
     // Password Toggle Logic
     const passwordInput = document.getElementById("password");
     const toggleBtn = document.getElementById("togglePassword");
-
     toggleBtn.onclick = () => {
       const type = passwordInput.type === "password" ? "text" : "password";
       passwordInput.type = type;
@@ -176,12 +226,13 @@
       const btn = document.getElementById("signupBtn");
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
       const faculty = document.getElementById("faculty").value;
       const course = document.getElementById("course").value.trim();
       const hostel = document.getElementById("hostel").value.trim();
       const password = document.getElementById("password").value.trim();
 
-      if (!name || !email || !faculty || !course || !hostel || !password) {
+      if (!name || !email || !phone || !faculty || !course || !hostel || !password) {
         return alert("Please complete all fields.");
       }
 
@@ -191,9 +242,12 @@
       try {
         const res = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, "students", res.user.uid), {
-          name, email, faculty, course, hostel, uid: res.user.uid, createdAt: serverTimestamp()
+          name, email, phone, faculty, course, hostel, uid: res.user.uid, createdAt: serverTimestamp()
         });
-        window.location.href = "home.html";
+        
+        // Show Success Modal instead of Alert
+        document.getElementById("successModal").style.display = "flex";
+        
       } catch (e) {
         alert(e.message);
         btn.disabled = false;
@@ -201,12 +255,9 @@
       }
     };
 
-    // SW Registration
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('✅ SW Registered'))
-          .catch(err => console.error('❌ SW Failed', err));
+        navigator.serviceWorker.register('/sw.js');
       });
     }
   </script>

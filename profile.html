@@ -16,7 +16,7 @@
   <meta name="theme-color" content="#ff914d">
 
   <style>
-    :root { --primary: #ff914d; --bg: #fdfdfd; --dark: #1a1a1a; --text: #2d3436; --danger: #eb4d4b; }
+    :root { --primary: #ff914d; --bg: #fdfdfd; --dark: #1a1a1a; --text: #2d3436; --danger: #eb4d4b; --info: #0984e3; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: "Poppins", sans-serif; background-color: var(--bg); color: var(--text); padding-bottom: 110px; }
 
@@ -39,9 +39,19 @@
 
     #adminPortal {
       background: var(--dark); color: white; border-radius: 20px; padding: 18px;
-      margin-bottom: 25px; display: none; align-items: center; justify-content: space-between;
+      margin-bottom: 15px; display: none; align-items: center; justify-content: space-between;
       cursor: pointer; box-shadow: 0 8px 15px rgba(0,0,0,0.15);
     }
+    
+    /* Smart Install Row Styling */
+    #installAppRow {
+      background: #e3f2fd; color: var(--info); border-radius: 20px; padding: 18px;
+      margin-bottom: 15px; display: none; align-items: center; justify-content: space-between;
+      cursor: pointer; border: 1px solid #74b9ff; animation: slideIn 0.5s ease;
+    }
+    .install-text h4 { font-size: 0.9rem; margin-bottom: 2px; }
+    .install-text p { font-size: 0.7rem; color: #74b9ff; }
+
     .admin-text h4 { font-size: 0.9rem; margin-bottom: 2px; }
     .admin-text p { font-size: 0.7rem; color: #888; }
 
@@ -77,6 +87,8 @@
     .footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
     .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
     .footer-nav a.active { color: var(--primary); }
+
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -95,6 +107,14 @@
       <p>Manage Orders & Students</p>
     </div>
     <i class="fa fa-arrow-right" style="color: var(--primary)"></i>
+  </div>
+
+  <div id="installAppRow">
+    <div class="install-text">
+      <h4>Install Campus Bite</h4>
+      <p>Add to home screen for a better experience</p>
+    </div>
+    <i class="fa fa-download"></i>
   </div>
 
   <span class="section-label">General Info</span>
@@ -173,6 +193,31 @@ const db = firebase.firestore();
 
 const ADMIN_EMAIL = "ezrasykar@gmail.com";
 
+// --- PWA INSTALL LOGIC ---
+let deferredPrompt;
+const installRow = document.getElementById("installAppRow");
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Check if we are ALREADY installed or in standalone mode
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  if (!isStandalone) {
+    installRow.style.display = "flex";
+  }
+});
+
+installRow.onclick = async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      installRow.style.display = "none";
+    }
+    deferredPrompt = null;
+  }
+};
+
 // Password visibility
 document.getElementById("eyeIcon").onclick = function() {
   const input = document.getElementById("newPassword");
@@ -213,16 +258,12 @@ document.getElementById("saveBtn").onclick = async function() {
   this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
 
   try {
-    // 1. Password Update
     if(newPass.length >= 6) {
       await user.updatePassword(newPass);
     } else if (newPass.length > 0) {
-      this.disabled = false;
-      this.innerHTML = '<i class="fa fa-check-circle"></i> Save Changes';
-      return alert("Password must be at least 6 characters!");
+      throw new Error("Password must be at least 6 characters!");
     }
 
-    // 2. Profile Update
     await db.collection("students").doc(user.uid).set({
       name: document.getElementById("name").value,
       phone: document.getElementById("phone").value,
@@ -236,9 +277,9 @@ document.getElementById("saveBtn").onclick = async function() {
     document.getElementById("newPassword").value = "";
   } catch(e) {
     if (e.code === 'auth/requires-recent-login') {
-      alert("Please log out and log back in to verify your identity before changing password.");
+      alert("Please log out and log back in to change your password for security.");
     } else {
-      alert("Update failed: " + e.message);
+      alert(e.message);
     }
   }
   this.disabled = false;
@@ -251,7 +292,6 @@ document.getElementById("logoutBtn").onclick = () => {
   }
 };
 
-// PWA Service Worker
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
