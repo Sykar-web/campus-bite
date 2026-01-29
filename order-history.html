@@ -4,7 +4,7 @@
   <link rel="canonical" href="https://campusbite.xyz/">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>My Orders | Campus Bite</title>
+  <title>Order History | Campus Bite</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -16,7 +16,7 @@
   <meta name="theme-color" content="#ff914d">
 
   <style>
-    :root{ --primary:#ff914d; --primary-dark:#ff6a00; --bg:#f8fafb; --text:#333; --muted:#888; --danger:#ff4d4d; --green:#2ecc71; --whatsapp:#25d366; }
+    :root { --primary:#ff914d; --primary-dark:#ff6a00; --bg:#f8fafb; --text:#333; --muted:#888; --danger:#ff4d4d; --green:#2ecc71; --whatsapp:#25d366; --dark:#1a1a1a; }
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 110px; }
 
@@ -29,6 +29,18 @@
     .back-link { color: white; text-decoration: none; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.4); padding: 5px 12px; border-radius: 10px; }
 
     .main-content { padding: 20px; max-width: 800px; margin: 0 auto; }
+    
+    #notifPermissionBanner {
+      display: none; background: var(--dark); color: white; padding: 15px;
+      border-radius: 20px; margin-bottom: 20px; align-items: center;
+      justify-content: space-between; animation: slideDown 0.5s ease;
+    }
+    #notifPermissionBanner span { font-size: 0.75rem; opacity: 0.9; }
+    #notifPermissionBanner button { 
+      background: var(--primary); border: none; color: white; 
+      padding: 8px 15px; border-radius: 10px; font-weight: 600; font-size: 0.75rem;
+    }
+
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
     .page-title h2 { color: var(--primary-dark); font-size: 1.5rem; }
     .pending-total { background: #fff5ee; padding: 8px 15px; border-radius: 10px; font-weight: 600; color: var(--primary-dark); font-size: 0.85rem; border: 1px solid #ffe0cc; }
@@ -36,9 +48,8 @@
     #historyContainer { display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 768px) { #historyContainer { grid-template-columns: 1fr 1fr; } }
 
-    .card { background: #fff; border-radius: 25px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eee; display: flex; flex-direction: column; position: relative; animation: slideUp 0.4s ease; }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+    .card { background: #fff; border-radius: 25px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eee; display: flex; flex-direction: column; position: relative; }
+    
     .status { padding: 5px 12px; border-radius: 10px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
     .pending { background: #fff9c4; color: #856404; }
     .preparing { background: #e3f2fd; color: #0d47a1; }
@@ -66,6 +77,7 @@
     .footer-nav a.active { color: var(--primary); font-weight: 700; }
 
     .empty { text-align: center; padding: 80px 20px; color: #bbb; grid-column: 1 / -1; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 
@@ -77,20 +89,25 @@
 </header>
 
 <div class="main-content">
+  <div id="notifPermissionBanner">
+    <span>Get alerts when your food is ready?</span>
+    <button onclick="requestUniversalNotifications()">Enable Alerts</button>
+  </div>
+
   <div class="page-header">
     <div class="page-title">
-      <h2>Order History</h2>
+      <h2>My Orders</h2>
       <p id="subTitle">Track your active meals</p>
     </div>
     <div id="pendingTotal" class="pending-total" style="display:none;"></div>
   </div>
 
   <div id="historyContainer">
-      <div class="empty"><i class="fa fa-circle-notch fa-spin"></i><br>Fetching orders...</div>
+      <div class="empty"><i class="fa fa-circle-notch fa-spin"></i><br>Loading your orders...</div>
   </div>
   
   <div style="text-align: center; margin-top: 40px;">
-    <button id="clear-history" style="display:none; background:none; border:none; color:#bbb; font-size:0.75rem; text-decoration:underline; cursor:pointer;">Clear Delivered History</button>
+    <button id="clear-history" style="display:none; background:none; border:none; color:#bbb; font-size:0.75rem; text-decoration:underline; cursor:pointer;">Clear Order History</button>
   </div>
 </div>
 
@@ -105,19 +122,22 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-messaging-compat.js"></script>
 
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
   authDomain: "campus-bite-9dbaa.firebaseapp.com",
-  projectId: "campus-bite-9dbaa"
+  projectId: "campus-bite-9dbaa",
+  messagingSenderId: "294389261625", // Make sure this line is there!
+  appId: "1:294389261625:web:095d6e5f85f4e8"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const messaging = firebase.messaging();
 const SUPPORT_PHONE = "256748372023"; 
 
-// Track status changes to prevent chime spamming
 let previousStatuses = {};
 
 auth.onAuthStateChanged(user => {
@@ -126,41 +146,76 @@ auth.onAuthStateChanged(user => {
       .orderBy("timestamp", "desc")
       .onSnapshot(snap => { renderOrders(snap); });
     
-    // Request permission once user is logged in and viewing history
-    setTimeout(requestNotificationPermission, 2000);
+    // Check permission & try to save token
+    checkNotificationStatus(user);
   } else {
     window.location.href = "login.html";
   }
 });
+
+async function checkNotificationStatus(user) {
+    if (!("Notification" in window)) return;
+    
+    if (Notification.permission === "default") {
+        document.getElementById("notifPermissionBanner").style.display = "flex";
+    } else if (Notification.permission === "granted") {
+        saveMessagingToken(user);
+    }
+}
+
+async function saveMessagingToken(user) {
+    try {
+        const currentToken = await messaging.getToken({ 
+            vapidKey: 'BCsn7-R1yc3DK8oIgjpO4gvQfethR8xZBeO4XQw2blzI7h__UVEBeOTUcGNMaE_sv04ido9SSaftHtShd9xJcV8' 
+        });
+        
+        if (currentToken) {
+            await db.collection("students").doc(user.uid).set({
+                fcmToken: currentToken,
+                lastSeen: new Date()
+            }, { merge: true });
+            console.log("Token saved successfully");
+        }
+    } catch (err) {
+        console.log('Unable to get messaging token.', err);
+    }
+}
+
+async function requestUniversalNotifications() {
+  const permission = await Notification.requestPermission();
+  if (permission === 'granted') {
+      document.getElementById("notifPermissionBanner").style.display = "none";
+      saveMessagingToken(auth.currentUser);
+  }
+}
 
 function renderOrders(snap) {
   const container = document.getElementById("historyContainer");
   container.innerHTML = "";
   
   if(snap.empty){
-    container.innerHTML = '<div class="empty"><i class="fa fa-box-open"></i><p>No orders found.</p></div>';
+    container.innerHTML = '<div class="empty"><i class="fa fa-box-open"></i><p>No orders yet.</p></div>';
     return;
   }
 
   let activeTotal = 0;
   let hasOldOrders = false;
-  const now = new Date().getTime();
 
   snap.forEach(doc => {
     const o = doc.data();
     const id = doc.id;
     const status = o.status || 'pending';
 
-    // --- ALERT LOGIC ---
-    // Only chime if the status exists and has actually CHANGED from what we saw last
+    // TRIGGER BROWSER ALERT IF STATUS CHANGED
     if (previousStatuses[id] && previousStatuses[id] !== status) {
-        if (['preparing', 'out for delivery', 'delivered', 'cancelled'].includes(status)) {
-            new Audio('/sounds/ready-chime.mp3').play().catch(() => {});
-            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        const msg = `Order #${id.slice(-5).toUpperCase()} is now ${status.toUpperCase()}.`;
+        if (Notification.permission === "granted") {
+            new Notification("Campus Bite", { body: msg, icon: '/images/tent.jpeg' });
         }
     }
-    previousStatuses[id] = status; // Update tracker
+    previousStatuses[id] = status;
 
+    const now = new Date().getTime();
     const orderTime = o.timestamp ? o.timestamp.toDate().getTime() : now;
     const diffMins = (now - orderTime) / 1000 / 60;
     const canCancel = diffMins < 5 && status === "pending";
@@ -173,7 +228,7 @@ function renderOrders(snap) {
 
     let itemsHTML = (o.items || []).map(i => `
       <div class="item-row">
-        <img src="${i.image || '/images/tent.jpeg'}" onerror="this.src='/images/tent.jpeg'">
+        <img src="${i.image || i.img || i.url || '/images/tent.jpeg'}" onerror="this.src='/images/tent.jpeg'">
         <div class="item-info">
           <strong>${i.name}</strong>
           <span style="color:#888;">${i.qty}x • UGX ${(i.price * i.qty).toLocaleString()}</span>
@@ -181,80 +236,57 @@ function renderOrders(snap) {
       </div>
     `).join('');
 
-    const waLink = `https://wa.me/${SUPPORT_PHONE}?text=Inquiry regarding Order #${id.slice(-5).toUpperCase()}`;
+    const waLink = `https://wa.me/${SUPPORT_PHONE}?text=Hello, I need help with Order #${id.slice(-5).toUpperCase()}`;
 
     card.innerHTML = `
-      <div class="order-header">
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items:flex-start;">
         <div>
-          <span style="font-size:0.65rem; color:#bbb; font-weight:700;">#${id.slice(-5).toUpperCase()}</span><br>
-          <small style="color:#888;">${o.timestamp ? o.timestamp.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</small>
+          <span style="font-size:0.6rem; color:#ccc; font-weight:700;">#${id.slice(-5).toUpperCase()}</span><br>
+          <small style="color:#999; font-size:0.7rem;">${o.timestamp ? o.timestamp.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</small>
         </div>
-        <div>
+        <div style="text-align:right;">
           <span class="status ${status.replace(/\s+/g, '-')}">${status}</span>
-          ${o.paymentStatus === 'Paid' ? '<span class="paid-badge">PAID</span>' : ''}
+          ${o.paymentStatus === 'Paid' ? '<div class="paid-badge" style="margin-top:4px; display:inline-block;">PAID</div>' : ''}
         </div>
       </div>
       ${itemsHTML}
       <div class="summary">
-        <div class="summary-line"><span>Deliver to:</span><strong>${o.deliveryLocation || 'Pickup'}</strong></div>
+        <div class="summary-line"><span>Deliver to:</span><strong>${o.deliveryLocation || 'Campus'}</strong></div>
         <div class="summary-line" style="margin-top:5px; border-top:1px solid #eee; padding-top:5px;">
           <span>Total:</span><span class="total-text">UGX ${(o.totalAmount || 0).toLocaleString()}</span>
         </div>
       </div>
       <div class="action-area">
-        <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Inquiry via WhatsApp</a>
+        <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat Support</a>
         ${canCancel ? `
           <button class="cancel-btn" onclick="cancelOrder('${id}')">Cancel Order</button>
-          <span class="time-warning" style="color:var(--danger)">Ends in ${Math.ceil(5 - diffMins)} mins</span>
-        ` : (status === 'pending' ? '<span class="time-warning">Cancellation period expired</span>' : '')}
+        ` : ''}
       </div>
     `;
     container.appendChild(card);
   });
 
-  document.getElementById("pendingTotal").textContent = "Active: UGX " + activeTotal.toLocaleString();
+  document.getElementById("pendingTotal").textContent = "Total Active: UGX " + activeTotal.toLocaleString();
   document.getElementById("pendingTotal").style.display = activeTotal > 0 ? "block" : "none";
   document.getElementById("clear-history").style.display = hasOldOrders ? "inline-block" : "none";
 }
 
 async function cancelOrder(id) {
-  const user = auth.currentUser;
-  const ref = db.collection("orders").doc(user.uid).collection("userOrders").doc(id);
-  const doc = await ref.get();
-  const orderTime = doc.data().timestamp.toDate().getTime();
-  
-  if ((new Date().getTime() - orderTime) / 1000 / 60 > 5) {
-    alert("Time limit (5 mins) exceeded.");
-    return;
-  }
-
   if(confirm("Cancel this order?")){
     try {
-      await ref.update({ status: "cancelled" });
-    } catch(e) { alert("Error: " + e.message); }
+      await db.collection("orders").doc(auth.currentUser.uid).collection("userOrders").doc(id).update({ status: "cancelled" });
+    } catch(e) { alert(e.message); }
   }
 }
 
 document.getElementById("clear-history").onclick = async () => {
-  if(!confirm("Clear delivered/cancelled history?")) return;
-  const user = auth.currentUser;
-  const snap = await db.collection("orders").doc(user.uid).collection("userOrders").get();
+  if(!confirm("Clear history?")) return;
+  const snap = await db.collection("orders").doc(auth.currentUser.uid).collection("userOrders").get();
   const batch = db.batch();
-  snap.forEach(d => {
-    if(['delivered', 'cancelled'].includes(d.data().status)) batch.delete(d.ref);
-  });
+  snap.forEach(d => { if(['delivered', 'cancelled'].includes(d.data().status)) batch.delete(d.ref); });
   await batch.commit();
 };
 
-async function requestNotificationPermission() {
-  if (!('Notification' in window)) return;
-  const permission = await Notification.requestPermission();
-  if (permission === 'granted') {
-      console.log('Notification permission granted.');
-  }
-}
-
-// Service Worker Registration
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }

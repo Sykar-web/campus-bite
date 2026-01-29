@@ -1,7 +1,12 @@
+/* Campus Bite - Service Worker 
+   Version: 2.0.1
+*/
+
+// 1. Import Firebase Scripts for Background Messaging
 importScripts('https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.13.1/firebase-messaging-compat.js');
 
-// 1. Initialize Firebase inside the Service Worker
+// 2. Initialize Firebase
 firebase.initializeApp({
   apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
   authDomain: "campus-bite-9dbaa.firebaseapp.com",
@@ -12,54 +17,98 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// 2. Background Notification Handler
-messaging.onBackgroundMessage((payload) => {
-  console.log('[sw.js] Received background message ', payload);
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/images/tent.jpeg', // Your app icon
-    badge: '/images/tent.jpeg', // Small icon for status bar
-    data: { url: payload.data?.url || '/order-history.html' }
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-// 3. Handle Notification Click (Open the App)
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  event.waitUntil(
-    clients.openWindow(event.notification.data.url)
-  );
-});
-
-// 4. Offline Caching (Cache-First Strategy)
-const CACHE_NAME = 'campus-bite-v1';
-const ASSETS = [
+// 3. Asset Configuration
+const CACHE_NAME = 'campus-bite-cache-v2';
+const ASSETS_TO_CACHE = [
   '/',
+  '/index.html',
   '/home.html',
   '/profile.html',
   '/comments.html',
   '/budget.html',
   '/order-history.html',
-  '/ingredients.js',
-  '/meals.js',
   '/images/tent.jpeg',
-  'https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+  '/manifest.json',
+  '/meals.js',
+  '/ingredients.js',
+  // Add '/ingredients.js' and '/meals.js' here ONLY if they are in your root folder
 ];
 
+// 4. Install Event: Cache Assets
 self.addEventListener('install', (event) => {
+  self.skipWaiting(); // Forces the waiting service worker to become active
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Caching system assets');
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
 });
 
+// 5. Activate Event: Cleanup Old Caches
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            console.log('[SW] Clearing old cache:', cache);
+            return caches.delete(cache);
+          }
+        })
+      );
+    })
+  );
+  return self.clients.claim(); // Take control of all open tabs immediately
+});
+
+// 6. Fetch Event: Offline Support (Network falling back to Cache)
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
+  );
+});
+
+// 7. Firebase Background Message Handler
+messaging.onBackgroundMessage((payload) => {
+  console.log('[SW] Background message received: ', payload);
+  
+  const notificationTitle = payload.notification.title || 'Campus Bite Update';
+  const notificationOptions = {
+    body: payload.notification.body || 'Open the app to see your order status.',
+    icon: '/images/tent.jpeg',
+    badge: '/images/tent.jpeg',
+    vibrate: [200, 100, 200],
+    tag: 'order-status', // Groups similar notifications
+    data: {
+      url: payload.data?.url || '/order-history.html'
+    }
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// 8. Handle Notification Clicks
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  
+  const targetUrl = event.notification.data.url;
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      // If a tab is already open, focus it
+      for (var i = 0; i < windowClients.length; i++) {
+        var client = windowClients[i];
+        if (client.url.includes(targetUrl) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      // If no tab is open, open a new one
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
     })
   );
 });

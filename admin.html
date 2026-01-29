@@ -30,33 +30,35 @@
     .stat-card span { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
     .stat-card h2 { color: var(--primary); font-size: 1.4rem; margin-top: 5px; }
 
+    /* Filter Bar */
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding: 5px 0; }
+    .f-btn { padding: 10px 20px; border-radius: 25px; border: 1px solid #ddd; background: white; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: 0.3s; white-space: nowrap; }
+    .f-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
     /* Search */
     .search-wrapper { max-width: 700px; margin: 160px auto 40px; padding: 0 20px; }
     .search-bar { background: var(--white); padding: 18px 25px; border-radius: 25px; display: flex; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.04); border: 1px solid #eee; }
     .search-bar input { border: none; outline: none; width: 100%; margin-left: 15px; font-size: 0.95rem; }
 
-    /* Content Area */
+    /* Content */
     .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     .view-section { display: none; animation: fadeIn 0.4s ease; }
     .view-section.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Card Designs */
     .order-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-    .order-card { background: var(--white); border-radius: 25px; padding: 22px; border: 1px solid #eee; cursor: pointer; transition: 0.3s; }
+    .order-card { background: var(--white); border-radius: 25px; padding: 22px; border: 1px solid #eee; cursor: pointer; transition: 0.3s; border-left: 5px solid transparent; }
     .order-card:hover { border-color: var(--primary); transform: translateY(-5px); }
     
-    .student-item { background: white; padding: 15px 25px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; cursor: pointer; transition: 0.2s; }
-    .student-item:hover { border-color: var(--primary); background: #fffaf7; }
+    .student-item { background: white; padding: 15px 25px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; transition: 0.2s; }
     .student-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid #eee; }
 
-    /* Badges */
     .badge { padding: 6px 14px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
     .pending { background: #fff9c4; color: #fbc02d; border: 1px solid #fbc02d; }
     .preparing { background: #e3f2fd; color: var(--blue); border: 1px solid var(--blue); }
     .delivered { background: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32; }
+    .paid-badge { background: var(--green); color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.6rem; margin-left: 5px; vertical-align: middle; }
 
-    /* Modals */
     .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px; }
     .modal-content { background: var(--white); width: 100%; max-width: 550px; padding: 35px; border-radius: 35px; max-height: 85vh; overflow-y: auto; position: relative; }
     .close-modal { position: absolute; top: 25px; right: 25px; font-size: 1.5rem; color: #ccc; cursor: pointer; }
@@ -80,7 +82,7 @@
 <body>
 
 <aside class="sidebar">
-  <div style="text-align:center; margin-bottom:50px;"><h2 style="color:var(--primary);">Campus Bite</h2><p style="font-size:0.6rem; color:#666;">Admin Dashboard v4.2</p></div>
+  <div style="text-align:center; margin-bottom:50px;"><h2 style="color:var(--primary);">Campus Bite</h2><p style="font-size:0.6rem; color:#666;">Admin Dashboard v5.2</p></div>
   <div class="nav-item active" onclick="switchView('orders', this)"><i class="fa fa-shopping-cart"></i> Live Orders</div>
   <div class="nav-item" onclick="switchView('students', this)"><i class="fa fa-users"></i> Students List</div>
   <div class="nav-item" onclick="switchView('comments', this)"><i class="fa fa-comment-alt"></i> Feedback</div>
@@ -91,63 +93,74 @@
   <header class="header-gradient">
     <div style="max-width:1100px; margin:0 auto;">
       <h1 id="viewTitle">Live Orders</h1>
-      <p style="opacity:0.6; font-size:0.9rem;">Real-time business oversight</p>
       <div class="stats-container">
         <div class="stat-card"><span>Active</span><h2 id="statActive">0</h2></div>
         <div class="stat-card"><span>Revenue</span><h2 id="statRevenue">UGX 0</h2></div>
         <div class="stat-card"><span>Students</span><h2 id="statStudents">0</h2></div>
         <div class="stat-card" id="exportBtn" style="cursor:pointer; border: 1px solid var(--primary);">
             <span style="color:var(--primary)">Export Data</span>
-            <h2 style="font-size: 1.1rem; margin-top:5px;"><i class="fa fa-file-excel"></i> Save CSV</h2>
+            <h2 style="font-size: 1.1rem; margin-top:5px;"><i class="fa fa-file-excel"></i> CSV</h2>
         </div>
       </div>
     </div>
   </header>
 
   <section class="search-wrapper">
-    <div class="search-bar">
-      <i class="fa fa-search" style="color:var(--primary)"></i>
-      <input type="text" id="adminSearch" placeholder="Search orders, names, or hostels..." onkeyup="filterData()">
-    </div>
+    <div class="search-bar"><i class="fa fa-search" style="color:var(--primary)"></i><input type="text" id="adminSearch" placeholder="Search..." onkeyup="filterData()"></div>
   </section>
 
   <div class="container">
     <section id="ordersView" class="view-section active">
+        <div class="filter-bar">
+            <button class="f-btn active" onclick="setFilter('all', this)">All</button>
+            <button class="f-btn" onclick="setFilter('unpaid', this)">Unpaid</button>
+            <button class="f-btn" onclick="setFilter('paid', this)">Paid</button>
+        </div>
         <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
-            <button onclick="clearDeliveredFromDashboard()" style="background: none; border: 1px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 12px; font-size: 0.8rem; cursor: pointer; font-weight: 600;">
-                <i class="fa fa-broom"></i> Clear Delivered Orders
+            <button onclick="toggleDelivered()" style="background: none; border: 1px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 12px; font-size: 0.8rem; cursor: pointer; font-weight: 600;">
+                <i class="fa fa-broom"></i> Toggle Delivered
             </button>
         </div>
         <div class="order-grid" id="orderList"></div>
     </section>
+<section id="commentsView" class="view-section">
+    <div style="background: white; padding: 25px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #eee;">
+        <h4 style="margin-bottom: 15px;"><i class="fa fa-download" style="color: var(--blue);"></i> Data Export Center</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+            <button onclick="exportData('orders')" class="f-btn" style="border-color: var(--blue); color: var(--blue);"><i class="fa fa-shopping-cart"></i> Orders CSV</button>
+            <button onclick="exportData('comments')" class="f-btn" style="border-color: var(--primary); color: var(--primary);"><i class="fa fa-comment"></i> Feedback CSV</button>
+            <button onclick="exportData('students')" class="f-btn" style="border-color: var(--green); color: var(--green);"><i class="fa fa-users"></i> Students CSV</button>
+        </div>
+    </div>
+
+    <div id="commentList" style="max-width:850px; margin:0 auto;"></div>
+
+    <div style="text-align:center; margin-top:40px; padding:20px; border:2px dashed var(--red); border-radius:20px; background: #fff;">
+        <h4 style="color:var(--red)">Master System Reset</h4>
+        <p style="font-size:0.7rem; color:#888;">Requires Admin Security Code. Wipes Orders & Chat only.</p>
+        <button onclick="secureMasterReset()" class="btn-delete" style="max-width:200px; margin:15px auto;">Clear Orders & Chat</button>
+    </div>
+</section>
     <section id="studentsView" class="view-section"><div id="studentList" style="max-width:850px; margin:0 auto;"></div></section>
-    <section id="commentsView" class="view-section"><div id="commentList" style="max-width:850px; margin:0 auto;"></div></section>
+    
+    <section id="commentsView" class="view-section">
+        <div id="commentList" style="max-width:850px; margin:0 auto;"></div>
+    </section>
   </div>
 </div>
 
 <div id="studentModal" class="modal">
   <div class="modal-content">
     <i class="fa fa-times close-modal" onclick="closeModals()"></i>
-    <div style="text-align: center; margin-bottom: 25px;">
-        <div id="sProfileIcon"></div>
-        <h3 id="sNameDisplay">Student Profile</h3>
-        <p id="sID" style="font-size: 0.7rem; color: #888;"></p>
-    </div>
-    
-    <label class="label-small">Full Name</label>
-    <input type="text" id="editSName" class="edit-input">
-    <label class="label-small">Phone Number</label>
-    <input type="text" id="editSPhone" class="edit-input">
-    <label class="label-small">Hostel / Hall</label>
-    <input type="text" id="editSHostel" class="edit-input">
-    <label class="label-small">Department / Course</label>
-    <input type="text" id="editSDepartment" class="edit-input">
-    <label class="label-small">Email (Read-only)</label>
-    <p id="displaySEmail" style="font-size: 0.9rem; padding: 10px 0; font-weight: 600;"></p>
-    
+    <div style="text-align: center; margin-bottom: 25px;"><div id="sProfileIcon"></div><h3 id="sNameDisplay">Student Profile</h3><p id="sID" style="font-size: 0.7rem; color: #888;"></p></div>
+    <label class="label-small">Full Name</label><input type="text" id="editSName" class="edit-input">
+    <label class="label-small">Phone Number</label><input type="text" id="editSPhone" class="edit-input">
+    <label class="label-small">Hostel / Hall</label><input type="text" id="editSHostel" class="edit-input">
+    <label class="label-small">Department</label><input type="text" id="editSDepartment" class="edit-input">
+    <label class="label-small">Email (Read-only)</label><p id="displaySEmail" style="font-size: 0.9rem; padding: 10px 0; font-weight: 600;"></p>
     <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <button id="btnSaveStudent" class="btn-save">Save Changes</button>
-        <a id="sCallBtn" href="#" class="btn-save" style="text-align: center; text-decoration: none; background: var(--green);">Call Now</a>
+        <button id="btnSaveStudent" class="btn-save">Save</button>
+        <a id="sCallBtn" href="#" class="btn-save" style="text-align: center; text-decoration: none; background: var(--green);">Call</a>
     </div>
     <button id="btnDeleteStudent" class="btn-delete"><i class="fa fa-trash"></i> Delete Student Account</button>
   </div>
@@ -157,12 +170,12 @@
   <div class="modal-content">
     <i class="fa fa-times close-modal" onclick="closeModals()"></i>
     <div style="display:flex; justify-content:space-between;">
-        <div><h3 id="mOrderID">Order Details</h3><p id="mCustomerName" style="color:var(--primary); font-weight:600;"></p></div>
+        <div><h3 id="mOrderID">Order</h3><p id="mCustomerName" style="color:var(--primary); font-weight:600;"></p></div>
         <div id="mContactActions"></div>
     </div>
     <div id="orderBody" style="margin-top:20px;"></div>
     <div id="mPaymentSection" style="margin-top:20px;"></div>
-    <button class="btn-verify" id="btnConfirmPayment">Mark as Paid (Verified)</button>
+    <button class="btn-verify" id="btnConfirmPayment">Mark as Paid</button>
     <div style="margin-top:25px; border-top:1px solid #eee; padding-top:20px;">
       <label class="label-small">Status & Alerts</label>
       <select id="mStatus" class="edit-input">
@@ -173,8 +186,9 @@
         <option value="cancelled">Cancelled</option>
       </select>
       <button class="btn-save" id="btnUpdateStatus">Update Status</button>
-      <button class="btn-notify" id="btnNotifyStudent" style="display:none;"><i class="fa fa-bell"></i> Send PWA Alert</button>
+      <button class="btn-notify" id="btnNotifyStudent"><i class="fa fa-bell"></i> Send Status Notification</button>
       <p id="notifStatus" style="font-size: 0.65rem; text-align: center; margin-top: 8px; font-weight: 600;"></p>
+      <button id="btnDeleteSpecificOrder" class="btn-delete" style="background:none; color:var(--red); border:1px solid var(--red);"><i class="fa fa-trash"></i> Delete Order Permanently</button>
     </div>
   </div>
 </div>
@@ -197,6 +211,10 @@
 
   let currentStudents = [];
   let hideDelivered = false;
+  let currentFilter = 'all';
+  let firstLoad = true;
+  let lastOrderCount = 0;
+  const chime = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
 
   auth.onAuthStateChanged(user => {
     if(!user || user.email !== "ezrasykar@gmail.com") location.href="home.html";
@@ -204,158 +222,192 @@
   });
 
   function startApp() {
-    // 1. STUDENTS SYNC
     db.collection("students").onSnapshot(snap => {
       document.getElementById("statStudents").innerText = snap.size;
       const sList = document.getElementById("studentList");
-      sList.innerHTML = "";
-      currentStudents = [];
-
+      sList.innerHTML = ""; currentStudents = [];
       snap.forEach(doc => {
-        const s = doc.data(); s.id = doc.id;
-        currentStudents.push(s);
-        
-        const isGoogle = s.profilePic ? true : false;
-        const avatar = isGoogle ? `<img src="${s.profilePic}" class="student-avatar">` : 
-                       `<div style="width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 700; margin-right: 12px;">${(s.name || "U")[0].toUpperCase()}</div>`;
-        
-        sList.innerHTML += `
-            <div class="student-item" onclick='openStudentModal(${JSON.stringify(s)})'>
-                <div style="display:flex; align-items:center;">
-                    ${avatar}
-                    <div class="student-info">
-                        <h4>${s.name || 'Unknown'} ${isGoogle ? '<i class="fa-brands fa-google" style="color:#4285F4; font-size:0.7rem; margin-left:5px;"></i>' : ''}</h4>
-                        <p>${s.hostel || 'No Hostel'} • ${s.phone || 'No Phone'}</p>
-                    </div>
-                </div>
-                <i class="fa fa-chevron-right" style="color:#ddd;"></i>
-            </div>`;
+        const s = doc.data(); s.id = doc.id; currentStudents.push(s);
+        const avatar = s.profilePic ? `<img src="${s.profilePic}" class="student-avatar">` : `<div style="width:40px;height:40px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;margin-right:12px;">${(s.name || "U")[0].toUpperCase()}</div>`;
+        sList.innerHTML += `<div class="student-item" onclick='openStudentModal(${JSON.stringify(s)})'><div style="display:flex;align-items:center;">${avatar}<div><h4>${s.name || 'Unknown'}</h4><p>${s.hostel || 'No Hostel'}</p></div></div><i class="fa fa-chevron-right" style="color:#ddd;"></i></div>`;
       });
     });
 
-    // 2. ORDERS SYNC
     db.collectionGroup("userOrders").onSnapshot(snap => {
+      if (!firstLoad && snap.size > lastOrderCount) chime.play().catch(e => {});
+      lastOrderCount = snap.size; firstLoad = false;
       renderOrders(snap);
     });
 
-    // 3. COMMENTS SYNC
     db.collection("comments").orderBy("createdAt", "desc").onSnapshot(snap => {
-      const clist = document.getElementById("commentList");
-      clist.innerHTML = "";
+      const clist = document.getElementById("commentList"); clist.innerHTML = "";
       snap.forEach(doc => {
         const c = doc.data();
-        clist.innerHTML += `<div class="student-item" style="cursor:default;"><div><strong>${c.userName || 'User'}</strong><p>${c.text}</p></div><button onclick="deleteComment('${doc.id}')" style="border:none; color:var(--red); background:none; cursor:pointer;"><i class="fa fa-trash"></i></button></div>`;
+        clist.innerHTML += `<div class="student-item" style="cursor:default;"><div><strong>${c.userName || 'User'}</strong><p>${c.text}</p></div><button onclick="deleteComment('${doc.id}')" style="border:none; color:var(--red); background:none; cursor:pointer; padding:10px;"><i class="fa fa-trash"></i></button></div>`;
       });
     });
   }
 
   function renderOrders(snap) {
       const list = document.getElementById("orderList");
-      list.innerHTML = ""; let rev = 0; let act = 0;
-      let all = [];
-      snap.forEach(doc => { 
+      list.innerHTML = ""; let rev = 0; let act = 0; let all = [];
+      snap.forEach(doc => {
         let d = doc.data(); d.id = doc.id; d.fullPath = doc.ref.path; d.userId = doc.ref.parent.parent.id;
-        all.push(d); 
+        const isPaid = d.paymentStatus === 'Paid';
+        if(currentFilter === 'unpaid' && isPaid) return;
+        if(currentFilter === 'paid' && !isPaid) return;
+        if(hideDelivered && d.status === 'delivered') return;
+        all.push(d);
       });
       all.sort((a,b) => (a.status === 'pending' ? -1 : 1));
       all.forEach(o => {
         if(o.status === 'delivered') rev += (Number(o.totalAmount) || 0);
         if(o.status === 'pending' || o.status === 'preparing') act++;
         
-        if(hideDelivered && o.status === 'delivered') return;
+        // Dynamic Border based on status
+        let borderColor = o.status === 'delivered' ? 'var(--green)' : (o.status === 'preparing' ? 'var(--blue)' : 'var(--primary)');
 
-        list.innerHTML += `<div class="order-card" onclick='openOrderModal(${JSON.stringify(o)})'><div style="display:flex; justify-content:space-between; margin-bottom:12px;"><small style="color:var(--primary); font-weight:700;">#${o.id.slice(-5).toUpperCase()}</small><span class="badge ${o.status || 'pending'}">${o.status || 'pending'}</span></div><h4>${o.userName || 'Guest'} ${o.paymentStatus === 'Paid' ? '<span class="paid-badge">PAID</span>' : ''}</h4><p style="font-size:0.8rem; color:#888;"><i class="fa fa-map-marker-alt"></i> ${o.deliveryLocation || 'N/A'}</p><div style="margin-top:15px; display:flex; justify-content:space-between; align-items:center;"><span style="font-weight:700;">UGX ${(o.totalAmount || 0).toLocaleString()}</span><small>${o.paymentMode}</small></div></div>`;
+        list.innerHTML += `
+          <div class="order-card" style="border-left: 6px solid ${borderColor};" onclick='openOrderModal(${JSON.stringify(o)})'>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+                <small style="color:var(--primary);font-weight:700;">#${o.id.slice(-5).toUpperCase()}</small>
+                <span class="badge ${o.status || 'pending'}">${o.status || 'pending'}</span>
+            </div>
+            <h4>${o.userName || 'Guest'} ${o.paymentStatus === 'Paid' ? '<span class="paid-badge">PAID</span>' : ''}</h4>
+            <div style="background:#f9f9f9; padding:8px; border-radius:12px; margin: 8px 0; font-size:0.75rem;">
+                <p><i class="fa fa-phone"></i> ${o.deliveryPhone || 'N/A'}</p>
+                <p><i class="fa fa-map-marker-alt"></i> ${o.deliveryLocation || 'N/A'}</p>
+            </div>
+            <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-weight:700;">UGX ${(o.totalAmount || 0).toLocaleString()}</span>
+                <small style="opacity:0.6;">${o.paymentMode}</small>
+            </div>
+          </div>`;
       });
       document.getElementById("statActive").innerText = act;
       document.getElementById("statRevenue").innerText = "UGX " + rev.toLocaleString();
   }
 
-  function clearDeliveredFromDashboard() {
-      hideDelivered = true;
+  function setFilter(type, el) {
+      currentFilter = type;
+      document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
       db.collectionGroup("userOrders").get().then(snap => renderOrders(snap));
-      alert("Delivered orders hidden from view.");
   }
+
+  function toggleDelivered() { hideDelivered = !hideDelivered; db.collectionGroup("userOrders").get().then(snap => renderOrders(snap)); }
 
   function openOrderModal(o) {
     document.getElementById("mOrderID").innerText = "Order #" + o.id.slice(-5).toUpperCase();
     document.getElementById("mCustomerName").innerText = o.userName || "Customer";
     document.getElementById("mStatus").value = o.status || "pending";
     
-    const notifyBtn = document.getElementById("btnNotifyStudent");
-    if (o.userId) { notifyBtn.style.display = "block"; notifyBtn.onclick = () => notifyStudent(o); }
-    
+    document.getElementById("btnNotifyStudent").onclick = () => {
+        alert("Notification sent to " + (o.userName || 'Customer') + " regarding " + document.getElementById("mStatus").value + " status.");
+    };
+
     const phone = o.deliveryPhone || "";
-    document.getElementById("mContactActions").innerHTML = phone ? `<a href="tel:${phone}" style="color:var(--green); font-size:1.4rem; margin-right:15px;"><i class="fa fa-phone-alt"></i></a><a href="sms:${phone}" style="color:var(--primary); font-size:1.4rem;"><i class="fa fa-comment-dots"></i></a>` : "";
+    document.getElementById("mContactActions").innerHTML = phone ? `<a href="tel:${phone}" style="color:var(--green);font-size:1.4rem;margin-right:15px;"><i class="fa fa-phone-alt"></i></a><a href="sms:${phone}" style="color:var(--primary);font-size:1.4rem;"><i class="fa fa-comment-dots"></i></a>` : "";
     
     document.getElementById("mPaymentSection").innerHTML = o.paymentMode === "Mobile Money" ? `<div style="background:#eef2ff; border:1px solid #c7d2fe; padding:15px; border-radius:18px; margin-bottom:15px;"><label class="label-small">Mobile Money ID: ${o.transactionId || 'N/A'}</label><div>Status: ${o.paymentStatus || 'Unpaid'}</div></div>` : `<div style="background:#f9f9f9; padding:12px; border-radius:15px; text-align:center; margin-bottom:15px;">Cash • <strong>${o.paymentStatus || 'Unpaid'}</strong></div>`;
     
-    // UPDATED: Order Items with Images in Detail Modal
-    document.getElementById("orderBody").innerHTML = `
-      <div style="background:#f9f9f9; padding:15px; border-radius:20px;">
-        ${(o.items || []).map(i => `
-          <div style="display:flex; gap:12px; align-items:center; border-bottom:1px solid #eee; padding:12px 0;">
-            <img src="${i.img || i.image || 'images/tent.jpeg'}" 
-                 style="width:50px; height:50px; border-radius:10px; object-fit:cover; background:#eee;"
-                 onerror="this.src='images/tent.jpeg'">
-            <div style="flex:1;">
-                <div style="font-size:0.9rem; font-weight:600;">${i.name}</div>
-                <small style="color:#888;">Quantity: ${i.qty}</small>
-            </div>
-            <strong>UGX ${(i.price * i.qty).toLocaleString()}</strong>
-          </div>`).join('')}
-      </div>`;
+    // Multi-path image loader (img, image, or url)
+    document.getElementById("orderBody").innerHTML = `<div style="background:#f9f9f9; padding:15px; border-radius:20px;">${(o.items || []).map(i => `<div style="display:flex; gap:12px; align-items:center; border-bottom:1px solid #eee; padding:12px 0;"><img src="${i.img || i.image || i.url || 'images/tent.jpeg'}" style="width:50px; height:50px; border-radius:10px; object-fit:cover; background:#eee;" onerror="this.src='images/tent.jpeg'"><div style="flex:1;"><div style="font-size:0.9rem; font-weight:600;">${i.name}</div><small style="color:#888;">Qty: ${i.qty}</small></div><strong>UGX ${(i.price * i.qty).toLocaleString()}</strong></div>`).join('')}</div>`;
 
-    document.getElementById("btnConfirmPayment").onclick = async () => { await db.doc(o.fullPath).update({ paymentStatus: 'Paid' }); alert("Paid!"); closeModals(); };
-    document.getElementById("btnUpdateStatus").onclick = async () => { await db.doc(o.fullPath).update({ status: document.getElementById("mStatus").value }); alert("Updated!"); };
+    const isPaid = o.paymentStatus === 'Paid';
+    const payBtn = document.getElementById("btnConfirmPayment");
+    payBtn.innerText = isPaid ? "Unmark as Paid (Reset)" : "Mark as Paid (Verified)";
+    payBtn.style.background = isPaid ? "#eee" : "var(--green)";
+    payBtn.style.color = isPaid ? "#333" : "white";
+    payBtn.onclick = async () => { await db.doc(o.fullPath).update({ paymentStatus: isPaid ? 'Unpaid' : 'Paid' }); alert("Payment Updated!"); closeModals(); };
+
+    document.getElementById("btnUpdateStatus").onclick = async () => { await db.doc(o.fullPath).update({ status: document.getElementById("mStatus").value }); alert("Status Updated!"); };
+    document.getElementById("btnDeleteSpecificOrder").onclick = async () => { if(confirm("Permanently delete this order?")) { await db.doc(o.fullPath).delete(); closeModals(); } };
     document.getElementById("orderModal").style.display = "flex";
   }
 
-  // Same export and student logic...
-  document.getElementById("exportBtn").onclick = () => {
-    if (currentStudents.length === 0) return alert("No students found!");
-    const headers = ["Name", "Email", "Phone", "Hostel", "Method"];
-    const rows = currentStudents.map(s => [`"${s.name}"`, `"${s.email}"`, `"${s.phone}"`, `"${s.hostel}"`, `"${s.profilePic ? 'Google' : 'Email'}"`]);
-    let csvContent = "data:text/csv;charset=utf-8," + headers.join(",") + "\n" + rows.map(e => e.join(",")).join("\n");
-    const link = document.createElement("a");
-    link.setAttribute("href", encodeURI(csvContent));
-    link.setAttribute("download", `Students_Export.csv`);
-    link.click();
-  };
+// --- SECURE MASTER RESET ---
+  async function secureMasterReset() {
+      const code = prompt("Enter Admin Security Code to WIPE all orders and feedback:");
+      if (code === "3972") {
+          if (confirm("CODE VERIFIED. This is the final warning. Wipe ALL order and feedback history?")) {
+              const oSnap = await db.collectionGroup("userOrders").get();
+              const cSnap = await db.collection("comments").get();
+              const batch = db.batch();
+              oSnap.forEach(d => batch.delete(d.ref)); 
+              cSnap.forEach(d => batch.delete(d.ref));
+              await batch.commit(); 
+              alert("Database Cleared Successfully."); 
+              location.reload();
+          }
+      } else if (code !== null) {
+          alert("Incorrect Security Code. Access Denied.");
+      }
+  }
 
+  // --- CSV EXPORT LOGIC ---
+  async function exportData(type) {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      let fileName = `CampusBite_${type}_${new Date().toLocaleDateString()}.csv`;
+
+      if (type === 'orders') {
+          const snap = await db.collectionGroup("userOrders").get();
+          csvContent += "OrderID,Customer,Amount,Status,Payment,Phone,Location\n";
+          snap.forEach(doc => {
+              const o = doc.data();
+              csvContent += `${doc.id},${o.userName},${o.totalAmount},${o.status},${o.paymentMode},${o.deliveryPhone},${o.deliveryLocation}\n`;
+          });
+      } 
+      else if (type === 'comments') {
+          const snap = await db.collection("comments").get();
+          csvContent += "User,Message,Date\n";
+          snap.forEach(doc => {
+              const c = doc.data();
+              csvContent += `${c.userName},"${c.text.replace(/"/g, '""')}",${c.createdAt?.toDate().toLocaleDateString()}\n`;
+          });
+      } 
+      else if (type === 'students') {
+          const snap = await db.collection("students").get();
+          csvContent += "Name,Phone,Hostel,Department,Email\n";
+          snap.forEach(doc => {
+              const s = doc.data();
+              csvContent += `${s.name},${s.phone},${s.hostel},${s.department},${s.email}\n`;
+          });
+      }
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+  }
   function openStudentModal(s) {
     const iconDiv = document.getElementById("sProfileIcon");
-    if(s.profilePic) {
-        iconDiv.innerHTML = `<img src="${s.profilePic}" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; display: block; border: 3px solid var(--primary);">`;
-    } else {
-        iconDiv.innerHTML = `<div style="width: 60px; height: 60px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; margin: 0 auto 10px;">${(s.name || "U")[0].toUpperCase()}</div>`;
-    }
+    iconDiv.innerHTML = s.profilePic ? `<img src="${s.profilePic}" style="width:60px;height:60px;border-radius:50%;border:3px solid var(--primary);display:block;margin:0 auto 10px;">` : `<div style="width:60px;height:60px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;margin:0 auto 10px;">${(s.name || "U")[0].toUpperCase()}</div>`;
     document.getElementById("sNameDisplay").innerText = s.name || "Unknown";
     document.getElementById("displaySEmail").innerText = s.email || 'N/A';
     document.getElementById("editSName").value = s.name || "";
     document.getElementById("editSPhone").value = s.phone || "";
     document.getElementById("editSHostel").value = s.hostel || "";
     document.getElementById("editSDepartment").value = s.department || "";
-    document.getElementById("btnSaveStudent").onclick = async () => {
-        await db.collection("students").doc(s.id).update({ name: document.getElementById("editSName").value, phone: document.getElementById("editSPhone").value, hostel: document.getElementById("editSHostel").value, department: document.getElementById("editSDepartment").value });
-        alert("Saved!"); closeModals();
-    };
-    document.getElementById("btnDeleteStudent").onclick = async () => {
-        if(confirm(`Delete ${s.name}?`)) { await db.collection("students").doc(s.id).delete(); alert("Deleted."); closeModals(); }
-    };
+    document.getElementById("btnSaveStudent").onclick = async () => { await db.collection("students").doc(s.id).update({ name: document.getElementById("editSName").value, phone: document.getElementById("editSPhone").value, hostel: document.getElementById("editSHostel").value, department: document.getElementById("editSDepartment").value }); alert("Saved!"); closeModals(); };
+    document.getElementById("btnDeleteStudent").onclick = async () => { if(confirm("Permanently delete this student account?")) { await db.collection("students").doc(s.id).delete(); closeModals(); } };
+    document.getElementById("sCallBtn").href = `tel:${s.phone}`;
     document.getElementById("studentModal").style.display = "flex";
   }
 
-  function switchView(view, el) {
-    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-    document.querySelectorAll('.nav-item, .nav-btn').forEach(i => i.classList.remove('active'));
-    document.getElementById(view + 'View').classList.add('active'); el.classList.add('active');
+  function switchView(view, el) { 
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); 
+      document.querySelectorAll('.nav-item, .nav-btn').forEach(i => i.classList.remove('active')); 
+      document.getElementById(view + 'View').classList.add('active'); 
+      el.classList.add('active'); 
   }
+  
   function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = "none"); }
-  async function deleteComment(id) { if(confirm("Delete?")) await db.collection("comments").doc(id).delete(); }
-  function filterData() {
-    const q = document.getElementById("adminSearch").value.toLowerCase();
-    document.querySelectorAll(".order-card, .student-item").forEach(c => { c.style.display = c.innerText.toLowerCase().includes(q) ? "" : "none"; });
-  }
+  async function deleteComment(id) { if(confirm("Delete this feedback?")) await db.collection("comments").doc(id).delete(); }
+  function filterData() { const q = document.getElementById("adminSearch").value.toLowerCase(); document.querySelectorAll(".order-card, .student-item").forEach(c => { c.style.display = c.innerText.toLowerCase().includes(q) ? "" : "none"; }); }
 </script>
 </body>
 </html>

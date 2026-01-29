@@ -3,7 +3,7 @@
 <head>
   <link rel="canonical" href="https://campusbite.xyz/">
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Profile | Campus Bite</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -37,21 +37,30 @@
 
     .container { padding: 0 25px; max-width: 500px; margin: 0 auto; }
 
+    /* --- NEW PREMIUM INSTALL ALERT --- */
+    #pwaOverlay {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;
+    }
+    .pwa-modal {
+      background: white; width: 85%; max-width: 350px; padding: 25px; border-radius: 25px;
+      text-align: center; position: relative; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .pwa-modal img { width: 70px; height: 70px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .pwa-modal h3 { font-size: 1.1rem; margin-bottom: 10px; }
+    .pwa-modal p { font-size: 0.85rem; color: #666; margin-bottom: 20px; line-height: 1.5; }
+    .pwa-btn {
+      background: var(--primary); color: white; border: none; width: 100%; padding: 12px;
+      border-radius: 12px; font-weight: 600; cursor: pointer;
+    }
+    .pwa-close { position: absolute; top: 15px; right: 15px; color: #ccc; cursor: pointer; }
+
     #adminPortal {
       background: var(--dark); color: white; border-radius: 20px; padding: 18px;
       margin-bottom: 15px; display: none; align-items: center; justify-content: space-between;
       cursor: pointer; box-shadow: 0 8px 15px rgba(0,0,0,0.15);
     }
     
-    /* Smart Install Row Styling */
-    #installAppRow {
-      background: #e3f2fd; color: var(--info); border-radius: 20px; padding: 18px;
-      margin-bottom: 15px; display: none; align-items: center; justify-content: space-between;
-      cursor: pointer; border: 1px solid #74b9ff; animation: slideIn 0.5s ease;
-    }
-    .install-text h4 { font-size: 0.9rem; margin-bottom: 2px; }
-    .install-text p { font-size: 0.7rem; color: #74b9ff; }
-
     .admin-text h4 { font-size: 0.9rem; margin-bottom: 2px; }
     .admin-text p { font-size: 0.7rem; color: #888; }
 
@@ -88,10 +97,20 @@
     .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
     .footer-nav a.active { color: var(--primary); }
 
-    @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes popIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
   </style>
 </head>
 <body>
+
+<div id="pwaOverlay">
+  <div class="pwa-modal">
+    <i class="fa fa-times pwa-close" onclick="closePwaModal()"></i>
+    <img src="/images/tent.jpeg" alt="Logo">
+    <h3>Install Campus Bite</h3>
+    <p id="pwaInstruction">Get live order updates and a smoother experience by adding us to your home screen.</p>
+    <button class="pwa-btn" id="pwaBtn">Install Now</button>
+  </div>
+</div>
 
 <div class="profile-header">
   <h2 id="displayEmail">Loading Profile...</h2>
@@ -107,14 +126,6 @@
       <p>Manage Orders & Students</p>
     </div>
     <i class="fa fa-arrow-right" style="color: var(--primary)"></i>
-  </div>
-
-  <div id="installAppRow">
-    <div class="install-text">
-      <h4>Install Campus Bite</h4>
-      <p>Add to home screen for a better experience</p>
-    </div>
-    <i class="fa fa-download"></i>
   </div>
 
   <span class="section-label">General Info</span>
@@ -193,28 +204,45 @@ const db = firebase.firestore();
 
 const ADMIN_EMAIL = "ezrasykar@gmail.com";
 
-// --- PWA INSTALL LOGIC ---
+// --- PWA ALERT LOGIC ---
 let deferredPrompt;
-const installRow = document.getElementById("installAppRow");
+const pwaOverlay = document.getElementById("pwaOverlay");
+const pwaBtn = document.getElementById("pwaBtn");
+const pwaText = document.getElementById("pwaInstruction");
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Check if we are ALREADY installed or in standalone mode
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-  if (!isStandalone) {
-    installRow.style.display = "flex";
+function closePwaModal() { pwaOverlay.style.display = "none"; }
+
+// Detect if user is already using the installed app
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+if (!isStandalone) {
+  // Check for iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (isIOS) {
+    // iOS doesn't support the 'Install' button, so we show manual instructions
+    pwaOverlay.style.display = "flex";
+    pwaText.innerHTML = "To install: Tap the <b>Share</b> icon <i class='fa fa-share-square'></i> at the bottom of Safari and select <b>'Add to Home Screen'</b>.";
+    pwaBtn.innerText = "Got it!";
+    pwaBtn.onclick = closePwaModal;
+  } else {
+    // Android/Mac Chrome Logic
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      pwaOverlay.style.display = "flex";
+    });
   }
-});
+}
 
-installRow.onclick = async () => {
+pwaBtn.onclick = async () => {
   if (deferredPrompt) {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      installRow.style.display = "none";
-    }
+    if (outcome === 'accepted') closePwaModal();
     deferredPrompt = null;
+  } else {
+    closePwaModal();
   }
 };
 
@@ -234,11 +262,17 @@ auth.onAuthStateChanged(async user => {
   if(!user) return location.href="index.html";
   document.getElementById("displayEmail").textContent = user.email;
 
+  const sessionUID = localStorage.getItem("activeUserUID");
+  if (sessionUID && sessionUID !== user.uid) {
+    localStorage.clear();
+    sessionStorage.clear();
+  }
+  localStorage.setItem("activeUserUID", user.uid);
+
   if(user.email === ADMIN_EMAIL) {
     document.getElementById("adminPortal").style.display = "flex";
   }
 
-  // Fetch student data
   try {
     const doc = await db.collection("students").doc(user.uid).get();
     if(doc.exists) {
@@ -286,9 +320,14 @@ document.getElementById("saveBtn").onclick = async function() {
   this.innerHTML = '<i class="fa fa-check-circle"></i> Save Changes';
 };
 
-document.getElementById("logoutBtn").onclick = () => {
+document.getElementById("logoutBtn").onclick = async () => {
   if(confirm("Log out of Campus Bite?")) {
-    auth.signOut().then(() => location.href = "index.html");
+    try {
+      await auth.signOut();
+      localStorage.clear(); 
+      sessionStorage.clear();
+      location.href = "index.html";
+    } catch(e) { alert("Error logging out."); }
   }
 };
 
