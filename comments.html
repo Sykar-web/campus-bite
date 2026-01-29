@@ -59,7 +59,6 @@
       border-radius: 4px 18px 18px 18px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
       position: relative;
-      transition: transform 0.2s ease;
     }
 
     .my-message { align-self: flex-end; background: #fff0e6; border-radius: 18px 4px 18px 18px; }
@@ -77,21 +76,16 @@
     .comment-footer { display: flex; gap: 15px; margin-top: 6px; font-size: 0.7rem; align-items: center; }
     .time-stamp { color: #ccc; margin-left: auto; font-size: 0.6rem; white-space: nowrap; }
 
-    #replyPreview { 
-      display: none; background: white; padding: 10px 20px; border-top: 2px solid var(--primary);
-      font-size: 0.8rem; position: relative; animation: slideUp 0.3s ease;
-    }
-    #replyPreview i { position: absolute; right: 20px; top: 12px; color: #999; cursor: pointer; }
-
+    /* Input section stays fixed at bottom on mobile */
     .input-container-group {
       background: #fff;
       z-index: 1001;
       border-top: 1px solid #eee;
-      margin-bottom: calc(60px + env(safe-area-inset-bottom)); 
     }
 
     .comment-input-section {
       display: flex; gap: 10px; padding: 10px 15px; align-items: center;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom));
     }
 
     .comment-input-section input {
@@ -105,18 +99,40 @@
       align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
     }
 
+    /* FOOTER NAV LOGIC */
     .footer-nav { 
       position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
       display: flex; justify-content: space-around; 
       padding: 10px 0;
       padding-bottom: calc(10px + env(safe-area-inset-bottom));
       box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 1002; 
+      transition: transform 0.3s ease;
     }
+
+    /* Mobile Only Adjustments */
+    @media (max-width: 768px) {
+      .footer-nav {
+        transform: translateY(100%); /* Default hidden on mobile */
+      }
+      .footer-nav.show-nav {
+        transform: translateY(0); /* Visible on scroll down */
+      }
+    }
+
+    /* Desktop Adjustments */
+    @media (min-width: 769px) {
+      .footer-nav {
+        position: relative; /* Stays visible under input */
+        transform: none !important;
+      }
+      .input-container-group {
+        border-bottom: 1px solid #eee;
+      }
+    }
+
     .footer-nav a { text-decoration: none; color: #ccc; display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; }
     .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
     .footer-nav a.active { color: var(--primary); font-weight: 600; }
-
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -130,7 +146,7 @@
     <div style="text-align:center; padding:20px; color:#aaa;">Connecting...</div>
 </div>
 
-<div class="input-container-group">
+<div class="input-container-group" id="inputGroup">
     <div id="replyPreview">
         <span>Replying to <b id="replyToName"></b></span>
         <p id="replyToText" style="color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></p>
@@ -142,7 +158,7 @@
     </div>
 </div>
 
-<nav class="footer-nav">
+<nav class="footer-nav" id="mainFooter">
   <a href="profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
   <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
   <a href="budget.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
@@ -167,28 +183,36 @@ const db = firebase.firestore();
 const container = document.getElementById("commentsContainer");
 const input = document.getElementById("commentInput");
 const btn = document.getElementById("postCommentBtn");
+const footer = document.getElementById("mainFooter");
 
 const ADMIN_EMAIL = "ezrasykar@gmail.com";
 let activeReply = null;
 
-// NEW: Enhanced Date + Time Logic
+// --- SCROLL LOGIC FOR MOBILE ---
+let lastScrollTop = 0;
+container.addEventListener('scroll', () => {
+  // Only execute on mobile screens
+  if (window.innerWidth <= 768) {
+    let st = container.scrollTop;
+    
+    // If scrolling DOWN (towards older messages) -> Show Navigation
+    if (st < lastScrollTop) {
+      footer.classList.add("show-nav");
+    } else {
+      // If scrolling UP (towards newest) -> Hide Navigation to show input/chat
+      footer.classList.remove("show-nav");
+    }
+    lastScrollTop = st <= 0 ? 0 : st; 
+  }
+});
+
 function formatTime(date) {
   if (!date) return "Now";
   const msgDate = date.toDate();
   const now = new Date();
-
-  const isToday = msgDate.getDate() === now.getDate() &&
-                  msgDate.getMonth() === now.getMonth() &&
-                  msgDate.getFullYear() === now.getFullYear();
-
+  const isToday = msgDate.getDate() === now.getDate() && msgDate.getMonth() === now.getMonth() && msgDate.getFullYear() === now.getFullYear();
   const timeStr = msgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-  if (isToday) {
-    return timeStr;
-  } else {
-    const dateStr = msgDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    return `${dateStr}, ${timeStr}`;
-  }
+  return isToday ? timeStr : `${msgDate.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${timeStr}`;
 }
 
 function scrollToBottom() {

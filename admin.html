@@ -125,20 +125,31 @@
     </section>
 <section id="commentsView" class="view-section">
     <div style="background: white; padding: 25px; border-radius: 25px; margin-bottom: 20px; border: 1px solid #eee;">
-        <h4 style="margin-bottom: 15px;"><i class="fa fa-download" style="color: var(--blue);"></i> Data Export Center</h4>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-            <button onclick="exportData('orders')" class="f-btn" style="border-color: var(--blue); color: var(--blue);"><i class="fa fa-shopping-cart"></i> Orders CSV</button>
-            <button onclick="exportData('comments')" class="f-btn" style="border-color: var(--primary); color: var(--primary);"><i class="fa fa-comment"></i> Feedback CSV</button>
-            <button onclick="exportData('students')" class="f-btn" style="border-color: var(--green); color: var(--green);"><i class="fa fa-users"></i> Students CSV</button>
+        <h4 style="margin-bottom: 15px; font-size: 0.95rem;">
+            <i class="fa fa-download" style="color: var(--info);"></i> Data Export Center
+        </h4>
+        
+        <div class="export-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+            <button onclick="exportData('orders')" class="f-btn" style="border-color: var(--info); color: var(--info);">
+                <i class="fa fa-shopping-cart"></i> Orders
+            </button>
+            <button onclick="exportData('comments')" class="f-btn" style="border-color: var(--primary); color: var(--primary);">
+                <i class="fa fa-comment"></i> Feedback
+            </button>
+            <button onclick="exportData('students')" class="f-btn" style="border-color: #2ecc71; color: #2ecc71;">
+                <i class="fa fa-users"></i> Students
+            </button>
         </div>
     </div>
 
     <div id="commentList" style="max-width:850px; margin:0 auto;"></div>
 
-    <div style="text-align:center; margin-top:40px; padding:20px; border:2px dashed var(--red); border-radius:20px; background: #fff;">
-        <h4 style="color:var(--red)">Master System Reset</h4>
-        <p style="font-size:0.7rem; color:#888;">Requires Admin Security Code. Wipes Orders & Chat only.</p>
-        <button onclick="secureMasterReset()" class="btn-delete" style="max-width:200px; margin:15px auto;">Clear Orders & Chat</button>
+    <div class="reset-box" style="text-align:center; margin-top:40px; padding:25px; border:2px dashed var(--danger); border-radius:20px; background: #fff;">
+        <h4 style="color:var(--danger); font-size: 1rem;">Master System Reset</h4>
+        <p style="font-size:0.75rem; color:#888; margin-bottom: 10px;">Requires Admin Security Code. Wipes Orders & Chat only.</p>
+        <button onclick="secureMasterReset()" class="btn-delete" style="max-width:250px; margin: 0 auto;">
+            <i class="fa fa-trash-alt"></i> Clear Orders & Chat
+        </button>
     </div>
 </section>
     <section id="studentsView" class="view-section"><div id="studentList" style="max-width:850px; margin:0 auto;"></div></section>
