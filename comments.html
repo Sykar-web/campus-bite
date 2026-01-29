@@ -50,6 +50,8 @@
       flex-direction: column;
       gap: 12px;
       -webkit-overflow-scrolling: touch;
+      /* Buffer to ensure newest message isn't hidden behind input */
+      padding-bottom: 30px; 
     }
 
     .comment-bubble {
@@ -76,21 +78,33 @@
     .comment-footer { display: flex; gap: 15px; margin-top: 6px; font-size: 0.7rem; align-items: center; }
     .time-stamp { color: #ccc; margin-left: auto; font-size: 0.6rem; white-space: nowrap; }
 
-    /* Input section stays fixed at bottom on mobile */
+    /* FIXED INPUT SECTION */
     .input-container-group {
       background: #fff;
       z-index: 1001;
       border-top: 1px solid #eee;
+      /* Lifted off the bottom slightly to prevent magnification/hiding */
+      padding-bottom: env(safe-area-inset-bottom);
     }
+
+    #replyPreview { 
+      display: none; 
+      background: #fdfdfd; 
+      padding: 10px 20px; 
+      border-top: 1px solid #eee;
+      border-left: 4px solid var(--primary);
+      font-size: 0.8rem; 
+      position: relative;
+    }
+    #replyPreview i { position: absolute; right: 20px; top: 12px; color: #ff4d4d; cursor: pointer; }
 
     .comment-input-section {
       display: flex; gap: 10px; padding: 10px 15px; align-items: center;
-      padding-bottom: calc(10px + env(safe-area-inset-bottom));
     }
 
     .comment-input-section input {
       flex: 1; padding: 12px 18px; border-radius: 25px;
-      border: 1px solid #ddd; background: #f9f9f9; outline: none; font-size: 16px;
+      border: 1px solid #ddd; background: #f9f9f9; outline: none; font-size: 16px; /* 16px prevents iOS zoom */
     }
 
     .comment-input-section button {
@@ -99,7 +113,7 @@
       align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0;
     }
 
-    /* FOOTER NAV LOGIC */
+    /* FOOTER NAV */
     .footer-nav { 
       position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
       display: flex; justify-content: space-around; 
@@ -109,25 +123,15 @@
       transition: transform 0.3s ease;
     }
 
-    /* Mobile Only Adjustments */
     @media (max-width: 768px) {
-      .footer-nav {
-        transform: translateY(100%); /* Default hidden on mobile */
-      }
-      .footer-nav.show-nav {
-        transform: translateY(0); /* Visible on scroll down */
-      }
+      .footer-nav { transform: translateY(100%); }
+      .footer-nav.show-nav { transform: translateY(0); }
+      /* Ensure comments list accounts for the floating input on mobile */
+      .comments-wrapper { margin-bottom: 5px; } 
     }
 
-    /* Desktop Adjustments */
     @media (min-width: 769px) {
-      .footer-nav {
-        position: relative; /* Stays visible under input */
-        transform: none !important;
-      }
-      .input-container-group {
-        border-bottom: 1px solid #eee;
-      }
+      .footer-nav { position: relative; transform: none !important; }
     }
 
     .footer-nav a { text-decoration: none; color: #ccc; display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; }
@@ -148,8 +152,8 @@
 
 <div class="input-container-group" id="inputGroup">
     <div id="replyPreview">
-        <span>Replying to <b id="replyToName"></b></span>
-        <p id="replyToText" style="color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></p>
+        <span style="color: var(--primary); font-weight: 600;">Replying to <span id="replyToName"></span></span>
+        <p id="replyToText" style="color:#888; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-size: 0.75rem;"></p>
         <i class="fa fa-times" onclick="cancelReply()"></i>
     </div>
     <div class="comment-input-section">
@@ -163,7 +167,7 @@
   <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
   <a href="budget.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
   <a href="order-history.html"><i class="fa fa-list"></i><span>My Orders</span></a>
-  <a href="comments.html" class="active"><i class="fa fa-comments"></i><span>Chat</span></a>
+  <a href="comments.html" class="active"><i class="fa fa-comments"></i><span>Comments</span></a>
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
@@ -188,18 +192,19 @@ const footer = document.getElementById("mainFooter");
 const ADMIN_EMAIL = "ezrasykar@gmail.com";
 let activeReply = null;
 
-// --- SCROLL LOGIC FOR MOBILE ---
+// Ensure reply state is RESET on load
+window.onload = () => {
+    cancelReply();
+};
+
+// --- SCROLL LOGIC ---
 let lastScrollTop = 0;
 container.addEventListener('scroll', () => {
-  // Only execute on mobile screens
   if (window.innerWidth <= 768) {
     let st = container.scrollTop;
-    
-    // If scrolling DOWN (towards older messages) -> Show Navigation
     if (st < lastScrollTop) {
       footer.classList.add("show-nav");
     } else {
-      // If scrolling UP (towards newest) -> Hide Navigation to show input/chat
       footer.classList.remove("show-nav");
     }
     lastScrollTop = st <= 0 ? 0 : st; 
@@ -238,7 +243,8 @@ function setupAdminSwipe(el, name, text) {
 
 function setReply(name, text) {
   activeReply = { name, text };
-  document.getElementById("replyPreview").style.display = "block";
+  const preview = document.getElementById("replyPreview");
+  preview.style.display = "block";
   document.getElementById("replyToName").innerText = name;
   document.getElementById("replyToText").innerText = text;
   input.focus();
@@ -247,6 +253,8 @@ function setReply(name, text) {
 function cancelReply() {
   activeReply = null;
   document.getElementById("replyPreview").style.display = "none";
+  document.getElementById("replyToName").innerText = "";
+  document.getElementById("replyToText").innerText = "";
 }
 
 btn.onclick = async () => {

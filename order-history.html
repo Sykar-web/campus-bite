@@ -3,7 +3,7 @@
 <head>
   <link rel="canonical" href="https://campusbite.xyz/">
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>Order History | Campus Bite</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -17,11 +17,13 @@
 
   <style>
     :root { --primary:#ff914d; --primary-dark:#ff6a00; --bg:#f8fafb; --text:#333; --muted:#888; --danger:#ff4d4d; --green:#2ecc71; --whatsapp:#25d366; --dark:#1a1a1a; }
-    * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 110px; }
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
+    
+    body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 110px; overflow-x: hidden; }
 
     header { 
       background: var(--primary); color: #fff; padding: 15px 20px; 
+      padding-top: calc(15px + env(safe-area-inset-top));
       display: flex; align-items: center; position: sticky; top: 0; z-index: 1000;
     }
     .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
@@ -71,12 +73,27 @@
     .whatsapp-btn { background: var(--whatsapp); color: white; text-decoration: none; padding: 12px; border-radius: 14px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .cancel-btn { background: #fff1f1; color: var(--danger); border: 1px solid #ffcccc; border-radius: 14px; padding: 12px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
     
-    .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 2000; border-top-left-radius: 30px; border-top-right-radius: 30px; }
-    .footer-nav a { text-decoration: none; color: #ccc; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
-    .footer-nav a i { font-size: 1.3rem; margin-bottom: 4px; }
-    .footer-nav a.active { color: var(--primary); font-weight: 700; }
+    /* NAVIGATION & BADGE STYLES */
+    .footer-nav { 
+      position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
+      display: flex; justify-content: space-around; padding: 12px 0; 
+      padding-bottom: calc(12px + env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 2000; 
+      border-top-left-radius: 30px; border-top-right-radius: 30px; 
+    }
+    .nav-item { position: relative; text-decoration: none; color: #ccc; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
+    .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
+    .nav-item.active { color: var(--primary); font-weight: 700; }
 
-    .empty { text-align: center; padding: 80px 20px; color: #bbb; grid-column: 1 / -1; }
+    #orderBadge {
+      position: absolute; top: -5px; right: -10px;
+      background: #ff3b30; color: white; font-size: 0.65rem; font-weight: 700;
+      min-width: 18px; height: 18px; border-radius: 50%;
+      display: none; align-items: center; justify-content: center;
+      border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .badge-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    @keyframes popIn { from { transform: scale(0.5); } to { transform: scale(1); } }
     @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
@@ -112,11 +129,15 @@
 </div>
 
 <nav class="footer-nav">
-  <a href="profile.html"><i class="fa fa-user"></i><span>Profile</span></a>
-  <a href="home.html"><i class="fa fa-utensils"></i><span>Menu</span></a>
-  <a href="budget.html"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
-  <a href="order-history.html" class="active"><i class="fa fa-list"></i><span>My Orders</span></a>
-  <a href="comments.html"><i class="fa fa-comments"></i><span>Feedback</span></a>
+  <a href="profile.html" class="nav-item"><i class="fa fa-user"></i><span>Profile</span></a>
+  <a href="home.html" class="nav-item"><i class="fa fa-utensils"></i><span>Menu</span></a>
+  <a href="budget.html" class="nav-item"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+  <a href="order-history.html" class="nav-item active">
+    <i class="fa fa-list"></i>
+    <span>My Orders</span>
+    <span id="orderBadge">0</span>
+  </a>
+  <a href="comments.html" class="nav-item"><i class="fa fa-comments"></i><span>Comments</span></a>
 </nav>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
@@ -129,7 +150,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
   authDomain: "campus-bite-9dbaa.firebaseapp.com",
   projectId: "campus-bite-9dbaa",
-  messagingSenderId: "294389261625", // Make sure this line is there!
+  messagingSenderId: "294389261625",
   appId: "1:294389261625:web:095d6e5f85f4e8"
 };
 firebase.initializeApp(firebaseConfig);
@@ -138,7 +159,13 @@ const db = firebase.firestore();
 const messaging = firebase.messaging();
 const SUPPORT_PHONE = "256748372023"; 
 
-let previousStatuses = {};
+let lastUnseenCount = 0;
+
+// SOUND LOGIC
+function playNotificationSound() {
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    audio.play().catch(e => console.log("Audio waiting for interaction"));
+}
 
 auth.onAuthStateChanged(user => {
   if(user){
@@ -146,39 +173,58 @@ auth.onAuthStateChanged(user => {
       .orderBy("timestamp", "desc")
       .onSnapshot(snap => { renderOrders(snap); });
     
-    // Check permission & try to save token
+    // BADGE COUNTER LISTENER
+    db.collection("orders").doc(user.uid).collection("userOrders")
+      .where("userSeen", "==", false)
+      .onSnapshot(snap => {
+          const badge = document.getElementById("orderBadge");
+          const count = snap.size;
+          if(count > 0) {
+              badge.innerText = count;
+              badge.style.display = "flex";
+              if(count > lastUnseenCount) {
+                  playNotificationSound();
+                  badge.classList.remove("badge-pop");
+                  void badge.offsetWidth;
+                  badge.classList.add("badge-pop");
+              }
+          } else {
+              badge.style.display = "none";
+          }
+          lastUnseenCount = count;
+      });
+
     checkNotificationStatus(user);
+    // Auto-clear badge after being on page
+    setTimeout(() => markAllAsSeen(user.uid), 4000);
   } else {
     window.location.href = "login.html";
   }
 });
 
+async function markAllAsSeen(uid) {
+    const snap = await db.collection("orders").doc(uid).collection("userOrders")
+                        .where("userSeen", "==", false).get();
+    if(!snap.empty) {
+        const batch = db.batch();
+        snap.forEach(doc => batch.update(doc.ref, { userSeen: true }));
+        await batch.commit();
+    }
+}
+
 async function checkNotificationStatus(user) {
     if (!("Notification" in window)) return;
-    
-    if (Notification.permission === "default") {
-        document.getElementById("notifPermissionBanner").style.display = "flex";
-    } else if (Notification.permission === "granted") {
-        saveMessagingToken(user);
-    }
+    if (Notification.permission === "default") document.getElementById("notifPermissionBanner").style.display = "flex";
+    else if (Notification.permission === "granted") saveMessagingToken(user);
 }
 
 async function saveMessagingToken(user) {
     try {
-        const currentToken = await messaging.getToken({ 
-            vapidKey: 'BCsn7-R1yc3DK8oIgjpO4gvQfethR8xZBeO4XQw2blzI7h__UVEBeOTUcGNMaE_sv04ido9SSaftHtShd9xJcV8' 
-        });
-        
+        const currentToken = await messaging.getToken({ vapidKey: 'BCsn7-R1yc3DK8oIgjpO4gvQfethR8xZBeO4XQw2blzI7h__UVEBeOTUcGNMaE_sv04ido9SSaftHtShd9xJcV8' });
         if (currentToken) {
-            await db.collection("students").doc(user.uid).set({
-                fcmToken: currentToken,
-                lastSeen: new Date()
-            }, { merge: true });
-            console.log("Token saved successfully");
+            await db.collection("students").doc(user.uid).set({ fcmToken: currentToken, lastSeen: new Date() }, { merge: true });
         }
-    } catch (err) {
-        console.log('Unable to get messaging token.', err);
-    }
+    } catch (err) { console.log('Token error:', err); }
 }
 
 async function requestUniversalNotifications() {
@@ -192,7 +238,6 @@ async function requestUniversalNotifications() {
 function renderOrders(snap) {
   const container = document.getElementById("historyContainer");
   container.innerHTML = "";
-  
   if(snap.empty){
     container.innerHTML = '<div class="empty"><i class="fa fa-box-open"></i><p>No orders yet.</p></div>';
     return;
@@ -205,15 +250,6 @@ function renderOrders(snap) {
     const o = doc.data();
     const id = doc.id;
     const status = o.status || 'pending';
-
-    // TRIGGER BROWSER ALERT IF STATUS CHANGED
-    if (previousStatuses[id] && previousStatuses[id] !== status) {
-        const msg = `Order #${id.slice(-5).toUpperCase()} is now ${status.toUpperCase()}.`;
-        if (Notification.permission === "granted") {
-            new Notification("Campus Bite", { body: msg, icon: '/images/tent.jpeg' });
-        }
-    }
-    previousStatuses[id] = status;
 
     const now = new Date().getTime();
     const orderTime = o.timestamp ? o.timestamp.toDate().getTime() : now;
@@ -258,9 +294,7 @@ function renderOrders(snap) {
       </div>
       <div class="action-area">
         <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat Support</a>
-        ${canCancel ? `
-          <button class="cancel-btn" onclick="cancelOrder('${id}')">Cancel Order</button>
-        ` : ''}
+        ${canCancel ? `<button class="cancel-btn" onclick="cancelOrder('${id}')">Cancel Order</button>` : ''}
       </div>
     `;
     container.appendChild(card);
@@ -274,7 +308,7 @@ function renderOrders(snap) {
 async function cancelOrder(id) {
   if(confirm("Cancel this order?")){
     try {
-      await db.collection("orders").doc(auth.currentUser.uid).collection("userOrders").doc(id).update({ status: "cancelled" });
+      await db.collection("orders").doc(auth.currentUser.uid).collection("userOrders").doc(id).update({ status: "cancelled", userSeen: false });
     } catch(e) { alert(e.message); }
   }
 }
@@ -286,10 +320,6 @@ document.getElementById("clear-history").onclick = async () => {
   snap.forEach(d => { if(['delivered', 'cancelled'].includes(d.data().status)) batch.delete(d.ref); });
   await batch.commit();
 };
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
-}
 </script>
 </body>
 </html>
