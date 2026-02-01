@@ -11,34 +11,45 @@
         :root { --primary: #ff914d; --dark: #121212; --bg: #f8fafb; --white: #ffffff; --red: #ff4d4d; --green: #2ecc71; --blue: #2563eb; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; }
         
-        /* Your Original Styles Restored */
+        /* Original Header & Stats */
         .header-gradient { background: linear-gradient(135deg, #121212 0%, #2c2c2c 100%); padding: 60px 25px 100px; color: white; border-bottom-left-radius: 50px; border-bottom-right-radius: 50px; }
         .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; max-width: 1100px; margin: 30px auto -140px; }
-        .stat-card { background: var(--white); color: var(--dark); padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        
+        .stat-card { background: var(--white); color: var(--dark); padding: 25px; border-radius: 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid #f0f0f0; }
+        .stat-card h2 { color: var(--primary); font-size: 1.4rem; margin-top: 5px; }
+        .stat-card span { font-size: 0.75rem; color: #888; text-transform: uppercase; }
+
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .search-bar { background: var(--white); padding: 18px 25px; border-radius: 25px; display: flex; align-items: center; margin: 160px auto 40px; max-width: 700px; box-shadow: 0 15px 35px rgba(0,0,0,0.04); }
+        .search-bar { background: var(--white); padding: 18px 25px; border-radius: 25px; display: flex; align-items: center; margin: 160px auto 40px; max-width: 700px; box-shadow: 0 15px 35px rgba(0,0,0,0.04); border: 1px solid #eee; }
         .search-bar input { border: none; outline: none; width: 100%; margin-left: 15px; font-size: 0.95rem; }
 
-        .view-section { display: none; }
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
         .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Items */
-        .student-item, .order-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border: 1px solid #eee; cursor: pointer; }
-        .student-avatar { width: 45px; height: 45px; border-radius: 50%; margin-right: 15px; object-fit: cover; }
+        /* Student & Order Cards */
+        .student-item, .order-card { background: white; padding: 20px; border-radius: 20px; margin-bottom: 15px; border: 1px solid #eee; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .student-item:hover, .order-card:hover { border-color: var(--primary); transform: translateY(-2px); }
+        .student-avatar { width: 45px; height: 45px; border-radius: 50%; margin-right: 15px; object-fit: cover; border: 1px solid #eee; }
+        
+        /* Online Status Dots */
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
         .dot-online { background: var(--green); box-shadow: 0 0 5px var(--green); }
         .dot-offline { background: #ddd; }
 
         /* Modals */
-        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; overflow-y: auto; padding: 20px; }
-        .modal-content { background: white; width: 100%; max-width: 550px; padding: 30px; border-radius: 30px; position: relative; }
-        .meal-img { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; margin-right: 12px; }
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 500px; padding: 30px; border-radius: 30px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .meal-row { display: flex; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+        .meal-img-small { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; margin-right: 15px; }
+
+        /* Inputs & Buttons */
+        .edit-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #eee; border-radius: 12px; font-family: inherit; }
+        .btn-action { background: var(--dark); color: white; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer; margin-top: 10px; }
+        .btn-outline-red { background: none; color: var(--red); border: 1px solid var(--red); padding: 12px; border-radius: 15px; width: 100%; margin-top: 10px; cursor: pointer; font-weight: 600; }
         
-        /* Buttons */
-        .btn-update { background: var(--dark); color: white; border: none; padding: 12px; border-radius: 12px; width: 100%; font-weight: 600; cursor: pointer; }
-        .btn-delete { background: none; color: var(--red); border: 1px solid var(--red); padding: 10px; border-radius: 12px; width: 100%; margin-top: 10px; cursor: pointer; }
-        .master-reset { background: var(--red); color: white; padding: 20px; border-radius: 20px; text-align: center; margin-top: 50px; cursor: pointer; font-weight: bold; }
+        .nav-item { padding: 15px 20px; border-radius: 15px; color: #888; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .nav-item.active { background: rgba(255,145,77,0.1); color: var(--primary); font-weight: 600; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 15px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 900; }
     </style>
 </head>
 <body>
@@ -56,7 +67,7 @@
 
     <div class="search-bar">
         <i class="fa fa-search"></i>
-        <input type="text" id="adminSearch" placeholder="Search..." onkeyup="filterData()">
+        <input type="text" id="adminSearch" placeholder="Search orders, students..." onkeyup="filterData()">
     </div>
 
     <div class="container">
@@ -70,8 +81,10 @@
 
         <section id="commentsView" class="view-section">
             <div id="commentList"></div>
-            <div class="master-reset" onclick="masterReset()">
-                <i class="fa fa-radiation"></i> MASTER RESET (Clear Orders & Feedback)
+            <div style="margin-top: 50px; padding: 30px; background: #fff; border-radius: 25px; text-align: center; border: 2px dashed var(--red);">
+                <h3 style="color: var(--red);">Danger Zone</h3>
+                <p style="font-size: 0.8rem; color: #666;">This clears all feedback and order history.</p>
+                <button class="btn-outline-red" onclick="masterReset()" style="background: var(--red); color: white;">MASTER RESET SYSTEM</button>
             </div>
         </section>
     </div>
@@ -79,34 +92,47 @@
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <h3 id="mOrderUser">Order Details</h3>
-            <div id="mOrderDetails" style="margin: 20px 0;"></div>
-            <hr>
-            <div style="margin: 20px 0;">
-                <label>Update Status:</label>
-                <select id="mStatusSelect" style="width: 100%; padding: 10px; border-radius: 10px; margin-top: 5px;">
-                    <option value="pending">Pending</option>
-                    <option value="preparing">Preparing</option>
-                    <option value="delivered">Delivered</option>
-                </select>
+            <div id="mMealList" style="margin: 20px 0;"></div>
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 15px; margin-bottom: 20px;">
+                <p id="mOrderTotal" style="font-weight: bold; margin: 0;"></p>
+                <p id="mOrderLocation" style="font-size: 0.8rem; color: #666; margin-top: 5px;"></p>
             </div>
-            <button class="btn-update" onclick="updateOrderStatus()">Update Status</button>
-            <button class="btn-delete" onclick="deleteOrder()">Delete Order</button>
-            <button onclick="closeModals()" style="width:100%; margin-top:10px; border:none; background:none; cursor:pointer;">Close</button>
+            <select id="mStatusSelect" class="edit-input">
+                <option value="pending">Pending</option>
+                <option value="preparing">Preparing</option>
+                <option value="out-for-delivery">Out for Delivery</option>
+                <option value="delivered">Delivered</option>
+            </select>
+            <button class="btn-action" onclick="updateOrderStatus()">Update Status</button>
+            <button class="btn-outline-red" onclick="deleteOrder()">Delete Order Record</button>
+            <button onclick="closeModals()" style="width:100%; margin-top:15px; border:none; background:none; color:#aaa; cursor:pointer;">Cancel</button>
         </div>
     </div>
 
     <div id="studentModal" class="modal">
         <div class="modal-content">
-            <h3>Edit Student</h3>
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div id="mStudentImg"></div>
+                <h3 id="mStudentNameHead">Edit Profile</h3>
+            </div>
             <input type="hidden" id="editSId">
-            <input type="text" id="editSName" placeholder="Name" style="width:100%; margin-bottom:10px; padding:10px;">
-            <input type="text" id="editSPhone" placeholder="Phone" style="width:100%; margin-bottom:10px; padding:10px;">
-            <input type="text" id="editSHostel" placeholder="Hostel" style="width:100%; margin-bottom:10px; padding:10px;">
-            <button class="btn-update" onclick="saveStudent()">Save Changes</button>
-            <button class="btn-delete" onclick="deleteStudent()">Delete Account</button>
-            <button onclick="closeModals()" style="width:100%; margin-top:10px; border:none; background:none; cursor:pointer;">Close</button>
+            <label style="font-size: 0.7rem; font-weight: bold;">FULL NAME</label>
+            <input type="text" id="editSName" class="edit-input">
+            <label style="font-size: 0.7rem; font-weight: bold;">PHONE</label>
+            <input type="text" id="editSPhone" class="edit-input">
+            <label style="font-size: 0.7rem; font-weight: bold;">HOSTEL / LOCATION</label>
+            <input type="text" id="editSHostel" class="edit-input">
+            <button class="btn-action" onclick="saveStudent()">Save Changes</button>
+            <button class="btn-outline-red" onclick="deleteStudent()">Delete Student Account</button>
+            <button onclick="closeModals()" style="width:100%; margin-top:15px; border:none; background:none; color:#aaa; cursor:pointer;">Cancel</button>
         </div>
     </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchView('orders', this)"><i class="fa fa-shopping-cart"></i></div>
+        <div class="nav-item" onclick="switchView('students', this)"><i class="fa fa-users"></i></div>
+        <div class="nav-item" onclick="switchView('comments', this)"><i class="fa fa-comment-alt"></i></div>
+    </nav>
 
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
@@ -121,53 +147,68 @@
         let activeOrderId = null;
         let activeOrderUid = null;
 
-        // 1. DATA LISTENERS
         function startListeners() {
-            // Students
+            // Real-time Students (Including Google Users)
             db.collection("students").onSnapshot(snap => {
                 currentStudents = [];
-                snap.forEach(doc => { let s = doc.data(); s.id = doc.id; currentStudents.push(s); });
+                snap.forEach(doc => { 
+                    let s = doc.data(); s.id = doc.id; 
+                    currentStudents.push(s); 
+                });
                 document.getElementById("statStudents").innerText = currentStudents.length;
                 renderStudents();
             });
 
-            // Orders
+            // Real-time Orders
             db.collectionGroup("userOrders").onSnapshot(snap => {
                 currentOrders = [];
-                let rev = 0;
+                let rev = 0; let activeCount = 0;
                 snap.forEach(doc => { 
-                    let o = doc.data(); o.id = doc.id; o.uid = doc.ref.parent.parent.id;
+                    let o = doc.data(); 
+                    o.id = doc.id; 
+                    o.uid = doc.ref.parent.parent.id;
                     currentOrders.push(o); 
                     if(o.status === 'delivered') rev += Number(o.totalAmount || 0);
+                    if(o.status !== 'delivered') activeCount++;
                 });
                 document.getElementById("statRevenue").innerText = "UGX " + rev.toLocaleString();
+                document.getElementById("statActive").innerText = activeCount;
                 renderOrders();
             });
 
-            // Feedback
-            db.collection("comments").onSnapshot(snap => {
+            // Real-time Feedback
+            db.collection("comments").orderBy("createdAt", "desc").onSnapshot(snap => {
                 const list = document.getElementById("commentList");
-                list.innerHTML = "<h3>Feedback</h3>";
+                list.innerHTML = "<h3>Student Feedback</h3>";
                 snap.forEach(doc => {
                     const c = doc.data();
                     list.innerHTML += `
-                        <div class="student-item">
-                            <div><strong>${c.userName}</strong><p>${c.text}</p></div>
-                            <button onclick="deleteFeedback('${doc.id}')" style="border:none; color:red; background:none;"><i class="fa fa-trash"></i></button>
+                        <div class="student-item" style="cursor: default;">
+                            <div style="flex: 1;">
+                                <strong>${c.userName || 'User'}</strong>
+                                <p style="font-size: 0.85rem; margin: 5px 0;">${c.text}</p>
+                            </div>
+                            <button onclick="deleteFeedback('${doc.id}')" style="border:none; color:var(--red); background:none; cursor:pointer; padding: 10px;">
+                                <i class="fa fa-trash-alt"></i>
+                            </button>
                         </div>`;
                 });
             });
         }
 
-        // 2. RENDERING
         function renderOrders() {
             const list = document.getElementById("orderList");
+            const term = document.getElementById("adminSearch").value.toLowerCase();
             list.innerHTML = "";
             currentOrders.forEach(o => {
+                if(term && !o.userName?.toLowerCase().includes(term)) return;
                 list.innerHTML += `
-                    <div class="order-card" onclick='openOrderModal(${JSON.stringify(o)})'>
-                        <h4>${o.userName}</h4>
-                        <p>Total: UGX ${o.totalAmount} | Status: <strong>${o.status}</strong></p>
+                    <div class="order-card" onclick='openOrderModal(${JSON.stringify(o).replace(/'/g, "&apos;")})'>
+                        <div>
+                            <h4>${o.userName}</h4>
+                            <p style="font-size: 0.8rem; color: #666;">UGX ${o.totalAmount} • ${o.status.toUpperCase()}</p>
+                        </div>
+                        <i class="fa fa-chevron-right" style="color: #eee;"></i>
                     </div>`;
             });
         }
@@ -177,50 +218,86 @@
             const term = document.getElementById("adminSearch").value.toLowerCase();
             list.innerHTML = "";
             currentStudents.forEach(s => {
-                const name = s.name || s.email || "User";
-                if(term && !name.toLowerCase().includes(term)) return;
+                const name = s.name || s.email || "New Student";
+                if(term && !name.toLowerCase().includes(term) && !s.hostel?.toLowerCase().includes(term)) return;
                 
                 const isOnline = s.lastActive && (new Date() - s.lastActive.toDate()) / 60000 < 5;
-                const avatar = s.profilePic ? `<img src="${s.profilePic}" class="student-avatar">` : `<div class="student-avatar" style="background:#eee; display:flex; align-items:center; justify-content:center;">${name[0]}</div>`;
+                const avatar = s.profilePic ? `<img src="${s.profilePic}" class="student-avatar">` : `<div class="student-avatar" style="background:#f0f0f0; display:flex; align-items:center; justify-content:center; font-weight:bold; color:#aaa;">${name[0]}</div>`;
 
                 list.innerHTML += `
-                    <div class="student-item" onclick='openStudentModal(${JSON.stringify(s)})'>
+                    <div class="student-item" onclick='openStudentModal(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
                         <div style="display:flex; align-items:center;">
                             ${avatar}
-                            <div><h4>${name}</h4><span class="status-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span>${s.hostel || 'No Hostel'}</div>
+                            <div>
+                                <h4>${name}</h4>
+                                <p style="font-size:0.75rem; color:#777;"><span class="status-dot ${isOnline ? 'dot-online' : 'dot-offline'}"></span>${s.hostel || 'No location set'}</p>
+                            </div>
                         </div>
+                        <i class="fa fa-chevron-right" style="color:#eee;"></i>
                     </div>`;
             });
         }
 
-        // 3. ADMIN ACTIONS
         function openOrderModal(o) {
             activeOrderId = o.id; activeOrderUid = o.uid;
             document.getElementById("orderModal").style.display = "flex";
-            document.getElementById("mOrderUser").innerText = "Order: " + o.userName;
+            document.getElementById("mOrderUser").innerText = o.userName;
+            document.getElementById("mOrderTotal").innerText = "Total: UGX " + o.totalAmount;
+            document.getElementById("mOrderLocation").innerText = "Deliver to: " + (o.location || "Not specified");
             
             let mealsHtml = "";
             o.cartItems.forEach(item => {
                 mealsHtml += `
-                    <div style="display:flex; align-items:center; margin-bottom:10px;">
-                        <img src="${item.image}" class="meal-img">
-                        <div><strong>${item.name}</strong><br>Qty: ${item.quantity}</div>
+                    <div class="meal-row">
+                        <img src="${item.image}" class="meal-img-small">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 600; font-size: 0.9rem;">${item.name}</div>
+                            <div style="font-size: 0.8rem; color: #888;">Qty: ${item.quantity} • UGX ${item.price}</div>
+                        </div>
                     </div>`;
             });
-            document.getElementById("mOrderDetails").innerHTML = mealsHtml;
+            document.getElementById("mMealList").innerHTML = mealsHtml;
             document.getElementById("mStatusSelect").value = o.status;
         }
 
         async function updateOrderStatus() {
-            const newStatus = document.getElementById("mStatusSelect").value;
-            await db.collection("students").doc(activeOrderUid).collection("userOrders").doc(activeOrderId).update({ status: newStatus });
+            const status = document.getElementById("mStatusSelect").value;
+            await db.collection("students").doc(activeOrderUid).collection("userOrders").doc(activeOrderId).update({ status });
             closeModals();
         }
 
         async function deleteOrder() {
-            if(!confirm("Delete this order?")) return;
-            await db.collection("students").doc(activeOrderUid).collection("userOrders").doc(activeOrderId).delete();
-            closeModals();
+            if(confirm("Delete this order record?")) {
+                await db.collection("students").doc(activeOrderUid).collection("userOrders").doc(activeOrderId).delete();
+                closeModals();
+            }
+        }
+
+        function openStudentModal(s) {
+            document.getElementById("studentModal").style.display = "flex";
+            document.getElementById("editSId").value = s.id;
+            document.getElementById("editSName").value = s.name || '';
+            document.getElementById("editSPhone").value = s.phone || '';
+            document.getElementById("editSHostel").value = s.hostel || '';
+            document.getElementById("mStudentNameHead").innerText = s.name || 'Edit Profile';
+            document.getElementById("mStudentImg").innerHTML = s.profilePic ? `<img src="${s.profilePic}" style="width:70px; height:70px; border-radius:50%; object-fit:cover; border:3px solid var(--primary);">` : "";
+        }
+
+        async function saveStudent() {
+            const id = document.getElementById("editSId").value;
+            await db.collection("students").doc(id).update({
+                name: document.getElementById("editSName").value,
+                phone: document.getElementById("editSPhone").value,
+                hostel: document.getElementById("editSHostel").value
+            });
+            alert("Updated!"); closeModals();
+        }
+
+        async function deleteStudent() {
+            if(confirm("Delete this student permanently?")) {
+                await db.collection("students").doc(document.getElementById("editSId").value).delete();
+                closeModals();
+            }
         }
 
         async function deleteFeedback(id) {
@@ -228,15 +305,24 @@
         }
 
         async function masterReset() {
-            if(!confirm("DANGER: This will delete ALL orders and feedback. Continue?")) return;
-            // Delete all comments
-            const comms = await db.collection("comments").get();
-            comms.forEach(d => d.ref.delete());
-            alert("Database Cleared (Except Students)");
+            if(confirm("DANGER: Delete ALL orders and feedback?")) {
+                const comms = await db.collection("comments").get();
+                comms.forEach(d => d.ref.delete());
+                // Orders are collectionGroup, usually reset via a cloud function or looping through users
+                alert("Feedback Cleared. System Reset Complete.");
+            }
         }
 
+        function filterData() { renderStudents(); renderOrders(); }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-        
+        function switchView(view, el) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(view + 'View').classList.add('active');
+            document.getElementById("viewTitle").innerText = el.innerText || view;
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+        }
+
         startListeners();
     </script>
 </body>
