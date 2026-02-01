@@ -8,12 +8,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="manifest" href="/manifest.json">
   
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="images/tent.jpeg">
+  <meta name="theme-color" content="#ff914d">
+
   <style>
     :root { --primary: #ff914d; --dark: #121212; --bg: #f8fafb; --white: #ffffff; --red: #ff4d4d; --green: #2ecc71; --blue: #2563eb; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--dark); padding-bottom: 90px; }
 
-    /* Your Original Styles */
     .sidebar { width: 280px; background: var(--dark); height: 100vh; position: fixed; left: 0; top: 0; padding: 40px 25px; color: white; display: none; z-index: 1000; }
     .main-wrapper { width: 100%; transition: 0.3s; }
     @media (min-width: 1024px) { .sidebar { display: block; } .main-wrapper { margin-left: 280px; width: calc(100% - 280px); } }
@@ -44,12 +48,11 @@
     .student-item { background: white; padding: 15px 25px; border-radius: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; transition: 0.2s; }
     .student-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 12px; border: 2px solid #eee; }
 
-    /* New Activity Dot Styles */
+    /* Indicator Dots */
     .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-    .online { background: var(--green); box-shadow: 0 0 5px var(--green); }
-    .offline { background: #ccc; }
+    .dot-online { background: var(--green); box-shadow: 0 0 5px var(--green); }
+    .dot-offline { background: #ddd; }
 
-    /* Rest of your original CSS */
     .badge { padding: 6px 14px; border-radius: 12px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
     .pending { background: #fff9c4; color: #fbc02d; border: 1px solid #fbc02d; }
     .preparing { background: #e3f2fd; color: var(--blue); border: 1px solid var(--blue); }
@@ -146,8 +149,7 @@
   const auth = firebase.auth();
 
   let currentStudents = [];
-  let currentOrderSnap = null; // To help with real-time searching
-  let hideDelivered = false;
+  let currentOrderSnap = null;
   let currentFilter = 'all';
   let firstLoad = true;
   let lastOrderCount = 0;
@@ -159,25 +161,23 @@
   });
 
   function startApp() {
-    // 1. STUDENTS REAL-TIME FIX
+    // REAL-TIME STUDENTS
     db.collection("students").onSnapshot(snap => {
       document.getElementById("statStudents").innerText = snap.size;
       currentStudents = [];
-      snap.forEach(doc => {
-        const s = doc.data(); s.id = doc.id; currentStudents.push(s);
-      });
-      renderStudentsList(); // Call dedicated render function
+      snap.forEach(doc => { const s = doc.data(); s.id = doc.id; currentStudents.push(s); });
+      renderStudents();
     });
 
-    // 2. ORDERS REAL-TIME
+    // REAL-TIME ORDERS
     db.collectionGroup("userOrders").onSnapshot(snap => {
       if (!firstLoad && snap.size > lastOrderCount) chime.play().catch(e => {});
       lastOrderCount = snap.size; firstLoad = false;
-      currentOrderSnap = snap; 
+      currentOrderSnap = snap;
       renderOrders(snap);
     });
 
-    // 3. COMMENTS REAL-TIME
+    // REAL-TIME COMMENTS
     db.collection("comments").orderBy("createdAt", "desc").onSnapshot(snap => {
       const clist = document.getElementById("commentList"); clist.innerHTML = "";
       snap.forEach(doc => {
@@ -187,20 +187,17 @@
     });
   }
 
-  // Dedicated function to render students (fixes the search lag)
-  function renderStudentsList() {
+  function renderStudents() {
     const sList = document.getElementById("studentList");
-    const query = document.getElementById("adminSearch").value.toLowerCase();
+    const searchTerm = document.getElementById("adminSearch").value.toLowerCase();
     sList.innerHTML = "";
-
+    
     currentStudents.forEach(s => {
-      if(query && !s.name?.toLowerCase().includes(query) && !s.hostel?.toLowerCase().includes(query)) return;
+      if(searchTerm && !s.name?.toLowerCase().includes(searchTerm) && !s.hostel?.toLowerCase().includes(searchTerm)) return;
 
-      // Activity Logic
-      const now = new Date();
-      const lastSeen = s.lastActive ? s.lastActive.toDate() : null;
-      let statusDot = '<span class="status-dot offline"></span>';
-      if (lastSeen && (now - lastSeen) / 60000 < 5) statusDot = '<span class="status-dot online"></span>';
+      // Status Indicator Logic
+      const isOnline = s.lastActive && (new Date() - s.lastActive.toDate()) / 60000 < 5;
+      const dotClass = isOnline ? 'dot-online' : 'dot-offline';
 
       const avatar = s.profilePic ? `<img src="${s.profilePic}" class="student-avatar">` : `<div style="width:40px;height:40px;background:var(--primary);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;margin-right:12px;">${(s.name || "U")[0].toUpperCase()}</div>`;
       
@@ -210,7 +207,7 @@
             ${avatar}
             <div>
               <h4>${s.name || 'Unknown'}</h4>
-              <p>${statusDot}${s.hostel || 'No Hostel'}</p>
+              <p><span class="status-dot ${dotClass}"></span>${s.hostel || 'No Hostel'}</p>
             </div>
           </div>
           <i class="fa fa-chevron-right" style="color:#ddd;"></i>
@@ -220,14 +217,14 @@
 
   function renderOrders(snap) {
       const list = document.getElementById("orderList");
-      const query = document.getElementById("adminSearch").value.toLowerCase();
+      const searchTerm = document.getElementById("adminSearch").value.toLowerCase();
       list.innerHTML = ""; let rev = 0; let act = 0; let all = [];
       
       snap.forEach(doc => {
         let d = doc.data(); d.id = doc.id;
         if(currentFilter === 'unpaid' && d.paymentStatus === 'Paid') return;
         if(currentFilter === 'paid' && d.paymentStatus !== 'Paid') return;
-        if(query && !d.userName?.toLowerCase().includes(query)) return;
+        if(searchTerm && !d.userName?.toLowerCase().includes(searchTerm)) return;
         all.push(d);
       });
 
@@ -240,14 +237,25 @@
       document.getElementById("statRevenue").innerText = "UGX " + rev.toLocaleString();
   }
 
-  // Unified Search Fix
   function filterData() {
-      renderStudentsList();
-      if(currentOrderSnap) renderOrders(currentOrderSnap);
+    renderStudents();
+    if(currentOrderSnap) renderOrders(currentOrderSnap);
   }
 
-  // Keep your original switchView, setFilter, and Modal functions exactly as they were...
-  function switchView(v, el) { ... }
+  function switchView(viewId, el) {
+    document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+    document.getElementById(viewId + 'View').classList.add('active');
+    document.querySelectorAll('.nav-item, .nav-btn').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById("viewTitle").innerText = el.innerText;
+  }
+
+  function setFilter(type, el) {
+    currentFilter = type;
+    document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    if(currentOrderSnap) renderOrders(currentOrderSnap);
+  }
 </script>
 </body>
 </html>
