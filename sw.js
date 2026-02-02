@@ -112,3 +112,17 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
+self.addEventListener('fetch', (event) => {
+  // ADD THIS BLOCK: Skip Firestore and Google APIs
+  if (event.request.url.includes('firestore.googleapis.com') || 
+      event.request.url.includes('google.firestore')) {
+    return; // Let the browser handle these normally
+  }
+
+  // Your existing cache logic goes here...
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});

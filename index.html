@@ -18,7 +18,7 @@
   <meta name="twitter:image" content="https://campusbite.xyz/images/tent.jpeg">
 
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff914d">
@@ -38,7 +38,7 @@
       --text-muted: #666;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
 
     body {
       height: 100vh;
@@ -84,7 +84,7 @@
     .input-wrapper input {
       width: 100%; padding: 14px 45px;
       border: 1.5px solid #eee; border-radius: 12px;
-      font-size: 0.95rem; outline: none; transition: 0.3s; background: #fafafa;
+      font-size: 16px; outline: none; transition: 0.3s; background: #fafafa;
     }
     .input-wrapper input:focus { border-color: var(--brand); background: #fff; }
 
@@ -180,10 +180,33 @@
       welcomeHeader.innerText = "Join the Hub";
     }
 
-    onAuthStateChanged(auth, (user) => {
+    // UPDATED: THE AUTO-SYNC LISTENER
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
         localStorage.setItem("hasLoggedInBefore", "true");
-        window.location.href = "home.html";
+        
+        // Sync user data to Firestore collection "students"
+        const studentRef = doc(db, "students", user.uid);
+        const studentSnap = await getDoc(studentRef);
+
+        if (!studentSnap.exists()) {
+          // Create the document if it doesn't exist (Critical for Google Users)
+          await setDoc(studentRef, {
+            name: user.displayName || "Anonymous Student",
+            email: user.email,
+            profilePic: user.photoURL || "",
+            uid: user.uid,
+            role: "student",
+            joinedAt: serverTimestamp(),
+            hostel: "Not Set",
+            phone: user.phoneNumber || ""
+          });
+        }
+        
+        // Brief delay ensures database write completes before redirect
+        setTimeout(() => {
+            window.location.href = "home.html";
+        }, 500);
       }
     });
 
@@ -206,28 +229,11 @@
       }
     };
 
-    // GOOGLE LOGIN + FIRESTORE SAVE
+    // GOOGLE LOGIN
     document.getElementById("googleBtn").onclick = async () => {
       try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-
-        const studentRef = doc(db, "students", user.uid);
-        const studentSnap = await getDoc(studentRef);
-
-        if (!studentSnap.exists()) {
-          await setDoc(studentRef, {
-            name: user.displayName,
-            email: user.email,
-            profilePic: user.photoURL,
-            uid: user.uid,
-            role: "student",
-            joinedAt: serverTimestamp()
-          });
-        }
-        
-        localStorage.setItem("hasLoggedInBefore", "true");
-        window.location.href = "home.html";
+        // Triggering this will fire the onAuthStateChanged listener above
+        await signInWithPopup(auth, provider);
       } catch (e) {
         if (e.code !== 'auth/popup-closed-by-user') {
           alert("Google Sign-In Error: " + e.message);
@@ -266,8 +272,11 @@
       togglePassword.classList.toggle("fa-eye-slash");
     };
 
+    // SERVICE WORKER REGISTRATION
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => { navigator.serviceWorker.register('/sw.js'); });
+      window.addEventListener('load', () => { 
+        navigator.serviceWorker.register('/sw.js').catch(err => console.log("SW failed", err)); 
+      });
     }
   </script>
 </body>
