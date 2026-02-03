@@ -112,7 +112,7 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
-self.addEventListener('fetch', (event) => {
+/*self.addEventListener('fetch', (event) => {
   // ADD THIS BLOCK: Skip Firestore and Google APIs
   if (event.request.url.includes('firestore.googleapis.com') || 
       event.request.url.includes('google.firestore')) {
@@ -125,4 +125,4 @@ self.addEventListener('fetch', (event) => {
       return response || fetch(event.request);
     })
   );
-});
+});*/
