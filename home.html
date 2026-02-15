@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Campus Bite – Meals & Budget</title>
   
+  <script type="module" src="guard.js"></script>
+
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ff914d">
   <link rel="icon" href="/images/tent.jpeg" type="image/jpeg">
@@ -14,11 +16,13 @@
   
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<script src="guard.js"></script>
+
   <style>
     :root { --brand: #ff914d; --brand-light: #fdf2e9; --text-muted: #888; }
     * { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins", sans-serif; }
-    body { background:#fff; color:#333; -webkit-font-smoothing:antialiased; overflow-x: hidden; padding-bottom: 90px; }
+    
+    /* Increased padding-bottom so the footer is never cut off by the Nav */
+    body { background:#fff; color:#333; -webkit-font-smoothing:antialiased; overflow-x: hidden; padding-bottom: 110px; }
 
     /* Header */
     header { 
@@ -28,6 +32,20 @@
     }
     .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
     header h1 { font-size:1.1rem; font-weight:600; flex-grow: 1; }
+
+    /* Slideshow Section (At the Top) */
+    .slideshow-section { padding: 15px 15px 0 15px; }
+    .slideshow-container {
+        width: 100%; height: 180px; background: #222; border-radius: 20px;
+        position: relative; overflow: hidden; display: flex; align-items: flex-end;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15); cursor: pointer;
+        transition: opacity 0.5s ease-in-out;
+    }
+    .slide-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+    .slide-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 15%, transparent 70%); z-index: 2; }
+    .slide-info { position: relative; z-index: 3; padding: 15px; color: white; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; }
+    .slide-tag { font-size: 0.65rem; background: var(--brand); padding: 2px 8px; border-radius: 5px; text-transform: uppercase; margin-bottom: 4px; display: inline-block; font-weight: 600; }
+    .slide-price { font-weight: 700; color: var(--brand); font-size: 0.9rem; }
 
     /* Search & Filters */
     .filter-section { padding:15px; display:flex; flex-direction: column; gap:12px; background: #fff; }
@@ -90,9 +108,14 @@
     <img src="/images/tent.jpeg" class="header-logo" alt="Logo">
     <div>
       <h1 id="welcomeUser">Welcome to Campus Bite 🍽️</h1>
-      <p style="font-size: 0.75rem; opacity: 0.9;">Plan your meals,Save your budget</p>
+      <p style="font-size: 0.75rem; opacity: 0.9;">Plan your meals, Save your budget</p>
     </div>
 </header>
+
+<section class="slideshow-section">
+    <div class="slideshow-container" id="featuredSlideshow" onclick="triggerSlideAction()">
+        </div>
+</section>
 
 <section class="filter-section">
     <div class="search-container">
@@ -180,10 +203,13 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 const STORAGE_KEY = "campusbite_budget_items_v1";
+const PAGE_KEY = "cb_last_page"; // For pagination persistence
+
 let addedMeals = {};
-let currentPage = 1;
+let currentPage = parseInt(localStorage.getItem(PAGE_KEY)) || 1;
 const itemsPerPage = 8;
 
+// Auth Check
 auth.onAuthStateChanged(user => {
     if(!user) { window.location.href="index.html"; }
     else {
@@ -193,6 +219,45 @@ auth.onAuthStateChanged(user => {
     }
 });
 
+// Slideshow Logic (Pulling from meals.js)
+function initSlideshow() {
+    const container = document.getElementById("featuredSlideshow");
+    if (typeof meals === 'undefined' || meals.length === 0) return;
+
+    const featuredPool = meals.filter(m => m.img); 
+    const shuffled = [...featuredPool].sort(() => Math.random() - 0.5);
+    let index = 0;
+
+    function showNext() {
+        const meal = shuffled[index];
+        container.style.opacity = "0";
+        setTimeout(() => {
+            container.innerHTML = `
+                <img src="${meal.img}" class="slide-img" onerror="this.src='/images/tent.jpeg'">
+                <div class="slide-overlay"></div>
+                <div class="slide-info">
+                    <div>
+                        <span class="slide-tag">🔥 Trending Now</span>
+                        <h2>${meal.name}</h2>
+                        <p style="font-size: 0.7rem; color: #ccc;">From ${meal.place}</p>
+                    </div>
+                    <div class="slide-price">UGX ${meal.price.toLocaleString()}</div>
+                </div>
+            `;
+            container.style.opacity = "1";
+        }, 500);
+        index = (index + 1) % shuffled.length;
+    }
+    showNext();
+    setInterval(showNext, 6000);
+}
+
+window.triggerSlideAction = function() {
+    const title = document.querySelector("#featuredSlideshow h2");
+    if(title) viewDetails(title.innerText);
+};
+
+// Meal Grid & Storage
 function loadFromStorage(){
     const raw = localStorage.getItem(STORAGE_KEY);
     addedMeals = raw ? JSON.parse(raw) : {};
@@ -274,13 +339,21 @@ window.shareApp = function() {
   }
 }
 
-document.getElementById("categoryFilter").addEventListener("change", () => { currentPage = 1; renderMeals(); });
-document.getElementById("mealSearch").addEventListener("input", () => { currentPage = 1; renderMeals(); });
-document.getElementById("prevBtn").addEventListener("click", () => { if(currentPage > 1) { currentPage--; renderMeals(); window.scrollTo(0,0); } });
-document.getElementById("nextBtn").addEventListener("click", () => { currentPage++; renderMeals(); window.scrollTo(0,0); });
+// Handlers with Page Persistence
+const updatePage = (newPage) => {
+    currentPage = newPage;
+    localStorage.setItem(PAGE_KEY, currentPage);
+    renderMeals();
+};
+
+document.getElementById("categoryFilter").addEventListener("change", () => updatePage(1));
+document.getElementById("mealSearch").addEventListener("input", () => updatePage(1));
+document.getElementById("prevBtn").addEventListener("click", () => { if(currentPage > 1) { updatePage(currentPage - 1); window.scrollTo(0,0); } });
+document.getElementById("nextBtn").addEventListener("click", () => { updatePage(currentPage + 1); window.scrollTo(0,0); });
 
 loadFromStorage();
 renderMeals();
+initSlideshow();
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');

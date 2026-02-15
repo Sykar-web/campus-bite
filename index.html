@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script type="module" src="guard.js"></script>
+
   <title>Fast Food Delivery for Muni University Students</title>
   <meta name="description" content="Order your favorite meals from Muni University's #1 student food hub. Fast delivery to hostels, easy payment, and exclusive student discounts.">
   <meta name="keywords" content="Muni University, Food Delivery, Campus Bite, Student Hub, Arua Food, University Meals">
@@ -88,8 +90,8 @@
     }
     .input-wrapper input:focus { border-color: var(--brand); background: #fff; }
 
+    /* Button Styles and Locked State */
     .primary-btn { width: 100%; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-    .primary-btn:disabled { background: #ccc; cursor: not-allowed; }
     
     .google-btn { 
       width: 100%; padding: 14px; background: #fff; color: #444; 
@@ -104,9 +106,16 @@
     
     .forgot-link { display: inline-block; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; text-decoration: none; }
     .forgot-link:hover { color: var(--brand); }
+
+    /* Class used by guard.js to unlock buttons */
+    .locked {
+      opacity: 0.5;
+      filter: grayscale(1);
+      cursor: not-allowed !important;
+    }
   </style>
 </head>
-<script src="guard.js"></script>
+
 <body>
 
   <div class="bg-wrapper">
@@ -131,13 +140,13 @@
         <i class="fa-regular fa-eye eye-icon" id="togglePassword"></i>
       </div>
 
-      <button class="primary-btn" id="loginBtn">Sign In</button>
+      <button class="primary-btn locked" id="emailLoginBtn" disabled>Sign In</button>
       
-      <button class="google-btn" id="googleBtn">
+      <button class="google-btn locked" id="googleLoginBtn" disabled>
         <i class="fa-brands fa-google"></i> Continue with Google
       </button>
 
-      <button class="secondary-btn" id="signupBtn">Join Campus Bite</button>
+      <button class="secondary-btn locked" id="joinBtn" disabled>Join Campus Bite</button>
       
       <span class="forgot-link" id="forgotBtn">Forgot your password?</span>
     </div>
@@ -186,12 +195,10 @@
       if (user) {
         localStorage.setItem("hasLoggedInBefore", "true");
         
-        // Sync user data to Firestore collection "students"
         const studentRef = doc(db, "students", user.uid);
         const studentSnap = await getDoc(studentRef);
 
         if (!studentSnap.exists()) {
-          // Create the document if it doesn't exist (Critical for Google Users)
           await setDoc(studentRef, {
             name: user.displayName || "Anonymous Student",
             email: user.email,
@@ -204,7 +211,6 @@
           });
         }
         
-        // Brief delay ensures database write completes before redirect
         setTimeout(() => {
             window.location.href = "home.html";
         }, 500);
@@ -212,10 +218,10 @@
     });
 
     // EMAIL LOGIN
-    document.getElementById("loginBtn").onclick = async () => {
+    document.getElementById("emailLoginBtn").onclick = async () => {
       const email = document.getElementById("email").value.trim();
       const pass = document.getElementById("password").value.trim();
-      const btn = document.getElementById("loginBtn");
+      const btn = document.getElementById("emailLoginBtn");
 
       if (!email || !pass) return alert("Please fill in all fields.");
       btn.disabled = true;
@@ -233,7 +239,6 @@
     // GOOGLE LOGIN
     document.getElementById("googleBtn").onclick = async () => {
       try {
-        // Triggering this will fire the onAuthStateChanged listener above
         await signInWithPopup(auth, provider);
       } catch (e) {
         if (e.code !== 'auth/popup-closed-by-user') {
@@ -261,7 +266,7 @@
     };
 
     // NAVIGATION
-    document.getElementById("signupBtn").onclick = () => window.location.href = "signup.html";
+    document.getElementById("joinBtn").onclick = () => window.location.href = "signup.html";
 
     // PASSWORD TOGGLE
     const passwordInput = document.getElementById("password");
