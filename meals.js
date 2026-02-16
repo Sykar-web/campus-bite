@@ -45,5 +45,5 @@ const meals=[
   {name:"Oner", category:"Drink", place:"Campus Canteen", price:1000, img:"images/oner.jpeg"},
   {name:"Yorghurt", category:"Drink", place:"Campus Canteen", price:2000, img:"images/yorghurt.jpg"},
   {name:"Fresh Juice", category:"Drink", place:"Desert Breeze", price:1000, img:"images/juice.jpg"},
-  {name:"Tomatoes(7)", category:"Ingredients", place:"Munisite", price:5000, img:"images/tomatoes.jpg"}
+  {name:"Tomatoes(7)", category:"Ingredients", place:"Munisite", price:1000, img:"images/tomatoes.jpg"}
 ];
