@@ -1,325 +1,610 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
   <link rel="canonical" href="https://campusbite.xyz/">
+
   <meta charset="UTF-8"/>
+
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+
   <title>Order History | Campus Bite</title>
 
+
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
   <script src="guard.js"></script>
+
   <link rel="icon" href="/images/tent.jpeg" type="image/jpeg"/>
+
   <link rel="manifest" href="/manifest.json">
+
   <meta name="apple-mobile-web-app-capable" content="yes">
+
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
   <meta name="theme-color" content="#ff914d">
 
+
   <style>
+
     :root { --primary:#ff914d; --primary-dark:#ff6a00; --bg:#f8fafb; --text:#333; --muted:#888; --danger:#ff4d4d; --green:#2ecc71; --whatsapp:#25d366; --dark:#1a1a1a; }
+
     * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color: transparent; }
+
     
+
     body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); padding-bottom: 110px; overflow-x: hidden; }
 
+
     header { 
+
       background: var(--primary); color: #fff; padding: 15px 20px; 
+
       padding-top: calc(15px + env(safe-area-inset-top));
+
       display: flex; align-items: center; position: sticky; top: 0; z-index: 1000;
+
     }
+
     .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
+
     header h1 { font-size: 1.1rem; flex-grow: 1; }
+
     .back-link { color: white; text-decoration: none; font-size: 0.8rem; border: 1px solid rgba(255,255,255,0.4); padding: 5px 12px; border-radius: 10px; }
 
+
     .main-content { padding: 20px; max-width: 800px; margin: 0 auto; }
+
     
+
     #notifPermissionBanner {
+
       display: none; background: var(--dark); color: white; padding: 15px;
+
       border-radius: 20px; margin-bottom: 20px; align-items: center;
+
       justify-content: space-between; animation: slideDown 0.5s ease;
+
     }
+
     #notifPermissionBanner span { font-size: 0.75rem; opacity: 0.9; }
+
     #notifPermissionBanner button { 
+
       background: var(--primary); border: none; color: white; 
+
       padding: 8px 15px; border-radius: 10px; font-weight: 600; font-size: 0.75rem;
+
     }
+
 
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+
     .page-title h2 { color: var(--primary-dark); font-size: 1.5rem; }
+
     .pending-total { background: #fff5ee; padding: 8px 15px; border-radius: 10px; font-weight: 600; color: var(--primary-dark); font-size: 0.85rem; border: 1px solid #ffe0cc; }
 
+
     #historyContainer { display: grid; grid-template-columns: 1fr; gap: 20px; }
+
     @media (min-width: 768px) { #historyContainer { grid-template-columns: 1fr 1fr; } }
 
+
     .card { background: #fff; border-radius: 25px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); border: 1px solid #eee; display: flex; flex-direction: column; position: relative; }
+
     
+
     .status { padding: 5px 12px; border-radius: 10px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+
     .pending { background: #fff9c4; color: #856404; }
+
     .preparing { background: #e3f2fd; color: #0d47a1; }
+
     .out-for-delivery { background: #f3e5f5; color: #4a148c; }
+
     .delivered { background: #e8f5e9; color: #1b5e20; }
+
     .cancelled { background: #ffebee; color: #b71c1c; }
+
 
     .paid-badge { background: var(--green); color: white; padding: 2px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 700; margin-left: 5px; }
 
+
     .item-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
+
     .item-row img { width: 45px; height: 45px; border-radius: 10px; object-fit: cover; background: #f9f9f9; }
+
     .item-info { flex: 1; font-size: 0.85rem; }
 
+
     .summary { background: #fafafa; padding: 14px; border-radius: 18px; font-size: 0.8rem; margin-top: auto; border: 1px solid #f0f0f0; }
+
     .summary-line { display: flex; justify-content: space-between; margin-bottom: 4px; }
+
     .total-text { color: var(--primary-dark); font-size: 1rem; font-weight: 700; }
 
+
     .action-area { margin-top: 15px; display: flex; flex-direction: column; gap: 8px; }
+
     .whatsapp-btn { background: var(--whatsapp); color: white; text-decoration: none; padding: 12px; border-radius: 14px; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
     .cancel-btn { background: #fff1f1; color: var(--danger); border: 1px solid #ffcccc; border-radius: 14px; padding: 12px; font-weight: 700; cursor: pointer; font-size: 0.8rem; }
+
     
+
     /* NAVIGATION & BADGE STYLES */
+
     .footer-nav { 
+
       position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
+
       display: flex; justify-content: space-around; padding: 12px 0; 
+
       padding-bottom: calc(12px + env(safe-area-inset-bottom));
+
       box-shadow: 0 -4px 20px rgba(0,0,0,0.08); z-index: 2000; 
+
       border-top-left-radius: 30px; border-top-right-radius: 30px; 
+
     }
+
     .nav-item { position: relative; text-decoration: none; color: #ccc; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
+
     .nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
+
     .nav-item.active { color: var(--primary); font-weight: 700; }
 
+
     #orderBadge {
+
       position: absolute; top: -5px; right: -10px;
+
       background: #ff3b30; color: white; font-size: 0.65rem; font-weight: 700;
+
       min-width: 18px; height: 18px; border-radius: 50%;
+
       display: none; align-items: center; justify-content: center;
+
       border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
     }
+
     .badge-pop { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
     @keyframes popIn { from { transform: scale(0.5); } to { transform: scale(1); } }
+
     @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
   </style>
+
 </head>
 
+
 <body>
+
 <header>
+
   <img src="/images/tent.jpeg" class="header-logo">
+
   <h1>Campus Bite</h1>
+
   <a href="home.html" class="back-link">Menu</a>
+
 </header>
 
+
 <div class="main-content">
+
   <div id="notifPermissionBanner">
+
     <span>Get alerts when your food is ready?</span>
+
     <button onclick="requestUniversalNotifications()">Enable Alerts</button>
+
   </div>
+
 
   <div class="page-header">
+
     <div class="page-title">
+
       <h2>My Orders</h2>
+
       <p id="subTitle">Track your active meals</p>
+
     </div>
+
     <div id="pendingTotal" class="pending-total" style="display:none;"></div>
+
   </div>
+
 
   <div id="historyContainer">
+
       <div class="empty"><i class="fa fa-circle-notch fa-spin"></i><br>Loading your orders...</div>
+
   </div>
+
   
+
   <div style="text-align: center; margin-top: 40px;">
+
     <button id="clear-history" style="display:none; background:none; border:none; color:#bbb; font-size:0.75rem; text-decoration:underline; cursor:pointer;">Clear Order History</button>
+
   </div>
+
 </div>
 
+
 <nav class="footer-nav">
+
   <a href="profile.html" class="nav-item"><i class="fa fa-user"></i><span>Profile</span></a>
+
   <a href="home.html" class="nav-item"><i class="fa fa-utensils"></i><span>Menu</span></a>
+
   <a href="budget.html" class="nav-item"><i class="fa fa-shopping-cart"></i><span>Cart</span></a>
+
   <a href="order-history.html" class="nav-item active">
+
     <i class="fa fa-list"></i>
+
     <span>My Orders</span>
+
     <span id="orderBadge">0</span>
+
   </a>
+
   <a href="comments.html" class="nav-item"><i class="fa fa-comments"></i><span>Comments</span></a>
+
 </nav>
 
+
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-auth-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+
 <script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-messaging-compat.js"></script>
 
+
 <script>
+
 const firebaseConfig = {
+
   apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
+
   authDomain: "campus-bite-9dbaa.firebaseapp.com",
+
   projectId: "campus-bite-9dbaa",
+
   messagingSenderId: "294389261625",
+
   appId: "1:294389261625:web:095d6e5f85f4e8"
+
 };
+
 firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
+
 const db = firebase.firestore();
+
 const messaging = firebase.messaging();
+
 const SUPPORT_PHONE = "256748372023"; 
+
 
 let lastUnseenCount = 0;
 
+
 // SOUND LOGIC
+
 function playNotificationSound() {
+
     const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+
     audio.play().catch(e => console.log("Audio waiting for interaction"));
+
 }
+
 
 auth.onAuthStateChanged(user => {
+
   if(user){
+
     db.collection("orders").doc(user.uid).collection("userOrders")
+
       .orderBy("timestamp", "desc")
+
       .onSnapshot(snap => { renderOrders(snap); });
+
     
+
     // BADGE COUNTER LISTENER
+
     db.collection("orders").doc(user.uid).collection("userOrders")
+
       .where("userSeen", "==", false)
+
       .onSnapshot(snap => {
+
           const badge = document.getElementById("orderBadge");
+
           const count = snap.size;
+
           if(count > 0) {
+
               badge.innerText = count;
+
               badge.style.display = "flex";
+
               if(count > lastUnseenCount) {
+
                   playNotificationSound();
+
                   badge.classList.remove("badge-pop");
+
                   void badge.offsetWidth;
+
                   badge.classList.add("badge-pop");
+
               }
+
           } else {
+
               badge.style.display = "none";
+
           }
+
           lastUnseenCount = count;
+
       });
 
+
     checkNotificationStatus(user);
+
     // Auto-clear badge after being on page
+
     setTimeout(() => markAllAsSeen(user.uid), 4000);
+
   } else {
+
     window.location.href = "login.html";
+
   }
+
 });
 
+
 async function markAllAsSeen(uid) {
+
     const snap = await db.collection("orders").doc(uid).collection("userOrders")
+
                         .where("userSeen", "==", false).get();
+
     if(!snap.empty) {
+
         const batch = db.batch();
+
         snap.forEach(doc => batch.update(doc.ref, { userSeen: true }));
+
         await batch.commit();
+
     }
+
 }
+
 
 async function checkNotificationStatus(user) {
+
     if (!("Notification" in window)) return;
+
     if (Notification.permission === "default") document.getElementById("notifPermissionBanner").style.display = "flex";
+
     else if (Notification.permission === "granted") saveMessagingToken(user);
+
 }
+
 
 async function saveMessagingToken(user) {
+
     try {
+
         const currentToken = await messaging.getToken({ vapidKey: 'BCsn7-R1yc3DK8oIgjpO4gvQfethR8xZBeO4XQw2blzI7h__UVEBeOTUcGNMaE_sv04ido9SSaftHtShd9xJcV8' });
+
         if (currentToken) {
+
             await db.collection("students").doc(user.uid).set({ fcmToken: currentToken, lastSeen: new Date() }, { merge: true });
+
         }
+
     } catch (err) { console.log('Token error:', err); }
+
 }
+
 
 async function requestUniversalNotifications() {
+
   const permission = await Notification.requestPermission();
+
   if (permission === 'granted') {
+
       document.getElementById("notifPermissionBanner").style.display = "none";
+
       saveMessagingToken(auth.currentUser);
+
   }
+
 }
 
+
 function renderOrders(snap) {
+
   const container = document.getElementById("historyContainer");
+
   container.innerHTML = "";
+
   if(snap.empty){
+
     container.innerHTML = '<div class="empty"><i class="fa fa-box-open"></i><p>No orders yet.</p></div>';
+
     return;
+
   }
 
+
   let activeTotal = 0;
+
   let hasOldOrders = false;
 
+
   snap.forEach(doc => {
+
     const o = doc.data();
+
     const id = doc.id;
+
     const status = o.status || 'pending';
 
+
     const now = new Date().getTime();
+
     const orderTime = o.timestamp ? o.timestamp.toDate().getTime() : now;
+
     const diffMins = (now - orderTime) / 1000 / 60;
+
     const canCancel = diffMins < 5 && status === "pending";
 
+
     if(['pending', 'preparing', 'out for delivery'].includes(status)) activeTotal += (o.totalAmount || 0);
+
     if(['delivered', 'cancelled'].includes(status)) hasOldOrders = true;
 
+
     const card = document.createElement("div");
+
     card.className = "card";
 
+
     let itemsHTML = (o.items || []).map(i => `
+
       <div class="item-row">
+
         <img src="${i.image || i.img || i.url || '/images/tent.jpeg'}" onerror="this.src='/images/tent.jpeg'">
+
         <div class="item-info">
+
           <strong>${i.name}</strong>
+
           <span style="color:#888;">${i.qty}x • UGX ${(i.price * i.qty).toLocaleString()}</span>
+
         </div>
+
       </div>
+
     `).join('');
+
 
     const waLink = `https://wa.me/${SUPPORT_PHONE}?text=Hello, I need help with Order #${id.slice(-5).toUpperCase()}`;
 
+
     card.innerHTML = `
+
       <div style="display:flex; justify-content:space-between; margin-bottom:12px; align-items:flex-start;">
+
         <div>
+
           <span style="font-size:0.6rem; color:#ccc; font-weight:700;">#${id.slice(-5).toUpperCase()}</span><br>
+
           <small style="color:#999; font-size:0.7rem;">${o.timestamp ? o.timestamp.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</small>
+
         </div>
+
         <div style="text-align:right;">
+
           <span class="status ${status.replace(/\s+/g, '-')}">${status}</span>
+
           ${o.paymentStatus === 'Paid' ? '<div class="paid-badge" style="margin-top:4px; display:inline-block;">PAID</div>' : ''}
+
         </div>
+
       </div>
+
       ${itemsHTML}
+
       <div class="summary">
+
         <div class="summary-line"><span>Deliver to:</span><strong>${o.deliveryLocation || 'Campus'}</strong></div>
+
         <div class="summary-line" style="margin-top:5px; border-top:1px solid #eee; padding-top:5px;">
+
           <span>Total:</span><span class="total-text">UGX ${(o.totalAmount || 0).toLocaleString()}</span>
+
         </div>
+
       </div>
+
       <div class="action-area">
+
         <a href="${waLink}" target="_blank" class="whatsapp-btn"><i class="fab fa-whatsapp"></i> Chat Support</a>
+
         ${canCancel ? `<button class="cancel-btn" onclick="cancelOrder('${id}')">Cancel Order</button>` : ''}
+
       </div>
+
     `;
+
     container.appendChild(card);
+
   });
 
+
   document.getElementById("pendingTotal").textContent = "Total Active: UGX " + activeTotal.toLocaleString();
+
   document.getElementById("pendingTotal").style.display = activeTotal > 0 ? "block" : "none";
+
   document.getElementById("clear-history").style.display = hasOldOrders ? "inline-block" : "none";
+
 }
+
 
 async function cancelOrder(id) {
+
   if(confirm("Cancel this order?")){
+
     try {
+
       await db.collection("orders").doc(auth.currentUser.uid).collection("userOrders").doc(id).update({ status: "cancelled", userSeen: false });
+
     } catch(e) { alert(e.message); }
+
   }
+
 }
 
+
 document.getElementById("clear-history").onclick = async () => {
+
   if(!confirm("Clear history?")) return;
+
   const snap = await db.collection("orders").doc(auth.currentUser.uid).collection("userOrders").get();
+
   const batch = db.batch();
+
   snap.forEach(d => { if(['delivered', 'cancelled'].includes(d.data().status)) batch.delete(d.ref); });
+
   await batch.commit();
+
 };
+
 </script>
+
 </body>
-</html>
+
+</html> 

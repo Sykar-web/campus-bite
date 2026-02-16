@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>Confirm Order | Campus Bite</title>
   
   <link rel="manifest" href="/manifest.json">
@@ -47,6 +47,7 @@
     .choice-btn.active { border-color: var(--primary); color: var(--primary); background: #fff3ea; }
 
     #deliveryOptions { display: none; border-top: 1px solid #f0f0f0; padding-top: 15px; }
+    .distance-alert { background: #fff3e0; padding: 12px; border-radius: 10px; font-size: 0.85rem; margin-bottom: 15px; border-left: 4px solid var(--primary); color: #e65100; line-height: 1.4; }
 
     #momoWizard { display:none; background: #f0f7ff; padding: 15px; border-radius: 12px; border: 1px solid #dbeafe; }
     .net-grid { display: flex; gap: 10px; margin-bottom: 15px; }
@@ -56,7 +57,7 @@
     #confirmOrderBtn { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; width: 100%; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
     #confirmOrderBtn:disabled { background: #ccc; }
 
-    .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; }
+    .footer-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 2000; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
     .footer-nav a { text-decoration: none; color: #aaa; display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; }
     .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
     .footer-nav a.active { color: var(--primary); }
@@ -65,44 +66,39 @@
 <body>
 
 <header>
-  <a href="home.html" class="back-btn"><i class="fa fa-chevron-left"></i></a>
+  <a href="budget.html" class="back-btn"><i class="fa fa-chevron-left"></i></a>
   <img src="/images/tent.jpeg" class="header-logo">
-  <h1>Confirm Order</h1>
+  <h1>Order Finalization</h1>
 </header>
 
 <div class="main-content">
-  <span class="section-title">Your Items</span>
+  <span class="section-title">Order Items</span>
   <div id="itemsContainer"></div>
 
-  <span class="section-title">Order Method</span>
+  <span class="section-title">Delivery Method</span>
   <div class="form-group">
     <div class="choice-grid">
-      <div class="choice-btn active" id="btnPickup" onclick="setMethod('pickup')"><i class="fa fa-walking"></i> Pickup</div>
-      <div class="choice-btn" id="btnDelivery" onclick="setMethod('delivery')"><i class="fa fa-truck"></i> Delivery</div>
+      <div class="choice-btn active" id="btnPickup" onclick="setMethod('pickup')"><i class="fa fa-walking"></i> Hub Pickup</div>
+      <div class="choice-btn" id="btnDelivery" onclick="setMethod('delivery')"><i class="fa fa-motorcycle"></i> Door Delivery</div>
     </div>
 
     <div id="deliveryOptions">
-      <label>Delivery Area</label>
-      <select id="areaSelector" onchange="updateCalculations()">
-        <option value="0" selected>Muni Campus (Free)</option>
-        <option value="1000">Ocholin (1,000/-)</option>
-        <option value="1500">Onzivu (1,500/-)</option>
-        <option value="2000">Munnisite (2,000/-)</option>
-        <option value="2500">Extended Areas (2,500/-)</option>
-      </select>
-      <label>Specific Room / Hostel / Office</label>
-      <input type="text" id="deliveryLocation" placeholder="e.g. Elite Lower Rm8" oninput="validate()">
+      <div id="distanceInfo" class="distance-alert">
+        <i class="fa fa-satellite fa-spin"></i> Estimating distance from Hub...
+      </div>
+      <label>Specific Room / Hostel Name</label>
+      <input type="text" id="deliveryLocation" placeholder="e.g. Elite Hostel, Room 10" oninput="validate()">
     </div>
   </div>
 
-  <span class="section-title">Contact & Payment</span>
+  <span class="section-title">Customer Info</span>
   <div class="form-group">
-    <label>Phone Number</label>
+    <label>Active Phone Number</label>
     <input type="tel" id="deliveryPhone" placeholder="07XXXXXXXX" oninput="validate()">
     
     <label>Payment Mode</label>
     <select id="paymentMode" onchange="toggleMomo()">
-      <option value="Cash">Cash (on Delivery/Pickup)</option>
+      <option value="Cash">Cash (On fulfillment)</option>
       <option value="Mobile Money">Mobile Money (Pre-pay)</option>
     </select>
 
@@ -113,19 +109,19 @@
       </div>
       <div id="momoActions" style="display:none; text-align:center;">
         <p style="font-size:0.8rem; margin-bottom:10px;">Dial: <strong id="ussdDisplay"></strong></p>
-        <a id="payNowBtn" href="#" style="display:block; background:#22c55e; color:#fff; padding:10px; border-radius:8px; text-decoration:none; font-weight:700; margin-bottom:10px;">Dial Now</a>
-        <input type="text" id="transactionId" placeholder="Transaction ID from SMS" oninput="validate()">
+        <a id="payNowBtn" href="#" style="display:block; background:#22c55e; color:#fff; padding:10px; border-radius:8px; text-decoration:none; font-weight:700; margin-bottom:10px;">Open Dialer</a>
+        <input type="text" id="transactionId" placeholder="Input Transaction ID" oninput="validate()">
       </div>
     </div>
   </div>
 
   <div class="summary-card">
-    <div class="row"><span>Subtotal</span><span id="subTotal">UGX 0</span></div>
-    <div class="row"><span>Delivery Fee</span><span id="deliveryFee">UGX 0</span></div>
-    <div class="row total-row"><span>Total</span><span id="finalTotal">UGX 0</span></div>
+    <div class="row"><span>Food Total</span><span id="subTotalDisplay">UGX 0</span></div>
+    <div class="row"><span>Delivery Fee</span><span id="deliveryFeeDisplay">UGX 0</span></div>
+    <div class="row total-row"><span>Total Payable</span><span id="finalTotalDisplay">UGX 0</span></div>
   </div>
 
-  <button id="confirmOrderBtn" disabled onclick="placeOrder()">Place Order Now</button>
+  <button id="confirmOrderBtn" disabled onclick="placeOrder()">Confirm My Order</button>
 </div>
 
 <nav class="footer-nav">
@@ -146,46 +142,83 @@
   const db = firebase.firestore();
   const auth = firebase.auth();
 
-  const MERCHANT_MTN = "12345678";
-  const MERCHANT_AIRTEL = "6984477";
+  // HUB CONFIG (Technoscience Hall)
+  const HUB_LAT = 2.999146339267604;
+  const HUB_LNG = 30.926922100000002;
+  const BASE_FEE = 500;
+  const RATE_PER_KM = 300;
+
+  const MERCHANT_MTN = "12345678"; 
+  const MERCHANT_AIRTEL = "6984477"; 
+  
   let netSelected = "";
   let subtotal = 0;
+  let deliveryFee = 0;
   let methodSelected = "pickup";
   const cart = JSON.parse(localStorage.getItem("campusbite_budget_items_v1") || "{}");
 
-  if (Object.keys(cart).length === 0) {
-      alert("Your cart is empty! Redirecting to menu...");
-      window.location.href = "home.html";
-  }
-
   function init() {
     const container = document.getElementById("itemsContainer");
-    subtotal = 0;
+    if (Object.keys(cart).length === 0) { window.location.href = "home.html"; return; }
+
     Object.keys(cart).forEach(name => {
       const item = cart[name];
       subtotal += (item.price * item.qty);
       container.innerHTML += `<div class="order-card"><img src="${item.img || '/images/tent.jpeg'}" class="item-img"><div class="item-details"><strong>${name}</strong><br><span class="item-price">${item.qty}x — UGX ${(item.price * item.qty).toLocaleString()}</span></div></div>`;
     });
-    updateCalculations();
+    updateUI();
   }
 
-  function setMethod(method) {
-    methodSelected = method;
-    document.getElementById('btnPickup').classList.toggle('active', method === 'pickup');
-    document.getElementById('btnDelivery').classList.toggle('active', method === 'delivery');
-    document.getElementById('deliveryOptions').style.display = (method === 'delivery') ? 'block' : 'none';
-    updateCalculations();
-  }
-
-  function updateCalculations() {
-    let fee = 0;
-    if (methodSelected === 'delivery') {
-      fee = parseInt(document.getElementById("areaSelector").value);
+  function setMethod(m) {
+    methodSelected = m;
+    document.getElementById('btnPickup').classList.toggle('active', m === 'pickup');
+    document.getElementById('btnDelivery').classList.toggle('active', m === 'delivery');
+    document.getElementById('deliveryOptions').style.display = (m === 'delivery') ? 'block' : 'none';
+    
+    if (m === 'delivery') {
+      calculateRate();
+    } else {
+      deliveryFee = 0;
+      updateUI();
     }
-    const final = subtotal + fee;
-    document.getElementById("subTotal").innerText = "UGX " + subtotal.toLocaleString();
-    document.getElementById("deliveryFee").innerText = "UGX " + fee.toLocaleString();
-    document.getElementById("finalTotal").innerText = "UGX " + final.toLocaleString();
+  }
+
+  function calculateRate() {
+    const info = document.getElementById('distanceInfo');
+    if (!navigator.geolocation) {
+      deliveryFee = 1500;
+      info.innerHTML = "GPS Unavailable. Fixed delivery: UGX 1,500";
+      updateUI();
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(pos => {
+      const R = 6371;
+      const dLat = (pos.coords.latitude - HUB_LAT) * Math.PI / 180;
+      const dLon = (pos.coords.longitude - HUB_LNG) * Math.PI / 180;
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(HUB_LAT * Math.PI / 180) * Math.cos(pos.coords.latitude * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+      const dist = R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
+
+      // Dynamic Math: Base + (Distance * Rate)
+      let rawFee = BASE_FEE + (dist * RATE_PER_KM);
+      // Round to nearest 100 for easy change
+      deliveryFee = Math.ceil(rawFee / 100) * 100;
+      if (deliveryFee > 5000) deliveryFee = 5000; // Cap at 5k
+
+      info.innerHTML = `<i class="fa fa-route"></i> Distance: ${dist.toFixed(2)} km <br> Delivery Fee : <b>UGX ${deliveryFee.toLocaleString()}</b>`;
+      updateUI();
+    }, () => {
+      deliveryFee = 1500;
+      info.innerHTML = "Location Denied. Standard delivery: UGX 1,500";
+      updateUI();
+    });
+  }
+
+  function updateUI() {
+    const total = subtotal + deliveryFee;
+    document.getElementById("subTotalDisplay").innerText = "UGX " + subtotal.toLocaleString();
+    document.getElementById("deliveryFeeDisplay").innerText = "UGX " + deliveryFee.toLocaleString();
+    document.getElementById("finalTotalDisplay").innerText = "UGX " + total.toLocaleString();
     if(netSelected) setNet(netSelected);
     validate();
   }
@@ -199,8 +232,8 @@
     netSelected = net;
     document.querySelectorAll('.net-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('btn'+net).classList.add('active');
-    const finalVal = subtotal + (methodSelected === 'delivery' ? parseInt(document.getElementById("areaSelector").value) : 0);
-    let ussd = (net === 'MTN') ? `*165*3*${MERCHANT_MTN}*${finalVal}#` : `*185*9*${MERCHANT_AIRTEL}*${finalVal}#`;
+    const total = subtotal + deliveryFee;
+    let ussd = (net === 'MTN') ? `*165*3*${MERCHANT_MTN}*${total}#` : `*185*9*${MERCHANT_AIRTEL}*${total}#`;
     document.getElementById("ussdDisplay").innerText = ussd;
     document.getElementById("payNowBtn").href = "tel:" + ussd.replace(/#/g, "%23");
     document.getElementById("momoActions").style.display = "block";
@@ -212,63 +245,56 @@
     const mode = document.getElementById("paymentMode").value;
     const tx = document.getElementById("transactionId").value.trim();
     const loc = document.getElementById("deliveryLocation").value.trim();
-    let basicOk = phone.length >= 10;
-    if (methodSelected === 'delivery') basicOk = basicOk && loc.length >= 2;
-    if (mode === "Mobile Money") basicOk = basicOk && netSelected && tx.length > 5;
-    document.getElementById("confirmOrderBtn").disabled = !basicOk;
+    let ok = phone.length >= 10;
+    if (methodSelected === 'delivery') ok = ok && loc.length >= 2;
+    if (mode === "Mobile Money") ok = ok && netSelected && tx.length > 5;
+    document.getElementById("confirmOrderBtn").disabled = !ok;
   }
 
-  // --- UPDATED PLACE ORDER FUNCTION ---
   async function placeOrder() {
     const user = auth.currentUser;
-    if(!user) return alert("Please log in to place an order.");
+    if(!user) return alert("Auth error.");
     
     const btn = document.getElementById("confirmOrderBtn");
     btn.disabled = true;
     btn.innerText = "Processing...";
 
-    const fee = methodSelected === 'delivery' ? parseInt(document.getElementById("areaSelector").value) : 0;
-    const areaText = methodSelected === 'delivery' ? document.getElementById("areaSelector").options[document.getElementById("areaSelector").selectedIndex].text : "Pickup";
-
     try {
-      // 1. Initialize Parent Doc (Necessary for Nested Rules)
+      // Step 1: Ensure User Doc exists
       await db.collection("orders").doc(user.uid).set({
         userName: user.displayName || "Muni Student",
         lastActivity: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
 
-      // 2. Add Order to Sub-collection (orders/uid/userOrders)
+      // Step 2: Add Subcollection Record
       await db.collection("orders").doc(user.uid).collection("userOrders").add({
         userId: user.uid,
         userName: user.displayName || "Muni Student",
-        // Add the image field so it's saved with the order
-items: Object.keys(cart).map(k => ({ 
-    name: k, 
-    qty: cart[k].qty, 
-    price: cart[k].price,
-    image: cart[k].img // Ensure this matches what is in your localStorage
-})),
-
+        items: Object.keys(cart).map(k => ({ 
+            name: k, 
+            qty: cart[k].qty, 
+            price: cart[k].price,
+            image: cart[k].img || '/images/tent.jpeg' // History Page Image
+        })),
         subtotal: subtotal,
-        deliveryFee: fee,
-        totalAmount: subtotal + fee,
+        deliveryFee: deliveryFee,
+        totalAmount: subtotal + deliveryFee,
         orderMethod: methodSelected,
-        area: areaText,
         deliveryPhone: document.getElementById("deliveryPhone").value,
-        deliveryLocation: methodSelected === 'delivery' ? document.getElementById("deliveryLocation").value : "N/A (Pickup)",
+        deliveryLocation: methodSelected === 'delivery' ? document.getElementById("deliveryLocation").value : "Hub Pickup",
         paymentMode: document.getElementById("paymentMode").value,
         transactionId: document.getElementById("transactionId").value || "CASH",
         status: "pending",
+        userSeen: false,
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
 
       localStorage.removeItem("campusbite_budget_items_v1");
       window.location.href = "order-history.html";
     } catch(e) { 
-      console.error("Save Error: ", e);
-      alert("Error: " + e.message); 
+      alert(e.message); 
       btn.disabled = false; 
-      btn.innerText = "Place Order Now";
+      btn.innerText = "Confirm My Order";
     }
   }
 
@@ -276,4 +302,3 @@ items: Object.keys(cart).map(k => ({
 </script>
 </body>
 </html>
-
