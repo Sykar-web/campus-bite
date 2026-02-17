@@ -25,19 +25,32 @@ const db = getFirestore(app);
     // Arua District Boundaries
     const ARUA = { latMin: 2.80, latMax: 3.30, lngMin: 30.70, lngMax: 31.30 };
 
-    function unlockButtons() {
-        const buttonIds = ['googleLoginBtn', 'emailLoginBtn', 'joinBtn'];
-        buttonIds.forEach(id => {
-            const btn = document.getElementById(id);
-            if (btn) {
-                btn.disabled = false;
-                btn.style.opacity = "1";
-                btn.style.filter = "none";
-                btn.style.cursor = "pointer";
-            }
-        });
-    }
+   function unlockButtons() {
+    const buttonIds = ['emailLoginBtn', 'googleLoginBtn', 'joinBtn'];
+    
+    buttonIds.forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) {
+            // 1. Remove visual restrictions
+            btn.disabled = false;
+            btn.classList.remove('locked');
+            btn.style.opacity = "1";
+            btn.style.filter = "none";
+            btn.style.cursor = "pointer";
+            btn.style.pointerEvents = "auto";
 
+            // 2. Fix the "Click" issue
+            // Since the logic is in index.html, we just need to ensure 
+            // the 'onclick' attribute is actually allowed to fire.
+            const currentOnClick = btn.onclick;
+            btn.addEventListener('click', () => {
+                if (typeof currentOnClick === 'function') {
+                    currentOnClick();
+                }
+            });
+        }
+    });
+    console.log("Arua Student Verified: Campus Bite Unlocked.")};
     function checkLocation() {
         if (!navigator.geolocation) {
             showFullPageBlock("Browser Error", "Your browser does not support location services.");

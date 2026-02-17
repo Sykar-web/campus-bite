@@ -19,6 +19,7 @@ const meals=[
   {name:"Kikomando", category:"Lunch", place:"Campus Canteen", price:1000, img:"images/kikomando.jpg"},
   {name:"Fried Rice", category:"Lunch", place:"Desert breeze", price:2000, img:"images/rice.webp"},
   {name:"Matooke", category:"Lunch", place:"Bangri TC", price:2000, img:"images/matooke.jpg"},
+  {name:"Onions(1kg)", category:"Ingredients", place:"Ocholin", price:3000, img:"images/onions.jpg"},
   {name:"Beef Suasage (A pair)", category:"Breakfast", place:"Desert Breeze", price:3000, img:"images/beefs.webp"},
   {name:"White Rice & Beans", category:"Lunch", place:"Bangri TC", price:2000, img:"images/white rice.jpg"},
   {name:"Anyoya", category:"Lunch", place:"Bangri TC", price:1000, img:"images/anyoya.jpeg"},
@@ -43,6 +44,7 @@ const meals=[
   {name:"Minute maid", category:"Drink", place:"Campus Ark", price:2500, img:"images/minute maid.webp"},
   {name:"Bushera", category:"Drink", place:"Campus Canteen", price:1000, img:"images/bushera.jpeg"},
   {name:"Oner", category:"Drink", place:"Campus Canteen", price:1000, img:"images/oner.jpeg"},
+  {name:"Fresh Eggs(Atray)", category:"Ingredients", place:"Munisite", price:13500, img:"images/Fresh eggs.jpg"},
   {name:"Yorghurt", category:"Drink", place:"Campus Canteen", price:2000, img:"images/yorghurt.jpg"},
   {name:"Fresh Juice", category:"Drink", place:"Desert Breeze", price:1000, img:"images/juice.jpg"},
   {name:"Tomatoes(7)", category:"Ingredients", place:"Munisite", price:1000, img:"images/tomatoes.jpg"}
