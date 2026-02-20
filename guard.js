@@ -1,5 +1,5 @@
 // arua-guard.js - The Gatekeeper for Campus Bite
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+/*import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // 1. Firebase Configuration
@@ -188,4 +188,4 @@ const db = getFirestore(app);
     } else {
         checkLocation();
     }
-})();
+})();*/
