@@ -107,8 +107,8 @@
     .forgot-link { display: inline-block; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; text-decoration: none; }
     .forgot-link:hover { color: var(--brand); }
 
-    /* Class used by guard.js to unlock buttons */
-    /*.locked {
+    /* Class used by guard.js to unlock buttons 
+    .locked {
       opacity: 0.5;
       filter: grayscale(1);
       cursor: not-allowed !important;
@@ -140,13 +140,13 @@
         <i class="fa-regular fa-eye eye-icon" id="togglePassword"></i>
       </div>
 
-      <button class="primary-btn locked" id="emailLoginBtn" disabled>Sign In</button>
+      <button class="primary-btn unlocked" id="emailLoginBtn" enabled>Sign In</button>
       
-      <button class="google-btn locked" id="googleLoginBtn" disabled>
+      <button class="google-btn locked" id="googleLoginBtn" enabled>
         <i class="fa-brands fa-google"></i> Continue with Google
       </button>
 
-      <button class="secondary-btn locked" id="joinBtn" disabled>Join Campus Bite</button>
+      <button class="secondary-btn unlocked" id="joinBtn" enabled>Join Campus Bite</button>
       
       <span class="forgot-link" id="forgotBtn">Forgot your password?</span>
     </div>

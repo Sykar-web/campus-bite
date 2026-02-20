@@ -188,4 +188,4 @@ const db = getFirestore(app);
     } else {
         checkLocation();
     }
-})();*/
+})();
