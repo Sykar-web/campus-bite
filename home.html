@@ -21,34 +21,52 @@
     :root { --brand: #ff914d; --brand-light: #fdf2e9; --text-muted: #888; }
     * { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins", sans-serif; }
     
-    /* Increased padding-bottom so the footer is never cut off by the Nav */
-    body { background:#fff; color:#333; -webkit-font-smoothing:antialiased; overflow-x: hidden; padding-bottom: 110px; }
+    body { background:#fff; color:#333; -webkit-font-smoothing:antialiased; overflow-x: hidden; padding-bottom: 110px; width: 100%; }
 
     /* Header */
     header { 
         background: var(--brand); color:#fff; padding:15px 20px; 
         display:flex; align-items:center; box-shadow:0 2px 10px rgba(0,0,0,0.1); 
-        position: sticky; top: 0; z-index: 1000;
+        position: sticky; top: 0; z-index: 1000; width: 100%;
     }
     .header-logo { width: 35px; height: 35px; border-radius: 8px; margin-right: 12px; object-fit: cover; }
     header h1 { font-size:1.1rem; font-weight:600; flex-grow: 1; }
 
-    /* Slideshow Section (At the Top) */
-    .slideshow-section { padding: 15px 15px 0 15px; }
+    /* ENDLESS SWIPEABLE SLIDESHOW */
+    .slideshow-section { padding: 15px 15px 0 15px; width: 100%; }
     .slideshow-container {
-        width: 100%; height: 180px; background: #222; border-radius: 20px;
-        position: relative; overflow: hidden; display: flex; align-items: flex-end;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15); cursor: pointer;
-        transition: opacity 0.5s ease-in-out;
+        width: 100%; height: 200px; border-radius: 20px;
+        display: flex; overflow-x: auto; 
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth; 
+        scrollbar-width: none; 
+        gap: 15px;
     }
-    .slide-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
-    .slide-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 15%, transparent 70%); z-index: 2; }
-    .slide-info { position: relative; z-index: 3; padding: 15px; color: white; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; }
+    .slideshow-container::-webkit-scrollbar { display: none; }
+    
+    .slide {
+        flex: 0 0 100%; /* Mobile: 1 slide */
+        scroll-snap-align: start;
+        position: relative; height: 100%; border-radius: 20px; overflow: hidden;
+        cursor: pointer;
+    }
+
+    @media (min-width: 768px) {
+        .slide { flex: 0 0 calc(50% - 8px); } /* Tablet: 2 slides */
+        .slideshow-container { height: 260px; }
+    }
+    @media (min-width: 1200px) {
+        .slide { flex: 0 0 calc(33.33% - 10px); } /* Mac: 3 slides */
+    }
+
+    .slide-img { width: 100%; height: 100%; object-fit: cover; }
+    .slide-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 15%, transparent 70%); }
+    .slide-info { position: absolute; bottom: 0; padding: 15px; color: white; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; }
     .slide-tag { font-size: 0.65rem; background: var(--brand); padding: 2px 8px; border-radius: 5px; text-transform: uppercase; margin-bottom: 4px; display: inline-block; font-weight: 600; }
-    .slide-price { font-weight: 700; color: var(--brand); font-size: 0.9rem; }
+    .slide-price { font-weight: 700; color: #fff; font-size: 0.9rem; }
 
     /* Search & Filters */
-    .filter-section { padding:15px; display:flex; flex-direction: column; gap:12px; background: #fff; }
+    .filter-section { padding:15px; display:flex; flex-direction: column; gap:12px; background: #fff; width: 100%; }
     .search-container { position: relative; width: 100%; }
     .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--brand); }
     #mealSearch { 
@@ -61,11 +79,20 @@
         background: var(--brand-light); color: #ff6a00; font-weight: 600; font-size: 0.85rem;
     }
 
-    /* Meal Grid */
-    .meal-section { padding: 10px; display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; }
-    .meal-card { background:#fff; border-radius: 15px; overflow:hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+    /* MEAL GRID - FIXED FOR MULTIPLE ROWS */
+    .meal-section { 
+        padding: 15px; 
+        display: grid; 
+        gap: 15px;
+        width: 100%;
+        grid-template-columns: repeat(2, 1fr); /* Default Mobile */
+    }
+    @media (min-width: 768px) { .meal-section { grid-template-columns: repeat(4, 1fr); } }
+    @media (min-width: 1200px) { .meal-section { grid-template-columns: repeat(6, 1fr); } }
+
+    .meal-card { background:#fff; border-radius: 15px; overflow:hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
     .meal-card img { width:100%; height:130px; object-fit:cover; cursor: pointer; }
-    .meal-info { padding:10px; }
+    .meal-info { padding:10px; flex-grow: 1; }
     .meal-info h3 { font-size: 0.9rem; color: #333; margin-bottom: 2px; cursor: pointer; }
     .meal-place { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px; }
     .meal-price { font-size: 0.85rem; font-weight: 700; color: #ff6a00; margin-bottom: 8px; }
@@ -74,22 +101,11 @@
     .counter { display: flex; justify-content: space-between; align-items: center; background: var(--brand-light); border-radius: 8px; }
     .counter button { background: none; border: none; padding: 8px; color: #ff6a00; font-weight: bold; width: 30px; cursor: pointer; }
 
-    .pagination { display: flex; justify-content: center; align-items: center; padding: 20px; gap: 15px; }
+    .pagination { display: flex; justify-content: center; align-items: center; padding: 20px; gap: 15px; width: 100%; }
     .page-btn { background: var(--brand); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
     .page-btn:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
 
-    /* Contact Footer */
-    .contact-footer { background: #fff; color: #333; padding: 40px 20px; text-align: center; border-top: 1px solid #f0f0f0; margin-top: 20px; }
-    .contact-container h3 { color: var(--brand); font-size: 1.2rem; margin-bottom: 5px; }
-    .contact-container p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 25px; }
-    .contact-details { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-bottom: 25px; }
-    .contact-item { text-decoration: none; color: #333; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--brand-light); border-radius: 12px; width: 100%; max-width: 280px; }
-    .contact-item i { color: var(--brand); }
-    .share-app-btn { background: #333; color: #fff; border: none; padding: 12px 25px; border-radius: 25px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 30px; }
-    .location-tag { font-size: 0.7rem; color: #aaa; margin-bottom: 10px; }
-    .copyright { font-size: 0.6rem; color: #ccc; border-top: 1px solid #f9f9f9; padding-top: 15px; }
-
-    /* Footer Nav */
+    /* Footer Nav Full Width */
     .footer-nav { 
         position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; 
         display: flex; justify-content: space-around; padding: 12px 0; 
@@ -99,7 +115,8 @@
     .footer-nav a i { font-size: 1.2rem; margin-bottom: 4px; }
     .footer-nav a.active { color: var(--brand); }
 
-    @media (min-width: 768px) { .meal-section { grid-template-columns: repeat(4, 1fr); } }
+    .contact-footer { background: #fff; color: #333; padding: 40px 20px; text-align: center; border-top: 1px solid #f0f0f0; margin-top: 20px; width: 100%; }
+    .contact-item { text-decoration: none; color: #333; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--brand-light); border-radius: 12px; width: 100%; max-width: 350px; margin: 0 auto 10px; }
   </style>
 </head>
 <body>
@@ -113,7 +130,7 @@
 </header>
 
 <section class="slideshow-section">
-    <div class="slideshow-container" id="featuredSlideshow" onclick="triggerSlideAction()">
+    <div class="slideshow-container" id="featuredSlideshow">
         </div>
 </section>
 
@@ -155,27 +172,18 @@
   <div class="contact-container">
     <h3>Campus Bite</h3>
     <p>Muni University • Delicious Foods Service</p>
-    
     <div class="contact-details">
-      <a href="mailto:ezrasykar@gmail.com?subject=Campus%20Bite%20Support" class="contact-item">
-        <i class="fa fa-envelope"></i>
-        <span>campusbite@muni.ac.ug</span>
+      <a href="mailto:ezrasykar@gmail.com" class="contact-item">
+        <i class="fa fa-envelope"></i><span>campusbite@muni.ac.ug</span>
       </a>
       <a href="tel:+256748372023" class="contact-item">
-        <i class="fa fa-phone"></i>
-        <span>+256 748 372 023</span>
+        <i class="fa fa-phone"></i><span>+256 748 372 023</span>
       </a>
     </div>
-
-    <button class="share-app-btn" onclick="shareApp()">
+    <button class="share-app-btn" style="background:#333; color:#fff; border:none; padding:12px 25px; border-radius:25px; cursor:pointer; margin-top:15px;" onclick="shareApp()">
       <i class="fa fa-share-nodes"></i> Share with Friends
     </button>
-
-    <div class="location-tag">
-      <i class="fa fa-map-marker-alt"></i>
-      <span>Arua, Uganda (Arua Hill)</span>
-    </div>
-    <p class="copyright">© 2026 Campus Bite. All Rights Reserved.</p>
+    <p style="font-size: 0.6rem; color: #ccc; margin-top: 20px;">© 2026 Campus Bite. All Rights Reserved.</p>
   </div>
 </footer>
 
@@ -204,13 +212,12 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 const STORAGE_KEY = "campusbite_budget_items_v1";
-const PAGE_KEY = "cb_last_page"; // For pagination persistence
+const PAGE_KEY = "cb_last_page";
 
 let addedMeals = {};
 let currentPage = parseInt(localStorage.getItem(PAGE_KEY)) || 1;
-const itemsPerPage = 8;
+const itemsPerPage = 8; // Increased for Mac screen space
 
-// Auth Check
 auth.onAuthStateChanged(user => {
     if(!user) { window.location.href="index.html"; }
     else {
@@ -220,45 +227,49 @@ auth.onAuthStateChanged(user => {
     }
 });
 
-// Slideshow Logic (Pulling from meals.js)
 function initSlideshow() {
     const container = document.getElementById("featuredSlideshow");
-    if (typeof meals === 'undefined' || meals.length === 0) return;
+    if (!container || typeof meals === 'undefined' || meals.length === 0) return;
 
-    const featuredPool = meals.filter(m => m.img); 
-    const shuffled = [...featuredPool].sort(() => Math.random() - 0.5);
-    let index = 0;
-
-    function showNext() {
-        const meal = shuffled[index];
-        container.style.opacity = "0";
-        setTimeout(() => {
-            container.innerHTML = `
-                <img src="${meal.img}" class="slide-img" onerror="this.src='/images/tent.jpeg'">
-                <div class="slide-overlay"></div>
-                <div class="slide-info">
-                    <div>
-                        <span class="slide-tag">🔥 Trending Now</span>
-                        <h2>${meal.name}</h2>
-                        <p style="font-size: 0.7rem; color: #ccc;">From ${meal.place}</p>
-                    </div>
-                    <div class="slide-price">UGX ${meal.price.toLocaleString()}</div>
+    const featuredPool = meals.filter(m => m.img).sort(() => 0.5 - Math.random());
+    
+    featuredPool.forEach((meal) => {
+        const slide = document.createElement("div");
+        slide.className = "slide";
+        slide.onclick = () => viewDetails(meal.name);
+        slide.innerHTML = `
+            <img src="${meal.img}" class="slide-img" onerror="this.src='/images/tent.jpeg'">
+            <div class="slide-overlay"></div>
+            <div class="slide-info">
+                <div>
+                    <span class="slide-tag">✨ Recommended</span>
+                    <h2 style="font-size:0.9rem;">${meal.name}</h2>
+                    <p style="font-size:0.6rem; opacity:0.8;">${meal.place}</p>
                 </div>
-            `;
-            container.style.opacity = "1";
-        }, 500);
-        index = (index + 1) % shuffled.length;
-    }
-    showNext();
-    setInterval(showNext, 6000);
+                <div class="slide-price">UGX ${meal.price.toLocaleString()}</div>
+            </div>
+        `;
+        container.appendChild(slide);
+    });
+
+    let autoScroll;
+    const startScroll = () => {
+        autoScroll = setInterval(() => {
+            const slide = container.querySelector('.slide');
+            const step = slide.offsetWidth + 15;
+            if (container.scrollLeft + container.offsetWidth >= container.scrollWidth - 10) {
+                container.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: step, behavior: 'smooth' });
+            }
+        }, 5000);
+    };
+
+    container.addEventListener('touchstart', () => clearInterval(autoScroll));
+    container.addEventListener('touchend', startScroll);
+    startScroll();
 }
 
-window.triggerSlideAction = function() {
-    const title = document.querySelector("#featuredSlideshow h2");
-    if(title) viewDetails(title.innerText);
-};
-
-// Meal Grid & Storage
 function loadFromStorage(){
     const raw = localStorage.getItem(STORAGE_KEY);
     addedMeals = raw ? JSON.parse(raw) : {};
@@ -329,18 +340,13 @@ window.viewDetails = function(name) {
 
 window.shareApp = function() {
   if (navigator.share) {
-    navigator.share({
-      title: 'Campus Bite',
-      text: 'Order your Muni University meals easily with Campus Bite!',
-      url: window.location.origin
-    }).catch(console.error);
+    navigator.share({ title: 'Campus Bite', text: 'Order Muni University meals easily!', url: window.location.origin }).catch(console.error);
   } else {
     navigator.clipboard.writeText(window.location.origin);
-    alert("App link copied to clipboard!");
+    alert("App link copied!");
   }
 }
 
-// Handlers with Page Persistence
 const updatePage = (newPage) => {
     currentPage = newPage;
     localStorage.setItem(PAGE_KEY, currentPage);
