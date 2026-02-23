@@ -88,7 +88,7 @@
         grid-template-columns: repeat(2, 1fr); /* Default Mobile */
     }
     @media (min-width: 768px) { .meal-section { grid-template-columns: repeat(4, 1fr); } }
-    @media (min-width: 1200px) { .meal-section { grid-template-columns: repeat(6, 1fr); } }
+    @media (min-width: 1200px) { .meal-section { grid-template-columns: repeat(4, 1fr); } }
 
     .meal-card { background:#fff; border-radius: 15px; overflow:hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
     .meal-card img { width:100%; height:130px; object-fit:cover; cursor: pointer; }
@@ -104,6 +104,26 @@
     .pagination { display: flex; justify-content: center; align-items: center; padding: 20px; gap: 15px; width: 100%; }
     .page-btn { background: var(--brand); color: #fff; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; }
     .page-btn:disabled { background: #eee; color: #aaa; cursor: not-allowed; }
+/* Contact Footer */
+
+    .contact-footer { background: #fff; color: #333; padding: 40px 20px; text-align: center; border-top: 1px solid #f0f0f0; margin-top: 20px; }
+
+    .contact-container h3 { color: var(--brand); font-size: 1.2rem; margin-bottom: 5px; }
+
+    .contact-container p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 25px; }
+
+    .contact-details { display: flex; flex-direction: column; gap: 12px; align-items: center; margin-bottom: 25px; }
+
+    .contact-item { text-decoration: none; color: #333; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--brand-light); border-radius: 12px; width: 100%; max-width: 280px; }
+
+    .contact-item i { color: var(--brand); }
+
+    .share-app-btn { background: #333; color: #fff; border: none; padding: 12px 25px; border-radius: 25px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 30px; }
+
+    .location-tag { font-size: 0.7rem; color: #aaa; margin-bottom: 10px; }
+
+    .copyright { font-size: 0.6rem; color: #ccc; border-top: 1px solid #f9f9f9; padding-top: 15px; }
+
 
     /* Footer Nav Full Width */
     .footer-nav { 
