@@ -1,6 +1,7 @@
-// arua-guard.js - THE UNIVERSAL INTELLIGENT BARRIER
+// arua-guard.js - Unified Service Area Guard
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
@@ -13,141 +14,127 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 (function() {
-    const VIP_EMAILS = ["ezrasykar@gmail.com", "admin@campusbite.com"];
-    const fbKey = "firebase:authUser:AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI:[DEFAULT]";
-    const ARUA = { latMin: 2.80, latMax: 3.30, lngMin: 30.70, lngMax: 31.30 };
+    const WHITELIST = ["ezrasykar@gmail.com", "admin@campusbite.com"];
+    const BLACKLIST = ["ezrasychar1@gmail.com", "test@user.com"];
+    const ARUA = { latMin: 2.85, latMax: 3.20, lngMin: 30.75, lngMax: 31.10 };
 
-    // 1. Immediate Shield
-    const blurStyle = document.createElement('style');
-    blurStyle.id = "guard-blur";
-    blurStyle.innerHTML = `
-        body > *:not(#guard-overlay) { filter: blur(20px) !important; pointer-events: none !important; user-select: none !important; }
-        #guard-overlay { position: fixed; inset: 0; z-index: 9999999; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); }
+    // 1. INSTANT BLUR (Applied before logic runs)
+    const style = document.createElement('style');
+    style.innerHTML = `
+        body.guarded > *:not(#guard-overlay) { filter: blur(30px); pointer-events: none; overflow: hidden; }
+        #guard-overlay { position: fixed; inset: 0; z-index: 2147483647; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(20px); font-family: -apple-system, sans-serif; }
+        .guard-card { background: #fff; padding: 35px; width: 90%; max-width: 400px; border-radius: 30px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+        .logo-img { width: 85px; border-radius: 22px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .guard-btn { background: #ff914d; color: white; border: none; padding: 16px; border-radius: 16px; width: 100%; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 15px; }
+        .wl-input, .wl-select { width: 100%; padding: 14px; margin: 10px 0; border: 1.5px solid #f0f0f0; border-radius: 14px; box-sizing: border-box; font-size: 16px; background: #fafafa; }
+        .wl-input:focus { border-color: #ff914d; background: #fff; outline: none; }
+        #success-state { display: none; }
     `;
-    document.head.appendChild(blurStyle);
+    document.head.appendChild(style);
+    document.body.classList.add('guarded');
 
-    async function verifyAccess() {
-        const userData = JSON.parse(localStorage.getItem(fbKey));
-        const userEmail = userData ? userData.email : null;
+    // 2. AUTH LISTENER
+    onAuthStateChanged(auth, (user) => {
+        const email = user ? user.email : null;
 
-        // VIP/Admin Bypass
-        if (VIP_EMAILS.includes(userEmail) || localStorage.getItem("isAdmin") === "true") {
-            removeShield();
-            return;
+        if (email && BLACKLIST.includes(email)) {
+            return showWaitlistUI("Outside Service Area");
+        }
+        if (email && WHITELIST.includes(email)) {
+            return unlock();
+        }
+        if (sessionStorage.getItem("arua_passed") === "true") {
+            return unlock();
         }
 
-        // Silent Check (Works on PC and some Androids)
-        // We avoid navigator.permissions.query because Safari (iPhone) rejects it.
+        requestLocation();
+    });
+
+    function requestLocation() {
         navigator.geolocation.getCurrentPosition(
             (pos) => {
-                handlePositionSuccess(pos);
+                const { latitude, longitude } = pos.coords;
+                if (latitude >= ARUA.latMin && latitude <= ARUA.latMax && longitude >= ARUA.lngMin && longitude <= ARUA.lngMax) {
+                    sessionStorage.setItem("arua_passed", "true");
+                    unlock();
+                } else {
+                    showWaitlistUI("Outside Service Area");
+                }
             },
-            () => {
-                // If silent check fails, we MUST show the popup for user-initiated gesture (Mobile Requirement)
-                renderLockPopup();
-            },
-            { enableHighAccuracy: true, timeout: 2000, maximumAge: 10000 }
+            () => showWaitlistUI("Outside Service Area"),
+            { enableHighAccuracy: true, timeout: 8000 }
         );
     }
 
-    function removeShield() {
-        const blur = document.getElementById("guard-blur");
-        const overlay = document.getElementById("guard-overlay");
-        if (blur) blur.remove();
-        if (overlay) overlay.remove();
-        // Signal to app-guide.js that it can now show up
-        window.dispatchEvent(new Event('guard-cleared'));
-    }
-
-    function renderLockPopup(isOutside = false) {
-        if (document.getElementById("guard-overlay")) {
-            if(isOutside) showWaitlistUI();
-            return;
-        }
+    function showWaitlistUI(title) {
+        if (document.getElementById('guard-overlay')) return;
 
         const overlay = document.createElement('div');
         overlay.id = "guard-overlay";
         overlay.innerHTML = `
-        <div id="lockCard" style="background: white; padding: 30px; border-radius: 28px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.15); max-width: 400px; width: 90%; font-family: sans-serif;">
-            <div style="font-size: 50px; margin-bottom: 10px;">📍</div>
-            <h2 style="color: #333; margin-bottom: 10px; font-size: 1.4rem;">Enable Location</h2>
-            <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;">Campus Bite only serves <b>Muni University</b>. Tap below to verify your campus presence.</p>
-            
-            <button id="requestLocBtn" style="background: #ff914d; color: white; border: none; padding: 16px; border-radius: 16px; width: 100%; font-weight: 700; font-size: 1rem; cursor: pointer;">
-                Allow Location Access
-            </button>
-
-            <div id="waitlistSection" style="display:none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; text-align: left;">
-                <p style="font-size: 0.8rem; color: #d32f2f; margin-bottom: 15px; text-align: center; font-weight: 600;">You appear to be outside Arua.</p>
-                <input type="text" id="wlName" placeholder="Full Name" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px;">
-                <select id="wlLocation" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px; background: white;">
-                    <option value="Makerere">Makerere University</option>
-                    <option value="Kyambogo">Kyambogo University</option>
-                    <option value="Gulu">Gulu University</option>
-                    <option value="Busitema">Busitema University</option>
-                    <option value="Other">Other</option>
-                </select>
-                <div id="otherUniContainer" style="display: none; margin-bottom: 12px;">
-                    <input type="text" id="wlOtherUni" placeholder="Specify University" style="width:100%; padding:12px; border:2px solid #ff914d; border-radius:12px;">
+            <div class="guard-card">
+                <img src="/images/tent.jpeg" class="logo-img">
+                <div id="form-state">
+                    <h1 style="font-size: 1.5rem; margin: 0 0 10px; color: #111;">${title}</h1>
+                    <p style="color: #666; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px;">
+                        Please join the waitlist below to bring Campus Bite to your campus!
+                    </p>
+                    <input type="text" id="wlName" placeholder="Full Name" class="wl-input">
+                    <select id="wlUni" class="wl-select">
+                        <option value="" disabled selected>Select University</option>
+                        <option value="Makerere University">Makerere University</option>
+                        <option value="Kyambogo University">Kyambogo University</option>
+                        <option value="Gulu University">Gulu University</option>
+                        <option value="Other">Other / Not Listed</option>
+                    </select>
+                    <input type="text" id="wlOther" placeholder="Enter University Name" class="wl-input" style="display:none; border-color: #ff914d;">
+                    <button class="guard-btn" id="submitBtn">Join Waitlist</button>
                 </div>
-                <button id="submitWl" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer;">Join Waitlist</button>
+                <div id="success-state">
+                    <div style="font-size: 50px; margin-bottom: 10px;">🚀</div>
+                    <h2 style="color: #27ae60; margin: 0;">Joined!</h2>
+                    <p style="color: #666; font-size: 0.9rem; margin-top: 10px;">We'll notify you when we expand.</p>
+                    <button class="guard-btn" id="logoutBtn" style="background: #333;">Logout of App</button>
+                </div>
             </div>
-            <div id="successMsg" style="display:none; color: #27ae60; margin-top: 15px; font-weight: 600;">🚀 Added to Waitlist!</div>
-        </div>`;
-        
+        `;
         document.body.appendChild(overlay);
 
-        document.getElementById('requestLocBtn').addEventListener('click', handleLocationRequest);
-        document.getElementById('submitWl').addEventListener('click', saveToWaitlist);
-        document.getElementById('wlLocation').addEventListener('change', (e) => {
-            document.getElementById('otherUniContainer').style.display = (e.target.value === 'Other') ? 'block' : 'none';
-        });
+        // Handle "Other" field
+        document.getElementById('wlUni').onchange = (e) => {
+            document.getElementById('wlOther').style.display = e.target.value === 'Other' ? 'block' : 'none';
+        };
 
-        if(isOutside) showWaitlistUI();
+        // Submit Logic
+        document.getElementById('submitBtn').onclick = async () => {
+            const name = document.getElementById('wlName').value;
+            let uni = document.getElementById('wlUni').value;
+            if (uni === "Other") uni = document.getElementById('wlOther').value;
+
+            if (!name || !uni) return alert("Please fill in all fields");
+
+            try {
+                await addDoc(collection(db, "waiting_list"), { 
+                    name, 
+                    university: uni, 
+                    timestamp: serverTimestamp() 
+                });
+                document.getElementById('form-state').style.display = 'none';
+                document.getElementById('success-state').style.display = 'block';
+            } catch (e) { alert("Error joining waitlist."); }
+        };
+
+        // Logout Logic
+        document.getElementById('logoutBtn').onclick = () => {
+            signOut(auth).then(() => location.reload());
+        };
     }
 
-    function handlePositionSuccess(pos) {
-        const { latitude, longitude } = pos.coords;
-        const isInside = (latitude >= ARUA.latMin && latitude <= ARUA.latMax) &&
-                         (longitude >= ARUA.lngMin && longitude <= ARUA.lngMax);
-        if (isInside) removeShield();
-        else renderLockPopup(true);
+    function unlock() {
+        document.body.classList.remove('guarded');
+        document.getElementById('guard-overlay')?.remove();
     }
-
-    function handleLocationRequest() {
-        const btn = document.getElementById('requestLocBtn');
-        btn.innerText = "Verifying GPS...";
-        
-        // This direct call on click is the ONLY way to trigger iOS Safari
-        navigator.geolocation.getCurrentPosition(
-            (pos) => handlePositionSuccess(pos),
-            (err) => {
-                console.error(err);
-                alert("Please enable Location Services in your Phone Settings and Refresh.");
-                btn.innerText = "Retry Access";
-            },
-            { 
-                enableHighAccuracy: true, 
-                timeout: 15000, // Important: Phones take time to find satellites
-                maximumAge: 0 
-            }
-        );
-    }
-
-    async function saveToWaitlist() {
-        const name = document.getElementById('wlName').value;
-        let campus = document.getElementById('wlLocation').value;
-        if (campus === 'Other') campus = document.getElementById('wlOtherUni').value;
-        if (!name || !campus) return alert("Fill all fields");
-
-        try {
-            await addDoc(collection(db, "waiting_list"), { name, campus, timestamp: serverTimestamp() });
-            document.getElementById('waitlistSection').style.display = 'none';
-            document.getElementById('successMsg').style.display = 'block';
-        } catch (e) { alert("Error connecting to database."); }
-    }
-
-    window.addEventListener('load', verifyAccess);
 })();
