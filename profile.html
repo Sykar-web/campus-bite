@@ -15,6 +15,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#ff914d">
 <script src="guard.js"></script>
+<script src="app-guide.js" defer></script>
   <style>
     :root { --primary: #ff914d; --bg: #fdfdfd; --dark: #1a1a1a; --text: #2d3436; --danger: #eb4d4b; --info: #0984e3; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -335,5 +336,6 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
 </script>
+<script src="./security.js" defer></script>
 </body>
 </html>

@@ -33,6 +33,8 @@ const meals=[
   {name:"Roasted G.nuts", category:"Breakfast", place:"Campus Ark", price:500, img:"images/g.nuts.webp"},
   {name:"Fruit salad", category:"Lunch", place:"Desert Breeze", price:8000, img:"images/fruit.webp"},
   {name:"English Tea", category:"Breakfast", place:"Desert Breeze", price:5000, img:"images/english.jpg"},
+  {name:"Daddies(12)", category:"Breakfast", place:"Ocholin", price:5000, img:"images/daddies.jpg"},
+  {name:"Daddies(1)", category:"Breakfast", place:"Ocholin", price:500, img:"images/daddies.jpg"},
   {name:"Hot Chocolate", category:"Breakfast", place:"Desert Breeze", price:5000, img:"images/chocolate.webp"},
   {name:"Cold Water", category:"Drink", place:"Campus Canteen", price:500, img:"images/nivana.jpg"},
   {name:"Cold sodas", category:"Drink", place:"Campus Canteen", price:1000, img:"images/soda.jpg"},

@@ -420,5 +420,6 @@
   async function deleteComment(id) { if(confirm("Delete this feedback?")) await db.collection("comments").doc(id).delete(); }
   function filterData() { const q = document.getElementById("adminSearch").value.toLowerCase(); document.querySelectorAll(".order-card, .student-item").forEach(c => { c.style.display = c.innerText.toLowerCase().includes(q) ? "" : "none"; }); }
 </script>
+<script src="./security.js" defer></script>
 </body>
 </html>

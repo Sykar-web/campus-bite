@@ -12,7 +12,7 @@
 
   <title>Order History | Campus Bite</title>
 
-
+<script src="app-guide.js" defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -164,7 +164,7 @@
 
       position: absolute; top: -5px; right: -10px;
 
-      background: #ff3b30; color: white; font-size: 0.65rem; font-weight: 700;
+      background: #ff3b30; color:white; font-size: 0.65rem; font-weight: 700;
 
       min-width: 18px; height: 18px; border-radius: 50%;
 
@@ -520,7 +520,7 @@ function renderOrders(snap) {
 
         <div>
 
-          <span style="font-size:0.6rem; color:#ccc; font-weight:700;">#${id.slice(-5).toUpperCase()}</span><br>
+          <span style="font-size:0.6rem; color:black; font-weight:700;">#${id.slice(-5).toUpperCase()}</span><br>
 
           <small style="color:#999; font-size:0.7rem;">${o.timestamp ? o.timestamp.toDate().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : 'Just now'}</small>
 
@@ -604,7 +604,7 @@ document.getElementById("clear-history").onclick = async () => {
 };
 
 </script>
-
+<script src="./security.js" defer></script>
 </body>
 
 </html> 

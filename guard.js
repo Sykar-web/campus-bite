@@ -1,8 +1,7 @@
-// arua-guard.js - THE IRON VAULT VERSION
+// arua-guard.js - THE INTELLIGENT BARRIER
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// 1. Firebase Config (For Waitlist)
 const firebaseConfig = {
     apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
     authDomain: "campus-bite-9dbaa.firebaseapp.com",
@@ -16,121 +15,158 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 (function() {
-    // 2. FORCE HIDE: Stop the page from showing even for a millisecond
-    const hideStyle = document.createElement('style');
-    hideStyle.id = "guard-shield";
-    hideStyle.innerHTML = `body { display: none !important; }`;
-    document.head.appendChild(hideStyle);
-
+    const VIP_EMAILS = ["ezrasykar@gmail.com", "admin@campusbite.com"];
+    const fbKey = "firebase:authUser:AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI:[DEFAULT]";
     const ARUA = { latMin: 2.80, latMax: 3.30, lngMin: 30.70, lngMax: 31.30 };
 
+    // 1. Apply Shield Immediately
+    const blurStyle = document.createElement('style');
+    blurStyle.id = "guard-blur";
+    blurStyle.innerHTML = `
+        body > *:not(#guard-overlay) { 
+            filter: blur(20px) !important; 
+            pointer-events: none !important; 
+            user-select: none !important; 
+        }
+        #guard-overlay { position: fixed; inset: 0; z-index: 999999; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
+    `;
+    document.head.appendChild(blurStyle);
+
     async function verifyAccess() {
-        // Admin Bypass for your Mac
-        if (localStorage.getItem("isAdmin") === "true") {
-            console.log("Admin Verified. Shield Deactivated.");
-            showContent();
+        const userData = JSON.parse(localStorage.getItem(fbKey));
+        const userEmail = userData ? userData.email : null;
+
+        // 2. VIP Bypass
+        if (VIP_EMAILS.includes(userEmail) || localStorage.getItem("isAdmin") === "true") {
+            removeShield();
             return;
         }
 
-        if (!navigator.geolocation) {
-            renderLockPage("Device Error", "GPS is required to use Campus Bite.");
+        // 3. Check if Permission is ALREADY granted
+        if (navigator.permissions && navigator.permissions.query) {
+            const status = await navigator.permissions.query({ name: 'geolocation' });
+            if (status.state === 'granted') {
+                // Try to verify location silently
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const { latitude, longitude } = pos.coords;
+                        const isInside = (latitude >= ARUA.latMin && latitude <= ARUA.latMax) &&
+                                         (longitude >= ARUA.lngMin && longitude <= ARUA.lngMax);
+                        if (isInside) {
+                            removeShield(); // User is in Arua and already allowed, let them in!
+                        } else {
+                            renderLockPopup(true); // User allowed, but is outside Arua
+                        }
+                    },
+                    () => renderLockPopup(), // If GPS fails, show popup
+                    { enableHighAccuracy: true }
+                );
+                return;
+            }
+        }
+        
+        // 4. Default: Show the lock popup if permission isn't granted or known
+        renderLockPopup();
+    }
+
+    function removeShield() {
+        const blur = document.getElementById("guard-blur");
+        const overlay = document.getElementById("guard-overlay");
+        if (blur) blur.remove();
+        if (overlay) overlay.remove();
+    }
+
+    function renderLockPopup(isOutside = false) {
+        if (document.getElementById("guard-overlay")) {
+            // If already exists and we just found out they are outside, update view
+            if(isOutside) showWaitlistUI();
             return;
         }
 
+        const overlay = document.createElement('div');
+        overlay.id = "guard-overlay";
+        overlay.innerHTML = `
+        <div id="lockCard" style="background: white; padding: 30px; border-radius: 28px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.15); max-width: 400px; width: 90%; font-family: 'Poppins', sans-serif;">
+            <img src="/images/tent.jpeg" style="width: 70px; border-radius: 15px; margin-bottom: 15px;">
+            <h2 style="color: #333; margin-bottom: 10px; font-size: 1.4rem;">Location Access Required</h2>
+            <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;">Campus Bite is only available within <b>Muni University</b>. Please allow location access to browse the menu.</p>
+            
+            <button id="requestLocBtn" style="background: #ff914d; color: white; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s;">
+                Allow Location Access
+            </button>
+
+            <div id="waitlistSection" style="display:none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; text-align: left;">
+                <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px; text-align: center;">Outside Arua? Join our waitlist for your campus.</p>
+                <label style="font-size: 0.75rem; color: #555;">Full Name</label>
+                <input type="text" id="wlName" placeholder="Enter your name" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px; outline: none;">
+                <label style="font-size: 0.75rem; color: #555;">Select University</label>
+                <select id="wlLocation" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px; background: white;">
+                    <option value="Makerere">Makerere University</option>
+                    <option value="Kyambogo">Kyambogo University</option>
+                    <option value="Gulu">Gulu University</option>
+                    <option value="Busitema">Busitema University</option>
+                    <option value="Other">Other</option>
+                </select>
+                <div id="otherUniContainer" style="display: none; margin-bottom: 12px;">
+                    <input type="text" id="wlOtherUni" placeholder="Specify University" style="width:100%; padding:12px; border:2px solid #ff914d; border-radius:12px;">
+                </div>
+                <button id="submitWl" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer;">Join Waitlist</button>
+            </div>
+            <div id="successMsg" style="display:none; color: #27ae60; margin-top: 15px; font-weight: 600;">🚀 You're on the list!</div>
+        </div>`;
+        
+        document.body.appendChild(overlay);
+
+        document.getElementById('requestLocBtn').addEventListener('click', handleLocationRequest);
+        document.getElementById('submitWl').addEventListener('click', saveToWaitlist);
+        document.getElementById('wlLocation').addEventListener('change', (e) => {
+            document.getElementById('otherUniContainer').style.display = (e.target.value === 'Other') ? 'block' : 'none';
+        });
+
+        if(isOutside) showWaitlistUI();
+    }
+
+    function showWaitlistUI() {
+        const btn = document.getElementById('requestLocBtn');
+        if(btn) btn.style.display = 'none';
+        const p = document.querySelector('#lockCard p');
+        if(p) p.innerText = "Verified: You are outside the Muni University service area.";
+        const wl = document.getElementById('waitlistSection');
+        if(wl) wl.style.display = 'block';
+    }
+
+    function handleLocationRequest() {
+        const btn = document.getElementById('requestLocBtn');
+        btn.innerText = "Verifying...";
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const { latitude, longitude } = pos.coords;
                 const isInside = (latitude >= ARUA.latMin && latitude <= ARUA.latMax) &&
                                  (longitude >= ARUA.lngMin && longitude <= ARUA.lngMax);
-
-                if (isInside) {
-                    showContent();
-                } else {
-                    renderLockPage("Outside Arua", "Muni University territory only.");
-                }
+                if (isInside) removeShield();
+                else showWaitlistUI();
             },
-            (err) => {
-                // If they click 'Block' or 'Deny'
-                renderLockPage("Access Denied", "Location access is mandatory for Campus Bite.");
+            () => {
+                alert("Access Denied. Please enable GPS.");
+                btn.innerText = "Allow Location Access";
             },
-            { enableHighAccuracy: true, timeout: 15000 }
+            { enableHighAccuracy: true }
         );
-    }
-
-    function showContent() {
-        const shield = document.getElementById("guard-shield");
-        if (shield) shield.remove();
-        // Force the body to be visible
-        document.body.style.setProperty('display', 'block', 'important');
-    }
-
-    function renderLockPage(title, reason) {
-        // REPLACE the entire body so the menu doesn't even exist in the DOM
-        document.body.innerHTML = `
-        <div style="height:100vh; width:100vw; background:#fff; display:flex; align-items:center; justify-content:center; position:fixed; top:0; left:0; z-index:999999; font-family:'Inter', sans-serif;">
-            <div style="text-align:center; padding:30px; max-width:400px; width:100%;">
-                <img src="/images/tent.jpeg" style="width: 80px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(255,145,77,0.3);">
-                <h1 style="color: #ff914d; font-size: 26px; margin-bottom: 10px;">${title}</h1>
-                <p style="color: #666; margin-bottom: 25px;">${reason}<br>Campus Bite is currently for <b>Muni University students</b> only.</p>
-                
-                <div id="wlForm" style="display: flex; flex-direction: column; gap: 12px; text-align: left; background: #fcfcfc; padding: 25px; border-radius: 22px; border: 1px solid #eee;">
-                    <input type="text" id="wlName" placeholder="Full Name" style="padding:14px; border:1px solid #ddd; border-radius:12px; font-size:16px;">
-                    <input type="email" id="wlEmail" placeholder="Email Address" style="padding:14px; border:1px solid #ddd; border-radius:12px; font-size:16px;">
-                    <select id="wlLocation" style="padding:14px; border:1px solid #ddd; border-radius:12px; font-size:16px; background:white;">
-                        <option value="" disabled selected>Select Your Campus</option>
-                        <option value="Makerere">Makerere</option>
-                        <option value="Kyambogo">Kyambogo</option>
-                        <option value="MUBS">MUBS</option>
-                        <option value="Gulu">Gulu</option>
-                        <option value="Busitema">Busitema</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <button id="submitWl" style="background: #ff914d; color: white; border: none; padding: 16px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top:10px;">Join the Waitlist</button>
-                    <button onclick="location.reload()" style="background:none; border:none; color:#999; font-size:12px; cursor:pointer; text-decoration:underline;">Retry Location Check</button>
-                </div>
-
-                <div id="successView" style="display: none; color: #27ae60;">
-                    <h3>🚀 You're on the list!</h3>
-                    <p>We will email you when we launch at your campus.</p>
-                </div>
-            </div>
-        </div>`;
-
-        // Make the lock page visible
-        document.body.style.setProperty('display', 'block', 'important');
-        
-        // Attach event listener
-        document.getElementById('submitWl').addEventListener('click', saveToWaitlist);
     }
 
     async function saveToWaitlist() {
         const name = document.getElementById('wlName').value;
-        const email = document.getElementById('wlEmail').value;
-        const campus = document.getElementById('wlLocation').value;
-        const btn = document.getElementById('submitWl');
+        let campus = document.getElementById('wlLocation').value;
+        if (campus === 'Other') campus = document.getElementById('wlOtherUni').value;
+        const email = JSON.parse(localStorage.getItem(fbKey))?.email || "anonymous";
 
-        if (!name || !email || !campus) return alert("Please fill all fields.");
-
-        btn.disabled = true;
-        btn.innerText = "Processing...";
-
+        if (!name || !campus) return alert("Fill all fields");
         try {
-            await addDoc(collection(db, "waiting_list"), {
-                name, email, campus, timestamp: serverTimestamp()
-            });
-            document.getElementById('wlForm').style.display = 'none';
-            document.getElementById('successView').style.display = 'block';
-        } catch (e) {
-            alert("Error saving. Check your internet.");
-            btn.disabled = false;
-            btn.innerText = "Join the Waitlist";
-        }
+            await addDoc(collection(db, "waiting_list"), { name, email, campus, timestamp: serverTimestamp() });
+            document.getElementById('waitlistSection').style.display = 'none';
+            document.getElementById('successMsg').style.display = 'block';
+        } catch (e) { alert("Error joining waitlist."); }
     }
 
-    // Start the process
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", verifyAccess);
-    } else {
-        verifyAccess();
-    }
+    window.addEventListener('load', verifyAccess);
 })();
