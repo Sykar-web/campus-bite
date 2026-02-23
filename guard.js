@@ -1,4 +1,4 @@
-// arua-guard.js - THE INTELLIGENT BARRIER
+// arua-guard.js - THE UNIVERSAL INTELLIGENT BARRIER
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -19,16 +19,12 @@ const db = getFirestore(app);
     const fbKey = "firebase:authUser:AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI:[DEFAULT]";
     const ARUA = { latMin: 2.80, latMax: 3.30, lngMin: 30.70, lngMax: 31.30 };
 
-    // 1. Apply Shield Immediately
+    // 1. Immediate Shield
     const blurStyle = document.createElement('style');
     blurStyle.id = "guard-blur";
     blurStyle.innerHTML = `
-        body > *:not(#guard-overlay) { 
-            filter: blur(20px) !important; 
-            pointer-events: none !important; 
-            user-select: none !important; 
-        }
-        #guard-overlay { position: fixed; inset: 0; z-index: 999999; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
+        body > *:not(#guard-overlay) { filter: blur(20px) !important; pointer-events: none !important; user-select: none !important; }
+        #guard-overlay { position: fixed; inset: 0; z-index: 9999999; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); }
     `;
     document.head.appendChild(blurStyle);
 
@@ -36,37 +32,24 @@ const db = getFirestore(app);
         const userData = JSON.parse(localStorage.getItem(fbKey));
         const userEmail = userData ? userData.email : null;
 
-        // 2. VIP Bypass
+        // VIP/Admin Bypass
         if (VIP_EMAILS.includes(userEmail) || localStorage.getItem("isAdmin") === "true") {
             removeShield();
             return;
         }
 
-        // 3. Check if Permission is ALREADY granted
-        if (navigator.permissions && navigator.permissions.query) {
-            const status = await navigator.permissions.query({ name: 'geolocation' });
-            if (status.state === 'granted') {
-                // Try to verify location silently
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => {
-                        const { latitude, longitude } = pos.coords;
-                        const isInside = (latitude >= ARUA.latMin && latitude <= ARUA.latMax) &&
-                                         (longitude >= ARUA.lngMin && longitude <= ARUA.lngMax);
-                        if (isInside) {
-                            removeShield(); // User is in Arua and already allowed, let them in!
-                        } else {
-                            renderLockPopup(true); // User allowed, but is outside Arua
-                        }
-                    },
-                    () => renderLockPopup(), // If GPS fails, show popup
-                    { enableHighAccuracy: true }
-                );
-                return;
-            }
-        }
-        
-        // 4. Default: Show the lock popup if permission isn't granted or known
-        renderLockPopup();
+        // Silent Check (Works on PC and some Androids)
+        // We avoid navigator.permissions.query because Safari (iPhone) rejects it.
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                handlePositionSuccess(pos);
+            },
+            () => {
+                // If silent check fails, we MUST show the popup for user-initiated gesture (Mobile Requirement)
+                renderLockPopup();
+            },
+            { enableHighAccuracy: true, timeout: 2000, maximumAge: 10000 }
+        );
     }
 
     function removeShield() {
@@ -74,11 +57,12 @@ const db = getFirestore(app);
         const overlay = document.getElementById("guard-overlay");
         if (blur) blur.remove();
         if (overlay) overlay.remove();
+        // Signal to app-guide.js that it can now show up
+        window.dispatchEvent(new Event('guard-cleared'));
     }
 
     function renderLockPopup(isOutside = false) {
         if (document.getElementById("guard-overlay")) {
-            // If already exists and we just found out they are outside, update view
             if(isOutside) showWaitlistUI();
             return;
         }
@@ -86,20 +70,18 @@ const db = getFirestore(app);
         const overlay = document.createElement('div');
         overlay.id = "guard-overlay";
         overlay.innerHTML = `
-        <div id="lockCard" style="background: white; padding: 30px; border-radius: 28px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.15); max-width: 400px; width: 90%; font-family: 'Poppins', sans-serif;">
-            <img src="/images/tent.jpeg" style="width: 70px; border-radius: 15px; margin-bottom: 15px;">
-            <h2 style="color: #333; margin-bottom: 10px; font-size: 1.4rem;">Location Access Required</h2>
-            <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;">Campus Bite is only available within <b>Muni University</b>. Please allow location access to browse the menu.</p>
+        <div id="lockCard" style="background: white; padding: 30px; border-radius: 28px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.15); max-width: 400px; width: 90%; font-family: sans-serif;">
+            <div style="font-size: 50px; margin-bottom: 10px;">📍</div>
+            <h2 style="color: #333; margin-bottom: 10px; font-size: 1.4rem;">Enable Location</h2>
+            <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px; line-height: 1.5;">Campus Bite only serves <b>Muni University</b>. Tap below to verify your campus presence.</p>
             
-            <button id="requestLocBtn" style="background: #ff914d; color: white; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s;">
+            <button id="requestLocBtn" style="background: #ff914d; color: white; border: none; padding: 16px; border-radius: 16px; width: 100%; font-weight: 700; font-size: 1rem; cursor: pointer;">
                 Allow Location Access
             </button>
 
             <div id="waitlistSection" style="display:none; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; text-align: left;">
-                <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px; text-align: center;">Outside Arua? Join our waitlist for your campus.</p>
-                <label style="font-size: 0.75rem; color: #555;">Full Name</label>
-                <input type="text" id="wlName" placeholder="Enter your name" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px; outline: none;">
-                <label style="font-size: 0.75rem; color: #555;">Select University</label>
+                <p style="font-size: 0.8rem; color: #d32f2f; margin-bottom: 15px; text-align: center; font-weight: 600;">You appear to be outside Arua.</p>
+                <input type="text" id="wlName" placeholder="Full Name" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px;">
                 <select id="wlLocation" style="width:100%; padding:12px; margin-bottom:12px; border:1px solid #ddd; border-radius:12px; background: white;">
                     <option value="Makerere">Makerere University</option>
                     <option value="Kyambogo">Kyambogo University</option>
@@ -112,7 +94,7 @@ const db = getFirestore(app);
                 </div>
                 <button id="submitWl" style="background: #333; color: white; border: none; padding: 15px; border-radius: 15px; width: 100%; font-weight: 600; cursor: pointer;">Join Waitlist</button>
             </div>
-            <div id="successMsg" style="display:none; color: #27ae60; margin-top: 15px; font-weight: 600;">🚀 You're on the list!</div>
+            <div id="successMsg" style="display:none; color: #27ae60; margin-top: 15px; font-weight: 600;">🚀 Added to Waitlist!</div>
         </div>`;
         
         document.body.appendChild(overlay);
@@ -126,31 +108,31 @@ const db = getFirestore(app);
         if(isOutside) showWaitlistUI();
     }
 
-    function showWaitlistUI() {
-        const btn = document.getElementById('requestLocBtn');
-        if(btn) btn.style.display = 'none';
-        const p = document.querySelector('#lockCard p');
-        if(p) p.innerText = "Verified: You are outside the Muni University service area.";
-        const wl = document.getElementById('waitlistSection');
-        if(wl) wl.style.display = 'block';
+    function handlePositionSuccess(pos) {
+        const { latitude, longitude } = pos.coords;
+        const isInside = (latitude >= ARUA.latMin && latitude <= ARUA.latMax) &&
+                         (longitude >= ARUA.lngMin && longitude <= ARUA.lngMax);
+        if (isInside) removeShield();
+        else renderLockPopup(true);
     }
 
     function handleLocationRequest() {
         const btn = document.getElementById('requestLocBtn');
-        btn.innerText = "Verifying...";
+        btn.innerText = "Verifying GPS...";
+        
+        // This direct call on click is the ONLY way to trigger iOS Safari
         navigator.geolocation.getCurrentPosition(
-            (pos) => {
-                const { latitude, longitude } = pos.coords;
-                const isInside = (latitude >= ARUA.latMin && latitude <= ARUA.latMax) &&
-                                 (longitude >= ARUA.lngMin && longitude <= ARUA.lngMax);
-                if (isInside) removeShield();
-                else showWaitlistUI();
+            (pos) => handlePositionSuccess(pos),
+            (err) => {
+                console.error(err);
+                alert("Please enable Location Services in your Phone Settings and Refresh.");
+                btn.innerText = "Retry Access";
             },
-            () => {
-                alert("Access Denied. Please enable GPS.");
-                btn.innerText = "Allow Location Access";
-            },
-            { enableHighAccuracy: true }
+            { 
+                enableHighAccuracy: true, 
+                timeout: 15000, // Important: Phones take time to find satellites
+                maximumAge: 0 
+            }
         );
     }
 
@@ -158,14 +140,13 @@ const db = getFirestore(app);
         const name = document.getElementById('wlName').value;
         let campus = document.getElementById('wlLocation').value;
         if (campus === 'Other') campus = document.getElementById('wlOtherUni').value;
-        const email = JSON.parse(localStorage.getItem(fbKey))?.email || "anonymous";
-
         if (!name || !campus) return alert("Fill all fields");
+
         try {
-            await addDoc(collection(db, "waiting_list"), { name, email, campus, timestamp: serverTimestamp() });
+            await addDoc(collection(db, "waiting_list"), { name, campus, timestamp: serverTimestamp() });
             document.getElementById('waitlistSection').style.display = 'none';
             document.getElementById('successMsg').style.display = 'block';
-        } catch (e) { alert("Error joining waitlist."); }
+        } catch (e) { alert("Error connecting to database."); }
     }
 
     window.addEventListener('load', verifyAccess);
