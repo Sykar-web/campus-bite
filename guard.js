@@ -17,7 +17,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 (function() {
-    const WHITELIST = ["ezrasykar@gmail.com", "namitala.teddy@student.utamu.ac.ug"];
+    const WHITELIST = ["ezrasykar@gmail.com", "namitala.teddy@student.utamu.ac.ug","kemigishavanessa9@gmail.com",];
     const ARUA = { 
         latMin: 2.950000000000000, 
         latMax: 3.100000000000000, 
