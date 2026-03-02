@@ -33,4 +33,4 @@ const meals = [
     {name:"Minute maid", img:"images/maid.jpg", ingredients:["Juice"], steps:["Pour chilled."]},
     {name:"Bushera", img:"images/bushera.jpg", ingredients:["Millet flour","Water","Sugar"], steps:["Mix millet flour with water to make a smooth paste.","Add boiling water and stir continuously to remove crumbs.","Place the pan on fire and let it boil for about 15 minutes.","Add sugar and milk to taste."]},
     {name:"Oner", img:"images/oner.jpg", ingredients:["Oner"], steps:["Serve chilled."]},
-    {name:"Yogurt", img:"images/yogurt.jpg", ingredients:["Milk","Culture"], steps:["Ferment and chill."]}
+    {name:"Yogurt", img:"images/yogurt.jpg", ingredients:["Milk","Culture"], steps:["Ferment and chill."]}];
