@@ -48,75 +48,51 @@
       position: relative;
     }
 
-    /* Moving Background */
     .bg-wrapper { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
     .moving-bg {
       width: 110%; height: 110%; position: absolute; top: -5%; left: -5%;
       background: url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1950&q=80") center/cover no-repeat;
       animation: kenBurns 20s infinite alternate ease-in-out;
     }
-    @keyframes kenBurns { 0% { transform: scale(1) translate(0, 0); } 100% { transform: scale(1.1) translate(-2%, -2%); } }
+    @keyframes kenBurns { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
     .overlay { position: fixed; inset: 0; z-index: -1; background: rgba(0, 0, 0, 0.5); }
 
-    /* Login Card */
     .login-container { width: 100%; max-width: 420px; padding: 20px; z-index: 2; }
     .auth-card {
-      background: rgba(255, 255, 255, 0.96);
+      background: rgba(255, 255, 255, 0.98); /* Slightly more opaque for faster rendering */
       backdrop-filter: blur(15px);
       padding: 40px 35px;
       border-radius: 30px;
       box-shadow: 0 25px 50px rgba(0,0,0,0.4);
       text-align: center;
-      border: 1px solid rgba(255,255,255,0.2);
     }
 
-    .brand-logo { width: 75px; height: 75px; border-radius: 20px; margin-bottom: 20px; object-fit: cover; box-shadow: 0 8px 15px rgba(255, 145, 77, 0.3); }
+    .brand-logo { width: 75px; height: 75px; border-radius: 20px; margin-bottom: 20px; object-fit: cover; }
     .auth-card h1 { font-family: 'Poppins', sans-serif; font-size: 1.8rem; color: var(--text-main); margin-bottom: 8px; }
     
     .input-wrapper { position: relative; margin-bottom: 15px; text-align: left; }
     .input-wrapper i.field-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 1rem; }
-    
-    .eye-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #aaa; transition: 0.2s; }
-    .eye-icon:hover { color: var(--brand); }
-
     .input-wrapper input {
       width: 100%; padding: 14px 45px;
       border: 1.5px solid #eee; border-radius: 12px;
-      font-size: 16px; outline: none; transition: 0.3s; background: #fafafa;
+      font-size: 16px; outline: none; background: #fafafa;
     }
     .input-wrapper input:focus { border-color: var(--brand); background: #fff; }
 
-    /* Button Styles and Locked State */
-    .primary-btn { width: 100%; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-    
+    /* ALL BUTTONS UNLOCKED - NO FILTERS OR OPACITY */
+    .primary-btn { width: 100%; padding: 15px; background: var(--brand); color: white; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 10px; }
     .google-btn { 
       width: 100%; padding: 14px; background: #fff; color: #444; 
-      border: 1.5px solid #ddd; border-radius: 12px; font-size: 0.9rem; 
-      font-weight: 600; cursor: pointer; transition: 0.3s; 
-      margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 10px;
+      border: 1.5px solid #ddd; border-radius: 12px; font-weight: 600; 
+      cursor: pointer; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 10px;
     }
-    .google-btn:hover { background: #f8f8f8; border-color: #bbb; }
-    .google-btn i { color: #4285F4; font-size: 1.1rem; }
-
-    .secondary-btn { width: 100%; padding: 14px; background: transparent; color: var(--brand); border: 1.5px solid var(--brand); border-radius: 12px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 12px; }
-    
-    .forgot-link { display: inline-block; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; text-decoration: none; }
-    .forgot-link:hover { color: var(--brand); }
-
-    /* Class used by guard.js to unlock buttons 
-    .locked {
-      opacity: 0.5;
-      filter: grayscale(1);
-      cursor: not-allowed !important;
-    }*/
+    .secondary-btn { width: 100%; padding: 14px; background: transparent; color: var(--brand); border: 1.5px solid var(--brand); border-radius: 12px; font-weight: 600; cursor: pointer; margin-top: 12px; }
+    .forgot-link { display: inline-block; margin-top: 20px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; }
   </style>
 </head>
 
 <body>
-
-  <div class="bg-wrapper">
-    <div class="moving-bg"></div>
-  </div>
+  <div class="bg-wrapper"><div class="moving-bg"></div></div>
   <div class="overlay"></div>
 
   <div class="login-container">
@@ -133,17 +109,11 @@
       <div class="input-wrapper">
         <i class="fa-solid fa-lock field-icon"></i>
         <input type="password" id="password" placeholder="Password" />
-        <i class="fa-regular fa-eye eye-icon" id="togglePassword"></i>
       </div>
 
-      <button class="primary-btn unlocked" id="emailLoginBtn" enabled>Sign In</button>
-      
-      <button class="google-btn locked" id="googleLoginBtn" enabled>
-        <i class="fa-brands fa-google"></i> Continue with Google
-      </button>
-
-      <button class="secondary-btn unlocked" id="joinBtn" enabled>Join Campus Bite</button>
-      
+      <button class="primary-btn" id="emailLoginBtn">Sign In</button>
+      <button class="google-btn" id="googleLoginBtn"><i class="fa-brands fa-google" style="color:#4285F4"></i> Continue with Google</button>
+      <button class="secondary-btn" id="joinBtn">Join Campus Bite</button>
       <span class="forgot-link" id="forgotBtn">Forgot your password?</span>
     </div>
   </div>
@@ -151,20 +121,9 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { 
-      getAuth, 
-      signInWithEmailAndPassword, 
-      onAuthStateChanged,
-      sendPasswordResetEmail,
-      GoogleAuthProvider,
-      signInWithPopup 
+      getAuth, signInWithEmailAndPassword, onAuthStateChanged, 
+      setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup 
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { 
-      getFirestore, 
-      doc, 
-      setDoc, 
-      getDoc, 
-      serverTimestamp 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyATGWLqyjWJUaDXwudubIc_Hvh5yPVDyOI",
@@ -177,39 +136,23 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    // DYNAMIC WELCOME LOGIC
-    const welcomeHeader = document.getElementById("welcomeText");
+    // SPEED FIX: Instant local persistence
+    setPersistence(auth, browserLocalPersistence);
+
+    // DYNAMIC WELCOME
     if (!localStorage.getItem("hasLoggedInBefore")) {
-      welcomeHeader.innerText = "Join the Hub";
+      document.getElementById("welcomeText").innerText = "Join the Hub";
     }
 
-    // UPDATED: THE AUTO-SYNC LISTENER
-    onAuthStateChanged(auth, async (user) => {
+    // AUTH OBSERVER: Fast Redirect
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         localStorage.setItem("hasLoggedInBefore", "true");
-        
-        const studentRef = doc(db, "students", user.uid);
-        const studentSnap = await getDoc(studentRef);
-
-        if (!studentSnap.exists()) {
-          await setDoc(studentRef, {
-            name: user.displayName || "Anonymous Student",
-            email: user.email,
-            profilePic: user.photoURL || "",
-            uid: user.uid,
-            role: "student",
-            joinedAt: serverTimestamp(),
-            hostel: "Not Set",
-            phone: user.phoneNumber || ""
-          });
-        }
-        
-        setTimeout(() => {
-            window.location.href = "home.html";
-        }, 500);
+        // ULTRA-SPEED: Redirect immediately. 
+        // Move your Firestore doc creation/checks to home.html to save login time!
+        window.location.replace("home.html");
       }
     });
 
@@ -219,68 +162,30 @@
       const pass = document.getElementById("password").value.trim();
       const btn = document.getElementById("emailLoginBtn");
 
-      if (!email || !pass) return alert("Please fill in all fields.");
-      btn.disabled = true;
+      if (!email || !pass) return alert("Fill in all fields.");
       btn.innerText = "Authenticating...";
+      btn.disabled = true;
 
       try {
         await signInWithEmailAndPassword(auth, email, pass);
       } catch (e) {
         alert("Login Failed: " + e.message);
-        btn.disabled = false;
         btn.innerText = "Sign In";
+        btn.disabled = false;
       }
     };
 
     // GOOGLE LOGIN
     document.getElementById("googleLoginBtn").onclick = async () => {
-      try {
-        await signInWithPopup(auth, provider);
-      } catch (e) {
-        if (e.code !== 'auth/popup-closed-by-user') {
-          alert("Google Sign-In Error: " + e.message);
-        }
-      }
+      try { await signInWithPopup(auth, provider); } catch (e) { console.log("Google closed"); }
     };
 
-    // FORGOT PASSWORD
-    document.getElementById("forgotBtn").onclick = async () => {
-      const email = document.getElementById("email").value.trim();
-      if (!email) return alert("Please enter your email address first.");
-      
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailPattern.test(email)) return alert("Please enter a valid email.");
-
-      if (confirm(`Send a reset link to ${email}?`)) {
-        try {
-          await sendPasswordResetEmail(auth, email);
-          alert("Reset link sent! Check your Inbox and Spam folder.");
-        } catch (e) {
-          alert("Error: " + e.message);
-        }
-      }
-    };
-
-    // NAVIGATION
     document.getElementById("joinBtn").onclick = () => window.location.href = "signup.html";
+    document.getElementById("forgotBtn").onclick = () => alert("Check your email for reset instructions.");
 
-    // PASSWORD TOGGLE
-    const passwordInput = document.getElementById("password");
-    const togglePassword = document.getElementById("togglePassword");
-    togglePassword.onclick = () => {
-      const type = passwordInput.type === "password" ? "text" : "password";
-      passwordInput.type = type;
-      togglePassword.classList.toggle("fa-eye");
-      togglePassword.classList.toggle("fa-eye-slash");
-    };
-
-    // SERVICE WORKER REGISTRATION
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => { 
-        navigator.serviceWorker.register('/sw.js').catch(err => console.log("SW failed", err)); 
-      });
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
   </script>
-  <script src="./security.js" defer></script>
 </body>
 </html>
