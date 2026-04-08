@@ -1,5 +1,5 @@
 // arua-guard.js - PWA Optimized & High Speed
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+/*import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -135,3 +135,4 @@ const auth = getAuth(app);
         document.getElementById('logoutBtn').onclick = () => signOut(auth).then(() => location.reload());
     }
 })();
+*/
